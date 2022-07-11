@@ -264,29 +264,7 @@ export default {
             const result = await version()
             const data = result.Data
             this.trojanVersion = data.trojanVersion
-            this.trojanUptime = this.parseUptime(data.trojanUptime)
-        },
-        parseUptime(uptime) {
-            let result = ''
-            if (uptime.indexOf('-') !== -1) {
-                const splitInfo = uptime.split('-')
-                result += splitInfo[0] + `${this.$t('dashboard.day')} `
-                const timeInfo = splitInfo[1].split(':')
-                result += timeInfo[0] + `${this.$t('dashboard.hour')} `
-                result += timeInfo[1] + `${this.$t('dashboard.minute')} `
-                result += timeInfo[2] + `${this.$t('dashboard.second')} `
-            } else {
-                const splitInfo = uptime.split(':')
-                if (splitInfo.length === 3) {
-                    result += splitInfo[0] + `${this.$t('dashboard.hour')} `
-                    result += splitInfo[1] + `${this.$t('dashboard.minute')} `
-                    result += splitInfo[2] + `${this.$t('dashboard.second')} `
-                } else if (splitInfo.length === 2) {
-                    result += splitInfo[0] + `${this.$t('dashboard.minute')} `
-                    result += splitInfo[1] + `${this.$t('dashboard.second')} `
-                }
-            }
-            return result
+            this.trojanUptime = data.trojanUptime
         }
     }
 }
