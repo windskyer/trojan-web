@@ -3,22 +3,15 @@
     <el-form ref="loginForm" :model="loginForm" class="login-form" autocomplete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title"> {{title}} </h3>
+        <h3 class="title"> {{ title }} </h3>
       </div>
 
       <el-form-item prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
-        <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
-          name="username"
-          type="text"
-          tabindex="1"
-          auto-complete="on"
-        />
+        <el-input ref="username" v-model="loginForm.username" placeholder="Username" name="username" type="text"
+          tabindex="1" auto-complete="on" />
       </el-form-item>
 
       <el-tooltip v-model:visible="capsTooltip" content="Caps lock is On" placement="right" manual>
@@ -26,26 +19,24 @@
           <span class="svg-container">
             <svg-icon icon-class="password" />
           </span>
-          <el-input
-            :key="passwordType"
-            ref="password"
-            v-model="loginForm.password"
-            :type="passwordType"
-            placeholder="Password"
-            name="password"
-            tabindex="2"
-            auto-complete="on"
-            @keyup="checkCapslock"
-            @blur="capsTooltip = false"
-            @keyup.enter="handleLogin"
-          />
+          <el-input :key="passwordType" ref="password" v-model="loginForm.password" :type="passwordType"
+            placeholder="Password" name="password" tabindex="2" auto-complete="on" @keyup="checkCapslock"
+            @blur="capsTooltip = false" @keyup.enter="handleLogin" />
           <span class="show-pwd" @click="showPwd">
             <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
           </span>
         </el-form-item>
       </el-tooltip>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.prevent="handleLogin">{{ $t('login') }}</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;margin-left:0px"
+        @click.prevent="handleLogin">
+        {{ $t('login') }}
+      </el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;margin-left:0px"
+        @click.prevent="registerUser">
+        {{ $t('register') }}
+      </el-button>
+
     </el-form>
   </div>
 </template>
@@ -55,76 +46,78 @@ import { mapState } from 'vuex'
 import CryptoJS from 'crypto-js'
 import { check, login } from '@/api/permission'
 export default {
-    data() {
-        return {
-            loginForm: {
-                username: '',
-                password: ''
-            },
-            loading: false,
-            capsTooltip: false,
-            passwordType: 'password',
-            title: ''
-        }
-    },
-    created() {
-        document.title = this.docTitle
-        check().then((res) => {
-            if (res.code === 201) {
-                this.$router.replace('/register').catch()
-            } else {
-                this.title = res.data.title
-                document.title = this.title
-                this.$store.commit('SET_TITLE', this.title)
-            }
-        })
-    },
-    computed: {
-        ...mapState(['docTitle'])
-    },
-    mounted() {
-        this.$refs.password.focus()
-    },
-    methods: {
-        showPwd() {
-            if (this.passwordType === 'password') {
-                this.passwordType = ''
-            } else {
-                this.passwordType = 'password'
-            }
-            this.$nextTick(() => {
-                this.$refs.password.focus()
-            })
-        },
-        checkCapslock(e) {
-            const { key } = e
-            this.capsTooltip = key && key.length === 1 && (key >= 'A' && key <= 'Z')
-        },
-        async handleLogin() {
-            if (this.loginForm.username === '' || this.loginForm.password === '') {
-                this.$message.error(this.$t('inputNotNull'))
-                return
-            }
-            const loginInfo = Object.assign({}, this.loginForm)
-            loginInfo.password = CryptoJS.SHA224(this.loginForm.password).toString()
-            const data = await login(loginInfo)
-            const token = data.token
-            let isAdmin = false
-            if (this.loginForm.username === 'admin') {
-                isAdmin = true
-            }
-            this.$store.commit('SET_ADMIN', isAdmin)
-            this.$store.commit('LOGIN_IN', token)
-            this.$router.replace('/').catch()
-        }
+  data() {
+    return {
+      loginForm: {
+        username: '',
+        password: ''
+      },
+      loading: false,
+      capsTooltip: false,
+      passwordType: 'password',
+      title: ''
     }
+  },
+  created() {
+    document.title = this.docTitle
+    check().then((res) => {
+      if (res.code === 201) {
+        this.$router.replace('/register').catch()
+      } else {
+        this.title = res.data.title
+        document.title = this.title
+        this.$store.commit('SET_TITLE', this.title)
+      }
+    })
+  },
+  computed: {
+    ...mapState(['docTitle'])
+  },
+  mounted() {
+    this.$refs.password.focus()
+  },
+  methods: {
+    registerUser() {
+      this.$router.replace('/registerUser').catch()
+    },
+    showPwd() {
+      if (this.passwordType === 'password') {
+        this.passwordType = ''
+      } else {
+        this.passwordType = 'password'
+      }
+      this.$nextTick(() => {
+        this.$refs.password.focus()
+      })
+    },
+    checkCapslock(e) {
+      const { key } = e
+      this.capsTooltip = key && key.length === 1 && (key >= 'A' && key <= 'Z')
+    },
+    async handleLogin() {
+      if (this.loginForm.username === '' || this.loginForm.password === '') {
+        this.$message.error(this.$t('inputNotNull'))
+        return
+      }
+      const loginInfo = Object.assign({}, this.loginForm)
+      loginInfo.password = CryptoJS.SHA224(this.loginForm.password).toString()
+      const data = await login(loginInfo)
+      const token = data.token
+      let isAdmin = false
+      if (this.loginForm.username === 'admin') {
+        isAdmin = true
+      }
+      this.$store.commit('SET_ADMIN', isAdmin)
+      this.$store.commit('LOGIN_IN', token)
+      this.$router.replace('/').catch()
+    }
+  }
 }
 </script>
 
 <style lang="scss">
-
-$bg:#283443;
-$light_gray:#fff;
+$bg: #283443;
+$light_gray: #fff;
 $cursor: #fff;
 
 /* reset element-ui css */
@@ -135,8 +128,8 @@ $cursor: #fff;
     position: static;
 
     .el-input__wrapper {
-      padding:0;
-      box-shadow:none;
+      padding: 0;
+      box-shadow: none;
     }
 
     input {
@@ -151,7 +144,7 @@ $cursor: #fff;
 
       &:-webkit-autofill {
         box-shadow: 0 0 0px 1000px $bg inset !important;
-        -webkit-text-fill-color: $cursor !important;
+        -webkit-text-fill-color: $cursor  !important;
       }
     }
   }
@@ -166,9 +159,9 @@ $cursor: #fff;
 </style>
 
 <style lang="scss" scoped>
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
-$light_gray:#eee;
+$bg: #2d3a4b;
+$dark_gray: #889aa4;
+$light_gray: #eee;
 
 .login-container {
   min-height: 100%;

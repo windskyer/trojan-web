@@ -1,7 +1,15 @@
 import request from '@/utils/request'
 
 export function userList() {
-    return request.get('/trojan/user')
+   return request.get('/trojan/user')
+}
+
+export function pageUserList(curPage, pageSize) {
+    return request({
+        url: '/trojan/user/page', // 修改为后端分页接口的路径
+        method: 'get',
+        params: { curPage, pageSize } // 将分页参数作为查询参数传递
+    })
 }
 
 export function addUser(data) {

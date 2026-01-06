@@ -9,7 +9,7 @@ import 'virtual:svg-icons-register'
 import SvgIcon from '@/components/SvgIcon'// svg组件
 import '@/icons'
 
-const whiteList = ['/login', '/register'] // no redirect whitelist
+const whiteList = ['/login', '/register', '/registerUser'] // no redirect whitelist
 const adminList = ['/trojan'] // need admin role
 
 router.beforeEach(async (to, from, next) => {

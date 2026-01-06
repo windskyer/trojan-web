@@ -145,6 +145,7 @@ import { readablizeBytes } from '@/utils/common'
 import { mapState } from 'vuex'
 
 export default {
+    name: 'dashIndex', // 添加这一行，定义组件名为 'UserIndex'
     data() {
         return {
             timer: null,

@@ -1,184 +1,208 @@
 <template>
-  <div>
-    <el-form :inline="true" label-width="80px">
-    <el-form-item>
-        <el-button-group>
-            <el-button type="primary" :icon="Refresh" @click="refresh()">{{ textShow($t('refresh')) }}</el-button>
-            <el-button type="primary" :icon="Plus" @click="commonType=2;userInfo.username='';userInfo.password='';userVisible=true" v-if="isAdmin">{{ textShow($t('add')) }}</el-button>
-            <el-button type="primary" :icon="RefreshLeft" @click="copySelection=multipleSelection;patchButton=true;commonType=1;confirmVisible=true" v-if="isAdmin">{{ textShow($t('user.reset')) }}</el-button>
-            <el-button type="primary" :icon="Scissor" @click="copySelection=multipleSelection;patchButton=true;quotaVisible=true" v-if="isAdmin">{{ textShow($t('user.limitData')) }}</el-button>
-            <el-button type="danger" :icon="Delete" @click="copySelection=multipleSelection;patchButton=true;commonType=0;confirmVisible=true" v-if="isAdmin">{{ textShow($t('delete')) }}</el-button>
-        </el-button-group>
-    </el-form-item>
-    </el-form>
-    <el-table
-    :data="dataList.filter(data => !search || data.Username.toLowerCase().includes(search.toLowerCase()))" :height="clientHeight" @selection-change="handleSelectionChange" class="tableShow">
-        <el-table-column
-        type="selection"
-        width="55" v-if="isAdmin">
-        </el-table-column>
-        <el-table-column
-        :label="$t('username')"
-        prop="Username"
-        >
-        </el-table-column>
-        <el-table-column
-        :label="$t('password')"
-        :formatter="passwordFormatter">
-        </el-table-column>
-        <el-table-column
-        :label="$t('user.upload')"
-        :formatter="uploadFormatter" :sort-method="uploadSort" sortable>
-        </el-table-column>
-        <el-table-column
-        :label="$t('user.download')"
-        :formatter="downloadFormatter" :sort-method="downloadSort" sortable>
-        </el-table-column>
-        <el-table-column
-        :label="$t('user.total')"
-        :formatter="totalFormatter" :sort-method="totalSort" sortable>
-        </el-table-column>
-        <el-table-column
-        :label="$t('user.quota')"
-        :formatter="quotaFormatter">
-        </el-table-column>
-        <el-table-column
-        :label="$t('user.expiryDate')">
-        <template #default="scope">
-            <div v-if="scope.row.ExpiryDate === ''">{{ $t('user.unlimit') }}</div>
-            <el-popover trigger="hover" placement="top" v-else>
-            <p>{{ $t('user.remaining') }}: {{ calculateDay(scope.row.ExpiryDate) }}</p>
-            <template #reference>
-                <div class="name-wrapper">
-                    <el-tag>{{ scope.row.ExpiryDate === '' ? $t('user.unlimit') : scope.row.ExpiryDate }}</el-tag>
-                </div>
-            </template>
-            </el-popover>
-        </template>
-        </el-table-column>
-        <el-table-column
-        width="170"
-        align="center">
-        <template #header>
-            <el-input
-                v-model="search"
-                :placeholder="$t('user.search')" v-if="isAdmin"/>
-            <div v-if="!isAdmin">{{ $t('user.operate') }}</div>
-        </template>
-        <template #default="scope">
-            <el-dropdown v-if="isAdmin">
-                <el-button type="primary" link style="margin-top:2.6px">
-                    {{ $t('edit') }}
-                </el-button>
-                <template #dropdown>
-                    <el-dropdown-menu>
-                        <el-dropdown-item @click="userItem=scope.row; patchButton=false; quotaVisible=true">{{ $t('user.limitData') }}</el-dropdown-item>
-                        <el-dropdown-item @click="userItem=scope.row; commonType=1; patchButton=false; confirmVisible=true">{{ $t('user.reset') }}</el-dropdown-item>
-                        <el-dropdown-item @click="userItem=scope.row; handelEditUser()">{{ $t('user.modifyUser') }}</el-dropdown-item>
-                        <el-dropdown-item @click="userItem=scope.row; expiryShow=$t('user.setExpire'); expiryVisible=true" v-if="scope.row.ExpiryDate === ''">{{ $t('user.setExpire') }}</el-dropdown-item>
-                        <div v-else>
-                            <el-dropdown-item @click="userItem=scope.row; expiryShow=$t('user.editExpire'); expiryVisible=true">{{ $t('user.editExpire') }}</el-dropdown-item>
-                            <el-dropdown-item @click="userItem=scope.row; cancelUserExpire()">{{ $t('user.cancelExpire') }}</el-dropdown-item>
-                        </div>
-                    </el-dropdown-menu>
-                </template>
-            </el-dropdown>
-            <el-dropdown style="margin-left:5px">
-                <el-button type="primary" link style="margin-top:2.6px">
-                    {{ $t('share') }} 
-                </el-button>
-                <template #dropdown>
-                    <el-dropdown-menu>
-                        <el-dropdown-item @click="userItem=scope.row;handleShare()">{{ $t('user.shareLink') }}</el-dropdown-item>
-                        <el-dropdown-item @click="userItem=scope.row;handleClash()">{{ $t('user.importClash') }}</el-dropdown-item>
-                    </el-dropdown-menu>
-                </template>
-            </el-dropdown>
-            <el-button style="margin-left:5px;" v-if="isAdmin" type="primary" link
-            @click="userItem=scope.row;commonType=0;patchButton=false;confirmVisible=true"
-            >{{ $t('delete') }}</el-button>
-        </template>
-        </el-table-column>
-    </el-table>
-    <el-dialog :title="commonTitle"  v-model="userVisible" :width="dialogWidth">
-        <el-input type="text" v-model="userInfo.username" :placeholder="$root.$t('user.inputUsername')" @keyup.enter="commonType === 2? handleAddUser(): handleUpdateUser()"/>
-        <el-input type="text" v-model="userInfo.password" :placeholder="$root.$t('user.inputPassword')" @keyup.enter="commonType === 2? handleAddUser(): handleUpdateUser()"/>
-        <template #footer class="dialog-footer">
-            <el-button @click="userVisible = false">{{ $root.$t('cancel') }}</el-button>
-            <el-button type="primary" @click="commonType === 2? handleAddUser(): handleUpdateUser()">{{ $root.$t('ok') }}</el-button>
-        </template>
-    </el-dialog>
-    <el-dialog :title="commonTitle"  v-model="confirmVisible" :width="dialogWidth">
-        {{ editUser }}
-        <template #footer>
-            <span class="dialog-footer">
-                <el-button @click="confirmVisible = false;copySelection=[];">{{ $root.$t('cancel') }}</el-button>
-                <el-button type="primary" @click="confirmVisible = false; patchButton ? handlePatchOpera(): handleOpera()">{{ $root.$t('ok') }}</el-button>
-            </span>
-        </template>
-    </el-dialog>
-    <el-dialog :title="quotaText" v-model="quotaVisible" :width="dialogWidth">
-        {{ editUser }}
-        <el-divider v-if="editUser != ''"></el-divider>
-        <el-tooltip effect="dark" :content="$t('user.meanUnlimit')" placement="top">
-            <el-input-number v-model="quota" :min="-1" :precision="0"></el-input-number>
-        </el-tooltip>
-        <el-select v-model="quotaUnit" :placeholder="$t('choice')" style="margin-left: 5px; width:80px">
-            <el-option
-            v-for="item in quotaOptions"
-            :key="item.value"
-            :label="item.value"
-            :value="item.value">
-            </el-option>
-        </el-select>
-        <template #footer>
-            <span class="dialog-footer">
-                <el-button @click="quotaVisible=false">{{ $root.$t('cancel') }}</el-button>
-                <el-button type="primary" @click="quotaVisible=false; handleSetQuota()">{{ $root.$t('ok') }}</el-button>
-            </span>
-        </template>
-    </el-dialog>
-    <el-dialog :title="$t('user.shareLink')" v-model="qrcodeVisible" :width="dialogWidth" @close="closeQRCode">
-        <div id="qrcode" ref="qrcode" class="qrcodeCenter"></div>
-        <p class="qrcodeCenter"> {{ shareLink }} </p>
-    </el-dialog>
-    <el-dialog :title="expiryShow" v-model="expiryVisible" :width="dialogWidth">
-        <el-form>
-            <el-form-item :label="$t('user.preset')">
-                <el-select v-model="useDays" :placeholder="$t('choice')" filterable style="width: 130px;">
-                    <el-option
-                        v-for="item in expiryDateOptions"
-                        :key="item.label"
-                        :label="item.label"
-                        :value="item.value">
-                    </el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item :label="$t('user.days')">
-                <el-input-number v-model="useDays" :min=0></el-input-number>
+    <div>
+        <el-form :inline="true" label-width="80px">
+            <el-form-item>
+                <el-button-group>
+                    <el-button type="primary" :icon="Refresh" @click="refresh()">{{ textShow($t('refresh')) }}
+                    </el-button>
+                    <el-button type="primary" :icon="Plus"
+                        @click="commonType = 2; userInfo.username = ''; userInfo.password = ''; userVisible = true"
+                        v-if="isAdmin">
+                        {{ textShow($t('add')) }}</el-button>
+                    <el-button type="primary" :icon="RefreshLeft"
+                        @click="copySelection = multipleSelection; patchButton = true; commonType = 1; confirmVisible = true"
+                        v-if="isAdmin">{{ textShow($t('user.reset')) }}</el-button>
+                    <el-button type="primary" :icon="Scissor"
+                        @click="copySelection = multipleSelection; patchButton = true; quotaVisible = true"
+                        v-if="isAdmin">{{
+                            textShow($t('user.limitData'))
+                        }}</el-button>
+                    <el-button type="danger" :icon="Delete"
+                        @click="copySelection = multipleSelection; patchButton = true; commonType = 0; confirmVisible = true"
+                        v-if="isAdmin">{{ textShow($t('delete')) }}</el-button>
+                </el-button-group>
             </el-form-item>
         </el-form>
-        <template #footer>
-            <span class="dialog-footer">
-                <el-button @click="expiryVisible = false">{{ $root.$t('cancel') }}</el-button>
-                <el-button type="primary" @click="expiryVisible=false; setUserExpire()">{{ $root.$t('ok') }}</el-button>
-            </span>
-        </template>
-    </el-dialog>
-  </div>
+        <el-table :data="dataList.filter(data => !search || data.Username.toLowerCase().includes(search.toLowerCase()))"
+            :height="clientHeight" @selection-change="handleSelectionChange" class="tableShow">
+            <el-table-column type="selection" width="55" v-if="isAdmin">
+            </el-table-column>
+            <el-table-column :label="$t('username')" prop="Username">
+            </el-table-column>
+            <el-table-column :label="$t('password')" :formatter="passwordFormatter">
+            </el-table-column>
+            <el-table-column :label="$t('user.upload')" :formatter="uploadFormatter" :sort-method="uploadSort" sortable>
+            </el-table-column>
+            <el-table-column :label="$t('user.download')" :formatter="downloadFormatter" :sort-method="downloadSort"
+                sortable>
+            </el-table-column>
+            <el-table-column :label="$t('user.total')" :formatter="totalFormatter" :sort-method="totalSort" sortable>
+            </el-table-column>
+            <el-table-column :label="$t('user.quota')" :formatter="quotaFormatter">
+            </el-table-column>
+            <el-table-column :label="$t('user.expiryDate')">
+                <template #default="scope">
+                    <div v-if="scope.row.ExpiryDate === ''">{{ $t('user.unlimit') }}</div>
+                    <el-popover trigger="hover" placement="top" v-else>
+                        <p>{{ $t('user.remaining') }}: {{ calculateDay(scope.row.ExpiryDate) }}</p>
+                        <template #reference>
+                            <div class="name-wrapper">
+                                <el-tag>{{ scope.row.ExpiryDate === '' ? $t('user.unlimit') : scope.row.ExpiryDate }}
+                                </el-tag>
+                            </div>
+                        </template>
+                    </el-popover>
+                </template>
+            </el-table-column>
+            <el-table-column width="170" align="center">
+                <template #header>
+                    <el-input v-model="search" :placeholder="$t('user.search')" v-if="isAdmin" />
+                    <div v-if="!isAdmin">{{ $t('user.operate') }}</div>
+                </template>
+                <template #default="scope">
+                    <el-dropdown v-if="isAdmin">
+                        <el-button type="primary" link style="margin-top:2.6px">
+                            {{ $t('edit') }}
+                        </el-button>
+                        <template #dropdown>
+                            <el-dropdown-menu>
+                                <el-dropdown-item
+                                    @click="userItem = scope.row; patchButton = false; quotaVisible = true">{{
+                                        $t('user.limitData')
+                                    }}</el-dropdown-item>
+                                <el-dropdown-item
+                                    @click="userItem = scope.row; commonType = 1; patchButton = false; confirmVisible = true">{{
+                                        $t('user.reset')
+                                    }}</el-dropdown-item>
+                                <el-dropdown-item @click="userItem = scope.row; handelEditUser()">{{
+                                    $t('user.modifyUser')
+                                    }}</el-dropdown-item>
+                                <el-dropdown-item
+                                    @click="userItem = scope.row; expiryShow = $t('user.setExpire'); expiryVisible = true"
+                                    v-if="scope.row.ExpiryDate === ''">{{ $t('user.setExpire') }}</el-dropdown-item>
+                                <div v-else>
+                                    <el-dropdown-item
+                                        @click="userItem = scope.row; expiryShow = $t('user.editExpire'); expiryVisible = true">
+                                        {{ $t('user.editExpire') }}</el-dropdown-item>
+                                    <el-dropdown-item @click="userItem = scope.row; cancelUserExpire()">{{
+                                        $t('user.cancelExpire')
+                                    }}</el-dropdown-item>
+                                </div>
+                            </el-dropdown-menu>
+                        </template>
+                    </el-dropdown>
+                    <el-dropdown style="margin-left:5px">
+                        <el-button type="primary" link style="margin-top:2.6px">
+                            {{ $t('share') }}
+                        </el-button>
+                        <template #dropdown>
+                            <el-dropdown-menu>
+                                <el-dropdown-item @click="userItem = scope.row; handleShare()">{{ $t('user.shareLink')
+                                    }}
+                                </el-dropdown-item>
+                                <el-dropdown-item @click="userItem = scope.row; handleClash()">{{ $t('user.importClash')
+                                    }}
+                                </el-dropdown-item>
+                            </el-dropdown-menu>
+                        </template>
+                    </el-dropdown>
+                    <el-button style="margin-left:5px;" v-if="isAdmin" type="primary" link
+                        @click="userItem = scope.row; commonType = 0; patchButton = false; confirmVisible = true">{{
+                            $t('delete')
+                        }}</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <!-- 添加分页组件 -->
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
+            :page-sizes="[10, 20, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper"
+            :total="totalUsers" background style="margin-top: 20px; text-align: right;">
+        </el-pagination>
+        <el-dialog :title="commonTitle" v-model="userVisible" :width="dialogWidth">
+            <el-input type="text" v-model="userInfo.username" :placeholder="$root.$t('user.inputUsername')"
+                @keyup.enter="commonType === 2 ? handleAddUser() : handleUpdateUser()" />
+            <el-input type="text" v-model="userInfo.password" :placeholder="$root.$t('user.inputPassword')"
+                @keyup.enter="commonType === 2 ? handleAddUser() : handleUpdateUser()" />
+            <template #footer>
+                <span class="dialog-footer">
+
+                    <el-button @click="userVisible = false">{{ $root.$t('cancel') }}</el-button>
+                    <el-button type="primary" @click="commonType === 2 ? handleAddUser() : handleUpdateUser()">{{
+                        $root.$t('ok')
+                        }}</el-button>
+                </span>
+            </template>
+        </el-dialog>
+        <el-dialog :title="commonTitle" v-model="confirmVisible" :width="dialogWidth">
+            {{ editUser }}
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="confirmVisible = false; copySelection = [];">{{ $root.$t('cancel') }}</el-button>
+                    <el-button type="primary"
+                        @click="confirmVisible = false; patchButton ? handlePatchOpera() : handleOpera()">{{
+                            $root.$t('ok')
+                        }}</el-button>
+                </span>
+            </template>
+        </el-dialog>
+        <el-dialog :title="quotaText" v-model="quotaVisible" :width="dialogWidth">
+            {{ editUser }}
+            <el-divider v-if="editUser != ''"></el-divider>
+            <el-tooltip effect="dark" :content="$t('user.meanUnlimit')" placement="top">
+                <el-input-number v-model="quota" :min="-1" :precision="0"></el-input-number>
+            </el-tooltip>
+            <el-select v-model="quotaUnit" :placeholder="$t('choice')" style="margin-left: 5px; width:80px">
+                <el-option v-for="item in quotaOptions" :key="item.value" :label="item.value" :value="item.value">
+                </el-option>
+            </el-select>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="quotaVisible = false">{{ $root.$t('cancel') }}</el-button>
+                    <el-button type="primary" @click="quotaVisible = false; handleSetQuota()">{{ $root.$t('ok') }}
+                    </el-button>
+                </span>
+            </template>
+        </el-dialog>
+        <el-dialog :title="$t('user.shareLink')" v-model="qrcodeVisible" :width="dialogWidth" @close="closeQRCode">
+            <div id="qrcode" ref="qrcode" class="qrcodeCenter"></div>
+            <p class="qrcodeCenter"> {{ shareLink }} </p>
+        </el-dialog>
+        <el-dialog :title="expiryShow" v-model="expiryVisible" :width="dialogWidth">
+            <el-form>
+                <el-form-item :label="$t('user.preset')">
+                    <el-select v-model="useDays" :placeholder="$t('choice')" filterable style="width: 130px;">
+                        <el-option v-for="item in expiryDateOptions" :key="item.label" :label="item.label"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item :label="$t('user.days')">
+                    <el-input-number v-model="useDays" :min=0></el-input-number>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="expiryVisible = false">{{ $root.$t('cancel') }}</el-button>
+                    <el-button type="primary" @click="expiryVisible = false; setUserExpire()">{{ $root.$t('ok') }}
+                    </el-button>
+                </span>
+            </template>
+        </el-dialog>
+    </div>
 </template>
 
 <script>
-import { userList, addUser, delUser, updateUser, setExpire, cancelExpire } from '@/api/user'
+import { pageUserList, addUser, delUser, updateUser, setExpire, cancelExpire } from '@/api/user'
 import { Refresh, Plus, RefreshLeft, Scissor, Delete } from '@element-plus/icons-vue'
 import { setQuota, cleanData } from '@/api/data'
 import { setDomain, restart } from '@/api/trojan'
 import { readablizeBytes, isValidIP } from '@/utils/common'
 import { mapState } from 'vuex'
-import * as QRCode from 'easyqrcodejs'   
+import * as QRCode from 'easyqrcodejs'
 import dayjs from 'dayjs'
 
 export default {
+    name: 'UserIndex', // 添加这一行，定义组件名为 'UserIndex'
     setup() {
         return {
             Refresh,
@@ -244,12 +268,16 @@ export default {
             userInfo: {
                 username: '',
                 password: ''
-            }
+            },
+            // 分页相关数据
+            currentPage: 1, // 当前页码，默认第一页
+            pageSize: 10,   // 每页显示数量，与后端默认值保持一致
+            totalUsers: 0,  // 总用户数，从后端获取
         }
     },
     computed: {
         ...mapState(['dialogWidth', 'isAdmin']),
-        commonTitle: function() {
+        commonTitle: function () {
             let text = ''
             if (this.commonType === 2) {
                 text = this.$t('user.addUser')
@@ -270,7 +298,7 @@ export default {
             }
             return text
         },
-        editUser: function() {
+        editUser: function () {
             if (this.patchButton) {
                 let result = ''
                 for (let i = 0; i < this.copySelection.length; i++) {
@@ -281,7 +309,7 @@ export default {
                 return ''
             }
         },
-        quotaText: function() {
+        quotaText: function () {
             if (this.patchButton) {
                 return `${this.$t('user.patchLimitUser')}`
             } else {
@@ -295,11 +323,13 @@ export default {
     },
     created() {
         this.refresh()
-        this.clientHeight = document.body.clientHeight - 120
+        // this.clientHeight = document.body.clientHeight - 120
+        this.updateClientHeight()
     },
     mounted() {
         window.onresize = () => {
-            this.clientHeight = document.body.clientHeight - 120
+            // this.clientHeight = document.body.clientHeight - 120
+            this.updateClientHeight()
         }
     },
     methods: {
@@ -342,7 +372,7 @@ export default {
                     width: 200,
                     height: 200,
                     text: this.shareLink
-                }) 
+                })
             })
             this.qrcodeVisible = true
         },
@@ -522,7 +552,7 @@ export default {
                 this.$store.commit('SET_NOERROR', true)
                 try {
                     await restart().catch()
-                } catch(e) {
+                } catch (e) {
                     this.$store.commit('SET_NOERROR', false)
                 }
             } else {
@@ -563,16 +593,21 @@ export default {
         refresh() {
             this.dataList = []
             this.domain = ''
+            this.currentPage = 1 // 刷新时重置页码到第一页
             this.getUserList()
+            // 刷新时也更新一下高度，确保最新状态
+            this.updateClientHeight()
         },
+
         async getUserList() {
-            const result = await userList()
+            // 调用修改后的 userList 函数，传入当前页码和每页大小
+            const result = await pageUserList(this.currentPage, this.pageSize)
             if (result.Msg === 'success') {
-                if (result.Data.userList === null) {
-                    this.dataList = []
-                } else {
-                    this.dataList = result.Data.userList
-                }
+                // 根据后端返回的结构，分页数据在 result.Data.pageData 中
+                const pageData = result.Data.pageData
+                this.dataList = pageData.DataList || [] // 更新表格数据为当前页的数据
+                this.totalUsers = pageData.Total || 0   // 更新总用户数
+
                 this.port = result.Data.port
                 if (result.Data.domain !== '') {
                     this.domain = result.Data.domain
@@ -587,7 +622,7 @@ export default {
                         try {
                             await setDomain(formData)
                         } catch (e) {
-                            this.$store.commit('SET_NPROGRESS', true)
+                            this.$store.commit('SET_NPROGRESS', false)
                             this.$store.commit('SET_NOERROR', false)
                         }
                     }
@@ -595,7 +630,29 @@ export default {
             } else {
                 this.$message.error(result.Msg)
             }
-        }
+        },
+        // 处理每页显示数量变化
+        handleSizeChange(val) {
+            this.pageSize = val
+            this.currentPage = 1 // 切换每页大小后，通常将当前页重置为第一页
+            this.getUserList()
+        },
+        // 处理当前页码变化
+        handleCurrentChange(val) {
+            this.currentPage = val
+            this.getUserList()
+        },
+        // 新增一个方法来更新 clientHeight
+        updateClientHeight() {
+            // 减去页面顶部和底部的固定元素高度（例如 header, footer）
+            // 再减去分页组件的高度和其上方的 margin-top
+            // 假设页面顶部有固定的导航栏等占据约 80px 的空间，加上分页组件大概 60px
+            // 这里的 120 应该是指除了表格以外的其他固定元素高度。
+            // 那么现在分页组件也成为固定元素，需要额外减去它的高度和间隔。
+            const paginationHeight = 60; // 预估分页组件及其margin-top的高度
+            const otherFixedElementsHeight = 120; // 页面其他固定元素的高度
+            this.clientHeight = document.body.clientHeight - otherFixedElementsHeight - paginationHeight;
+        },
     }
 }
 </script>
@@ -605,10 +662,12 @@ export default {
     margin: 0 auto;
     width: 200px;
 }
+
 .tableShow {
     ::-webkit-scrollbar {
         display: none;
     }
+
     &:hover {
         ::-webkit-scrollbar {
             display: inline;

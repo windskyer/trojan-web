@@ -34,9 +34,16 @@ export const constantRoutes = [
         component: () => import('@/views/login/login'),
         hidden: true
     },
+
     {
         path: '/register',
         component: () => import('@/views/login/register'),
+        hidden: true
+    },
+
+    {
+        path: '/registerUser',
+        component: () => import('@/views/register/new'),
         hidden: true
     },
 
@@ -50,12 +57,14 @@ export const constantRoutes = [
         path: '/',
         component: Layout,
         redirect: '/dashboard',
-        children: [{
-            path: 'dashboard',
-            name: 'Dashboard',
-            component: () => import('@/views/dashboard/index'),
-            meta: { title: 'dashboard', icon: 'dashboard' }
-        }]
+        children: [
+            {
+                path: 'dashboard',
+                name: 'Dashboard',
+                component: () => import('@/views/dashboard/index'),
+                meta: { title: 'dashboard', icon: 'dashboard' }
+            }
+        ]
     },
 
     {
