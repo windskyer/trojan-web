@@ -114,9 +114,9 @@
             </el-table-column>
         </el-table>
         <!-- 添加分页组件 -->
-        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
-            :page-sizes="[10, 20, 50, 100]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper"
-            :total="totalUsers" background style="margin-top: 20px; text-align: right;">
+        <el-pagination class="responsive-pagination" @size-change="handleSizeChange" @current-change="handleCurrentChange"
+            :current-page="currentPage" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize"
+            :layout="paginationLayout" :small="isMobile" :total="totalUsers" background>
         </el-pagination>
         <el-dialog :title="commonTitle" v-model="userVisible" :width="dialogWidth">
             <el-input type="text" v-model="userInfo.username" :placeholder="$root.$t('user.inputUsername')"
@@ -273,8 +273,11 @@ export default {
             currentPage: 1, // 当前页码，默认第一页
             pageSize: 10,   // 每页显示数量，与后端默认值保持一致
             totalUsers: 0,  // 总用户数，从后端获取
-        }
-    },
+            // 响应式分页
+            isMobile: false,
+            paginationLayout: 'total, sizes, prev, pager, next, jumper',
+         }
+     },
     computed: {
         ...mapState(['dialogWidth', 'isAdmin']),
         commonTitle: function () {
@@ -652,9 +655,21 @@ export default {
             const paginationHeight = 60; // 预估分页组件及其margin-top的高度
             const otherFixedElementsHeight = 120; // 页面其他固定元素的高度
             this.clientHeight = document.body.clientHeight - otherFixedElementsHeight - paginationHeight;
-        },
-    }
-}
+
+            // 根据窗口宽度切换分页的展示模式
+            const w = window.innerWidth || document.documentElement.clientWidth;
+            // 小屏阈值，可按需调整（如 600）
+            if (w <= 600) {
+                this.isMobile = true
+                // 简化布局以避免溢出
+                this.paginationLayout = 'prev, pager, next, jumper'
+            } else {
+                this.isMobile = false
+                this.paginationLayout = 'total, sizes, prev, pager, next, jumper'
+            }
+         },
+     }
+ }
 </script>
 
 <style lang="scss">
@@ -671,6 +686,33 @@ export default {
     &:hover {
         ::-webkit-scrollbar {
             display: inline;
+        }
+    }
+}
+
+/* 添加响应式分页样式 */
+.responsive-pagination {
+    /* 在小屏幕上，调整分页组件的间距和对齐方式 */
+    &.el-pagination {
+        margin: 10px 0;
+        text-align: center;
+
+        /* 隐藏不必要的元素 */
+        .el-pagination__sizes,
+        .el-pagination__total {
+            display: none;
+        }
+
+        /* 调整按钮大小 */
+        .el-pagination__button {
+            padding: 0 10px;
+            font-size: 14px;
+        }
+
+        /* 调整跳转输入框大小 */
+        .el-pagination__jump {
+            padding: 0 5px;
+            font-size: 14px;
         }
     }
 }
