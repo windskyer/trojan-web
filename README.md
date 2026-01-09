@@ -10,7 +10,11 @@
    `npm install`
 2. 开发运行  
    `vite`
+   或者
+   `npm run dev`
 3. 生产打包  
    `vite build`
+   或者
+   `npm run build`
 
 ### 欢迎fork以改进优化页面

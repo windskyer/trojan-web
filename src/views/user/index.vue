@@ -275,7 +275,7 @@ export default {
             totalUsers: 0,  // 总用户数，从后端获取
             // 响应式分页
             isMobile: false,
-            paginationLayout: 'total, sizes, prev, pager, next, jumper',
+            paginationLayout: 'prev, pager, next',
          }
      },
     computed: {
@@ -658,15 +658,9 @@ export default {
 
             // 根据窗口宽度切换分页的展示模式
             const w = window.innerWidth || document.documentElement.clientWidth;
-            // 小屏阈值，可按需调整（如 600）
-            if (w <= 600) {
-                this.isMobile = true
-                // 简化布局以避免溢出
-                this.paginationLayout = 'prev, pager, next, jumper'
-            } else {
-                this.isMobile = false
-                this.paginationLayout = 'total, sizes, prev, pager, next, jumper'
-            }
+            // 统一去掉 total / sizes / jumper（Go to）
+            this.isMobile = w <= 600
+            this.paginationLayout = 'prev, pager, next'
          },
      }
  }
@@ -692,28 +686,75 @@ export default {
 
 /* 添加响应式分页样式 */
 .responsive-pagination {
-    /* 在小屏幕上，调整分页组件的间距和对齐方式 */
-    &.el-pagination {
-        margin: 10px 0;
-        text-align: center;
+    margin: 10px 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    /* 不换行，防止分页按钮换行；必要时横向滚动 */
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    padding-bottom: 4px; /* 给横向滚动留一点空间 */
+}
 
-        /* 隐藏不必要的元素 */
-        .el-pagination__sizes,
-        .el-pagination__total {
-            display: none;
-        }
+/* 保持分页整体不被压缩，按钮固定最小宽度 */
+.responsive-pagination .el-pagination__button,
+.responsive-pagination .el-pager li,
+.responsive-pagination .el-pager li > button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
 
-        /* 调整按钮大小 */
-        .el-pagination__button {
-            padding: 0 10px;
-            font-size: 14px;
-        }
+/* 调整 pager 容器为横向排列，避免内部元素换行 */
+.responsive-pagination .el-pagination__pager,
+.responsive-pagination .el-pager {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex: 0 0 auto;
+}
 
-        /* 调整跳转输入框大小 */
-        .el-pagination__jump {
-            padding: 0 5px;
-            font-size: 14px;
-        }
+/* 每个页码/省略号保持最小宽度，不随容器收缩 */
+.responsive-pagination .el-pager li {
+    min-width: 34px;
+    text-align: center;
+}
+
+/* 省略号按钮保持与页码一致宽度 */
+.responsive-pagination .el-pager li.more {
+    min-width: 34px;
+}
+
+/* 箭头、更多图标保持不换行 */
+.responsive-pagination .el-icon-more,
+.responsive-pagination .el-icon-arrow-right,
+.responsive-pagination .el-icon-arrow-left {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+/* 保证跳转区域（若存在）不会换行，但这里已移除 jumper */
+.responsive-pagination .el-pagination__jump {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+/* 小屏时仍不换行，只允许横向滚动展示全部按钮 */
+@media (max-width: 600px) {
+    .responsive-pagination {
+        justify-content: center;
+        padding: 8px 6px;
+        gap: 6px;
+    }
+    .responsive-pagination .el-pagination__button {
+        padding: 0 8px;
+        font-size: 13px;
     }
 }
 </style>
