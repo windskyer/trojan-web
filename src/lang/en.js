@@ -73,6 +73,8 @@ export default {
         switchSuccess: 'switch trojan type success!'
     },
     user: {
+        email: "Email",
+        uuid: "UUID",
         upload: 'upload',
         download: 'download',
         total: 'total',

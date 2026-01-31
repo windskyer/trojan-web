@@ -29,6 +29,10 @@
             </el-table-column>
             <el-table-column :label="$t('username')" prop="Username">
             </el-table-column>
+            <el-table-column :label="$t('user.email')" prop="Email">
+            </el-table-column>
+            <el-table-column :label="$t('user.uuid')" prop="UUID">
+            </el-table-column>
             <el-table-column :label="$t('password')" :formatter="passwordFormatter">
             </el-table-column>
             <el-table-column :label="$t('user.upload')" :formatter="uploadFormatter" :sort-method="uploadSort" sortable>
@@ -76,7 +80,7 @@
                                     }}</el-dropdown-item>
                                 <el-dropdown-item @click="userItem = scope.row; handelEditUser()">{{
                                     $t('user.modifyUser')
-                                    }}</el-dropdown-item>
+                                }}</el-dropdown-item>
                                 <el-dropdown-item
                                     @click="userItem = scope.row; expiryShow = $t('user.setExpire'); expiryVisible = true"
                                     v-if="scope.row.ExpiryDate === ''">{{ $t('user.setExpire') }}</el-dropdown-item>
@@ -86,7 +90,7 @@
                                         {{ $t('user.editExpire') }}</el-dropdown-item>
                                     <el-dropdown-item @click="userItem = scope.row; cancelUserExpire()">{{
                                         $t('user.cancelExpire')
-                                    }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                 </div>
                             </el-dropdown-menu>
                         </template>
@@ -98,10 +102,10 @@
                         <template #dropdown>
                             <el-dropdown-menu>
                                 <el-dropdown-item @click="userItem = scope.row; handleShare()">{{ $t('user.shareLink')
-                                    }}
+                                }}
                                 </el-dropdown-item>
                                 <el-dropdown-item @click="userItem = scope.row; handleClash()">{{ $t('user.importClash')
-                                    }}
+                                }}
                                 </el-dropdown-item>
                             </el-dropdown-menu>
                         </template>
@@ -114,9 +118,9 @@
             </el-table-column>
         </el-table>
         <!-- 添加分页组件 -->
-        <el-pagination class="responsive-pagination" @size-change="handleSizeChange" @current-change="handleCurrentChange"
-            :current-page="currentPage" :page-sizes="[10, 20, 50, 100]" :page-size="pageSize"
-            :layout="paginationLayout" :small="isMobile" :total="totalUsers" background>
+        <el-pagination class="responsive-pagination" @size-change="handleSizeChange"
+            @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 50, 100]"
+            :page-size="pageSize" :layout="paginationLayout" :small="isMobile" :total="totalUsers" background>
         </el-pagination>
         <el-dialog :title="commonTitle" v-model="userVisible" :width="dialogWidth">
             <el-input type="text" v-model="userInfo.username" :placeholder="$root.$t('user.inputUsername')"
@@ -129,7 +133,7 @@
                     <el-button @click="userVisible = false">{{ $root.$t('cancel') }}</el-button>
                     <el-button type="primary" @click="commonType === 2 ? handleAddUser() : handleUpdateUser()">{{
                         $root.$t('ok')
-                        }}</el-button>
+                    }}</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -276,8 +280,8 @@ export default {
             // 响应式分页
             isMobile: false,
             paginationLayout: 'prev, pager, next',
-         }
-     },
+        }
+    },
     computed: {
         ...mapState(['dialogWidth', 'isAdmin']),
         commonTitle: function () {
@@ -661,9 +665,9 @@ export default {
             // 统一去掉 total / sizes / jumper（Go to）
             this.isMobile = w <= 600
             this.paginationLayout = 'prev, pager, next'
-         },
-     }
- }
+        },
+    }
+}
 </script>
 
 <style lang="scss">
@@ -697,13 +701,14 @@ export default {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     white-space: nowrap;
-    padding-bottom: 4px; /* 给横向滚动留一点空间 */
+    padding-bottom: 4px;
+    /* 给横向滚动留一点空间 */
 }
 
 /* 保持分页整体不被压缩，按钮固定最小宽度 */
 .responsive-pagination .el-pagination__button,
 .responsive-pagination .el-pager li,
-.responsive-pagination .el-pager li > button {
+.responsive-pagination .el-pager li>button {
     flex: 0 0 auto;
     white-space: nowrap;
 }
@@ -752,6 +757,7 @@ export default {
         padding: 8px 6px;
         gap: 6px;
     }
+
     .responsive-pagination .el-pagination__button {
         padding: 0 8px;
         font-size: 13px;

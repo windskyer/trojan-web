@@ -94,6 +94,8 @@ export default {
         switchSuccess: '切换trojan类型成功!'
     },
     user: {
+        email: "邮箱",
+        uuid: "UUID",
         upload: '上传流量',
         download: '下载流量',
         total: '总流量',
