@@ -6,7 +6,7 @@
                     <el-button type="primary" :icon="Refresh" @click="refresh()">{{ textShow($t('refresh')) }}
                     </el-button>
                     <el-button type="primary" :icon="Plus"
-                        @click="commonType = 2; userInfo.username = ''; userInfo.password = ''; userVisible = true"
+                        @click="commonType = 2; userInfo.username = ''; userInfo.password = ''; userInfo.email = ''; userInfo.phone = ''; userVisible = true"
                         v-if="isAdmin">
                         {{ textShow($t('add')) }}</el-button>
                     <el-button type="primary" :icon="RefreshLeft"
@@ -271,6 +271,7 @@ export default {
             ],
             userInfo: {
                 username: '',
+                email: '',
                 password: ''
             },
             // 分页相关数据
@@ -390,6 +391,7 @@ export default {
         },
         handelEditUser() {
             this.userInfo.username = this.userItem.Username
+            this.userInfo.email = this.userItem.Email
             this.userInfo.password = atob(this.userItem.Password)
             this.commonType = 3
             this.userVisible = true
