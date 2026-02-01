@@ -1,50 +1,43 @@
 <template>
-  <div :style="mainStyle">
-    <el-form :inline="true" style="margin-top: 15px">
-        <el-form-item>
-            <el-button-group>
-                <el-button type="primary" :icon="Refresh" @click="update()">{{ textShow($t('update')) }}</el-button>
-                <el-button type="primary" :icon="VideoPlay" @click="start()">{{ textShow($t('start')) }}</el-button>
-                <el-button type="primary" :icon="VideoPause" @click="stop()">{{ textShow($t('stop')) }}</el-button>
-                <el-button type="primary" :icon="RefreshRight" @click="restart()">{{ textShow($t('restart')) }}</el-button>
-            </el-button-group>
-        </el-form-item>
-        <el-form-item :label="$t('type')">
-            <el-select v-model="type" :placeholder="$t('choice')" filterable @change="trojanSwitch()" style="width: 110px;">
-            <el-option
-                v-for="item in typeOptions"
-                :key="item.label"
-                :label="item.label"
-                :value="item.label">
-            </el-option>
-            </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('loglevel')">
-            <el-select v-model="loglevel" :placeholder="$t('choice')" filterable @change="setLoglevel()" style="width: 110px;">
-            <el-option
-                v-for="item in loglevelOptions"
-                :key="item.label"
-                :label="item.label"
-                :value="item.value">
-            </el-option>
-            </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('line')">
-            <el-select v-model="line" :placeholder="$t('choice')" filterable @change="getLog()" style="width: 110px;">
-            <el-option
-                v-for="item in logLineOptions"
-                :key="item.label"
-                :label="item.label"
-                :value="item.value">
-            </el-option>
-            </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('latest')">
-            <el-switch v-model="isFollow"></el-switch>
-        </el-form-item>
-    </el-form>
-    <textarea id="logshow" readonly="readonly" class="el-textarea__inner"></textarea>
-  </div>
+    <div :style="mainStyle">
+        <el-form :inline="true" style="margin-top: 15px">
+            <el-form-item>
+                <el-button-group>
+                    <el-button type="primary" :icon="Refresh" @click="update()">{{ textShow($t('update')) }}</el-button>
+                    <el-button type="primary" :icon="VideoPlay" @click="start()">{{ textShow($t('start')) }}</el-button>
+                    <el-button type="primary" :icon="VideoPause" @click="stop()">{{ textShow($t('stop')) }}</el-button>
+                    <el-button type="primary" :icon="RefreshRight" @click="restart()">{{ textShow($t('restart'))
+                    }}</el-button>
+                </el-button-group>
+            </el-form-item>
+            <el-form-item :label="$t('type')">
+                <el-select v-model="type" :placeholder="$t('choice')" filterable @change="trojanSwitch()"
+                    style="width: 110px;">
+                    <el-option v-for="item in typeOptions" :key="item.label" :label="item.label" :value="item.label">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('loglevel')">
+                <el-select v-model="loglevel" :placeholder="$t('choice')" filterable @change="setLoglevel()"
+                    style="width: 110px;">
+                    <el-option v-for="item in loglevelOptions" :key="item.label" :label="item.label"
+                        :value="item.value">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('line')">
+                <el-select v-model="line" :placeholder="$t('choice')" filterable @change="getLog()"
+                    style="width: 110px;">
+                    <el-option v-for="item in logLineOptions" :key="item.label" :label="item.label" :value="item.value">
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item :label="$t('latest')">
+                <el-switch v-model="isFollow"></el-switch>
+            </el-form-item>
+        </el-form>
+        <textarea id="logshow" readonly="readonly" class="el-textarea__inner"></textarea>
+    </div>
 </template>
 
 <script>
@@ -78,6 +71,18 @@ export default {
                 },
                 {
                     label: 'trojan-go'
+                },
+                {
+                    label: 'sing-box'
+                },
+                {
+                    label: 'v2ray'
+                },
+                {
+                    label: 'xray-core'
+                },
+                {
+                    label: 'hysteria2'
                 }
             ],
             loglevelOptions: [
@@ -305,13 +310,13 @@ export default {
             this.ws.onopen = function () {
                 console.log('ws connected!')
             }
-            this.ws.onmessage = function(e) {
+            this.ws.onmessage = function (e) {
                 textarea.append(e.data)
             }
-            this.ws.onerror = function(e) {
+            this.ws.onerror = function (e) {
                 console.log('ws error: ' + e)
             }
-            this.ws.onclose = function() {
+            this.ws.onclose = function () {
                 console.log('ws closed')
             }
             textarea.scrollTop = textarea.scrollHeight
@@ -349,7 +354,7 @@ export default {
     height: 92%;
     padding: 10px;
     background-color: black;
-    color:white;
+    color: white;
     font-size: 13px;
     cursor: auto;
 }

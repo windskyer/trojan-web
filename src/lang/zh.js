@@ -38,7 +38,7 @@ export default {
     inputNotNull2: '用户名或密码或邮件不能为空!',
     route: {
         dashboard: '首页',
-        trojan: 'trojan管理',
+        trojan: 'VPN管理',
         user: '用户管理'
     },
     navbar: {
@@ -58,7 +58,7 @@ export default {
         resetRulesSuccess: '重置clash规则成功!',
         changeDaySuccess: '修改流量重置日成功!',
         closeResetSuccess: '关闭流量重置成功',
-        versionTitle: 'trojan管理程序版本',
+        versionTitle: 'VPN管理程序版本',
         passwordTitle: '变更管理员密码',
         resetSuccess: '重置密码成功!',
         meanClose: '0代表关闭流量重置',

@@ -17,7 +17,7 @@ export default {
     inputNotNull2: "username or password or email can't be null!",
     route: {
         dashboard: 'Dashboard',
-        trojan: 'Trojan',
+        trojan: 'VPN Management',
         user: 'User'
     },
     navbar: {
@@ -37,7 +37,7 @@ export default {
         changeDaySuccess: 'Change data reset day success!',
         closeResetSuccess: 'Close data reset success!',
         inputTitle: 'Input login page title',
-        versionTitle: 'Trojan-manager Version',
+        versionTitle: 'VPN-manager Version',
         passwordTitle: 'Change admin password',
         resetSuccess: 'reset password success!',
         meanClose: '0 means close data reset',
