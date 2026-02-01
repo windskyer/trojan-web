@@ -6,7 +6,7 @@
                     <el-button type="primary" :icon="Refresh" @click="refresh()">{{ textShow($t('refresh')) }}
                     </el-button>
                     <el-button type="primary" :icon="Plus"
-                        @click="commonType = 2; userInfo.username = ''; userInfo.password = ''; userInfo.email = ''; userInfo.phone = ''; userVisible = true"
+                        @click="commonType = 2; userInfo.username = ''; userInfo.password = ''; userInfo.email = ''; userVisible = true"
                         v-if="isAdmin">
                         {{ textShow($t('add')) }}</el-button>
                     <el-button type="primary" :icon="RefreshLeft"
@@ -124,6 +124,8 @@
         </el-pagination>
         <el-dialog :title="commonTitle" v-model="userVisible" :width="dialogWidth">
             <el-input type="text" v-model="userInfo.username" :placeholder="$root.$t('user.inputUsername')"
+                @keyup.enter="commonType === 2 ? handleAddUser() : handleUpdateUser()" />
+            <el-input type="email" v-model="userInfo.email" :placeholder="$root.$t('user.inputEmail')"
                 @keyup.enter="commonType === 2 ? handleAddUser() : handleUpdateUser()" />
             <el-input type="text" v-model="userInfo.password" :placeholder="$root.$t('user.inputPassword')"
                 @keyup.enter="commonType === 2 ? handleAddUser() : handleUpdateUser()" />
@@ -544,6 +546,7 @@ export default {
             const formData = new FormData()
             formData.set('id', this.userItem.ID)
             formData.set('username', this.userInfo.username)
+            formData.set('email', this.userInfo.email)
             try {
                 formData.set('password', btoa(this.userInfo.password))
             } catch (e) {
@@ -579,6 +582,7 @@ export default {
             }
             const formData = new FormData()
             formData.set('username', this.userInfo.username)
+            formData.set('email', this.userInfo.email)
             try {
                 formData.set('password', btoa(this.userInfo.password))
             } catch (e) {
@@ -593,6 +597,7 @@ export default {
                 })
                 this.userInfo.username = ''
                 this.userInfo.password = ''
+                this.userInfo.email = ''
             } else {
                 this.$message.error(result.Msg)
             }
