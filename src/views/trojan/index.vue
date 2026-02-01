@@ -7,7 +7,7 @@
                     <el-button type="primary" :icon="VideoPlay" @click="start()">{{ textShow($t('start')) }}</el-button>
                     <el-button type="primary" :icon="VideoPause" @click="stop()">{{ textShow($t('stop')) }}</el-button>
                     <el-button type="primary" :icon="RefreshRight" @click="restart()">{{ textShow($t('restart'))
-                    }}</el-button>
+                        }}</el-button>
                 </el-button-group>
             </el-form-item>
             <el-form-item :label="$t('type')">
@@ -74,9 +74,6 @@ export default {
                 },
                 {
                     label: 'sing-box'
-                },
-                {
-                    label: 'v2ray'
                 },
                 {
                     label: 'xray-core'
