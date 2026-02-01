@@ -50,9 +50,9 @@ export default {
     dashboard: {
         memory: 'memory',
         disk: 'disk',
-        trojanVersion: 'Trojan Version',
-        trojanUser: 'Trojan User',
-        trojanUptime: 'Trojan Uptime',
+        trojanVersion: 'VPN Version',
+        trojanUser: 'VPN User',
+        trojanUptime: 'VPN Uptime',
         netSpeed: 'Network Speed',
         netCount: 'Connection Count',
         load: 'Load',
@@ -65,12 +65,12 @@ export default {
         second: ' second'
     },
     trojan: {
-        restartSuccess: 'restart trojan success!',
-        startSuccess: 'start trojan success!',
-        stopSuccess: 'stop trojan success!',
-        updateSuccess: 'update trojan success!',
+        restartSuccess: 'restart VPN success!',
+        startSuccess: 'start VPN success!',
+        stopSuccess: 'stop VPN success!',
+        updateSuccess: 'update VPN success!',
         loglevelSuccess: 'set loglevel success!',
-        switchSuccess: 'switch trojan type success!'
+        switchSuccess: 'switch VPN type success!'
     },
     user: {
         email: "Email",

@@ -71,9 +71,9 @@ export default {
     dashboard: {
         memory: '内存',
         disk: '硬盘',
-        trojanVersion: 'trojan 版本',
-        trojanUser: 'trojan 用户数',
-        trojanUptime: 'trojan 已运行',
+        trojanVersion: 'VPN 版本',
+        trojanUser: 'VPN 用户数',
+        trojanUptime: 'VPN 已运行',
         netSpeed: '网速',
         netCount: '连接数',
         load: '服务器负载',
@@ -86,12 +86,12 @@ export default {
         second: '秒'
     },
     trojan: {
-        restartSuccess: '重启trojan成功!',
-        startSuccess: '启动trojan成功!',
-        stopSuccess: '停止trojan成功!',
-        updateSuccess: '更新trojan成功!',
+        restartSuccess: '重启VPN成功!',
+        startSuccess: '启动VPN成功!',
+        stopSuccess: '停止VPN成功!',
+        updateSuccess: '更新VPN成功!',
         loglevelSuccess: '设置日志等级成功!',
-        switchSuccess: '切换trojan类型成功!'
+        switchSuccess: '切换VPN类型成功!'
     },
     user: {
         email: "邮箱",
