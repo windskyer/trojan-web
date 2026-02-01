@@ -114,6 +114,7 @@ export default {
         meanUnlimit: '-1代表无流量限制',
         inputUsername: '输入用户名',
         inputPassword: '输入密码',
+        inputEmail: '输入邮件',
         operate: '操作',
         addUser: '新增trojan用户',
         patchLimitUser: '限制以下用户流量',

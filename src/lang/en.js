@@ -93,6 +93,7 @@ export default {
         meanUnlimit: '-1 means unlimited',
         inputUsername: 'username',
         inputPassword: 'password',
+        inputEmail: 'emial',
         operate: 'operate',
         addUser: 'add trojan user',
         patchLimitUser: 'patch limit user',

@@ -201,7 +201,7 @@
 import { pageUserList, addUser, delUser, updateUser, setExpire, cancelExpire } from '@/api/user'
 import { Refresh, Plus, RefreshLeft, Scissor, Delete } from '@element-plus/icons-vue'
 import { setQuota, cleanData } from '@/api/data'
-import { setDomain, restart } from '@/api/trojan'
+import { setDomain, } from '@/api/trojan'
 import { readablizeBytes, isValidIP } from '@/utils/common'
 import { mapState } from 'vuex'
 import * as QRCode from 'easyqrcodejs'
@@ -562,11 +562,6 @@ export default {
                     type: 'success'
                 })
                 this.$store.commit('SET_NOERROR', true)
-                try {
-                    await restart().catch()
-                } catch (e) {
-                    this.$store.commit('SET_NOERROR', false)
-                }
             } else {
                 this.$message.error(result.Msg)
             }
