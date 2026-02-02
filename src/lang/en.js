@@ -17,7 +17,7 @@ export default {
     inputNotNull2: "username or password or email can't be null!",
     route: {
         dashboard: 'Dashboard',
-        trojan: 'VPN Management',
+        trojan: 'Management',
         user: 'User'
     },
     navbar: {

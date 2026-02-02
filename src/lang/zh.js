@@ -38,8 +38,8 @@ export default {
     inputNotNull2: '用户名或密码或邮件不能为空!',
     route: {
         dashboard: '首页',
-        trojan: 'VPN管理',
-        user: '用户管理'
+        trojan: '管理',
+        user: '用户'
     },
     navbar: {
         version: '系统版本',

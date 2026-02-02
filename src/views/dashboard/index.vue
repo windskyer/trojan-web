@@ -268,7 +268,7 @@ export default {
         async getVersion() {
             const result = await version()
             const data = result.Data
-            this.trojanVersion = data.trojanType + ' / ' + data.trojanVersion
+            this.trojanVersion = data.trojanType + '/' + data.trojanVersion
             this.trojanUptime = data.trojanUptime
         }
     }
