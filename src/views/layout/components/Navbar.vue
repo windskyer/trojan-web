@@ -10,8 +10,7 @@
                     <el-button style="margin-top:13px" :icon="ArrowDown" link />
                     <template #dropdown>
                         <el-dropdown-menu>
-                            <el-dropdown-item @click="systemVersion(); versionVisible = true">{{ $t('navbar.version')
-                            }}</el-dropdown-item>
+                            <el-dropdown-item @click.stop="openVersion">{{ $t('navbar.version') }}</el-dropdown-item>
                             <el-dropdown placement='right-start' class="el-dropdown-menu__item" v-if="isAdmin">
                                 <span>
                                     {{ $t('navbar.setting') }}
@@ -19,14 +18,14 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="getTitle(); loginVisible = true">{{ $t('navbar.title')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="dialogVisible = true">{{ $t('navbar.password')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="getRules(); rulesVisible = true">{{
                                             $t('navbar.clashRules') }}</el-dropdown-item>
                                         <el-dropdown-item @click="importExportVisible = true">{{
                                             $t('navbar.importExport')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="getResetDay(); resetDayVisible = true">{{
                                             $t('navbar.resetDay') }}</el-dropdown-item>
                                     </el-dropdown-menu>
@@ -87,7 +86,7 @@
                     <el-tooltip effect="dark" :content="$t('navbar.exportTip')" placement="top">
                         <el-button type="primary" @click="downloadCsv(); importExportVisible = false">{{
                             $t('navbar.exportCsv')
-                        }}</el-button>
+                            }}</el-button>
                     </el-tooltip>
                     <el-tooltip effect="dark" :content="$t('navbar.importTip')" placement="top">
                         <el-upload accept=".csv" :action="uploadUrl" :on-success="uploadSuccess">
@@ -111,7 +110,7 @@
                         <span class="dialog-footer">
                             <el-button @click="dialogVisible = false">{{ $t('cancel') }}</el-button>
                             <el-button type="primary" @click="dialogVisible = false; changePass()">{{ $t('ok')
-                            }}</el-button>
+                                }}</el-button>
                         </span>
                     </template>
                 </el-dialog>
@@ -136,7 +135,7 @@ import { version, setLoginInfo, getClashRules, setClashRules, resetClashRules } 
 import { getResetDay, updateResetDay } from '@/api/data'
 
 export default {
-    name: 'NavBar',
+    name: 'LayoutNavBar',
     setup() {
         return {
             ArrowDown
@@ -308,6 +307,10 @@ export default {
                 ElMessage.error(result.Msg)
             }
             this.rulesVisible = false
+        },
+        async openVersion() {
+            await this.systemVersion()
+            this.versionVisible = true
         },
         async systemVersion() {
             const result = await version()
