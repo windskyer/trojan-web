@@ -95,7 +95,7 @@ export default {
     },
     user: {
         email: "邮箱",
-        uuid: "UUID",
+        uuid: "uuid",
         upload: '上传流量',
         download: '下载流量',
         total: '总流量',

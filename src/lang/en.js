@@ -74,7 +74,7 @@ export default {
     },
     user: {
         email: "Email",
-        uuid: "UUID",
+        uuid: "uuid",
         upload: 'upload',
         download: 'download',
         total: 'total',
