@@ -18,14 +18,14 @@
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item @click="getTitle(); loginVisible = true">{{ $t('navbar.title')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="dialogVisible = true">{{ $t('navbar.password')
-                                            }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                         <el-dropdown-item @click="getRules(); rulesVisible = true">{{
                                             $t('navbar.clashRules') }}</el-dropdown-item>
                                         <el-dropdown-item @click="importExportVisible = true">{{
                                             $t('navbar.importExport')
-                                        }}</el-dropdown-item>
+                                            }}</el-dropdown-item>
                                         <el-dropdown-item @click="getResetDay(); resetDayVisible = true">{{
                                             $t('navbar.resetDay') }}</el-dropdown-item>
                                     </el-dropdown-menu>
@@ -86,7 +86,7 @@
                     <el-tooltip effect="dark" :content="$t('navbar.exportTip')" placement="top">
                         <el-button type="primary" @click="downloadCsv(); importExportVisible = false">{{
                             $t('navbar.exportCsv')
-                            }}</el-button>
+                        }}</el-button>
                     </el-tooltip>
                     <el-tooltip effect="dark" :content="$t('navbar.importTip')" placement="top">
                         <el-upload accept=".csv" :action="uploadUrl" :on-success="uploadSuccess">
@@ -110,7 +110,7 @@
                         <span class="dialog-footer">
                             <el-button @click="dialogVisible = false">{{ $t('cancel') }}</el-button>
                             <el-button type="primary" @click="dialogVisible = false; changePass()">{{ $t('ok')
-                                }}</el-button>
+                            }}</el-button>
                         </span>
                     </template>
                 </el-dialog>
@@ -309,8 +309,15 @@ export default {
             this.rulesVisible = false
         },
         async openVersion() {
-            await this.systemVersion()
-            this.versionVisible = true
+            console.log('openVersion 被调用')
+            try {
+                await this.systemVersion()
+                console.log('systemVersion 完成，版本数据：', this.versionList)
+                this.versionVisible = true
+                console.log('versionVisible 设为 true')
+            } catch (error) {
+                console.error('openVersion 出错：', error)
+            }
         },
         async systemVersion() {
             const result = await version()
