@@ -1,5 +1,9 @@
 import request from '@/utils/request'
 
+export function userTotal() {
+   return request.get('/trojan/user/total')
+}
+
 export function userList() {
    return request.get('/trojan/user')
 }

@@ -56,7 +56,7 @@
                             <b>{{ $t('dashboard.trojanUser') }}:</b>
                         </el-col>
                         <el-col :span="12" style="padding-top:1px">
-                            <el-link type='primary' @click="navigate('/user')">{{ userList.length }}</el-link>
+                            <el-link type='primary' @click="navigate('/user')">{{ userNum }}</el-link>
                         </el-col>
                     </el-row>
                 </el-card>
@@ -144,7 +144,7 @@
 
 <script>
 import { version, serverInfo } from '@/api/common'
-import { userList } from '@/api/user'
+import { userTotal } from '@/api/user'
 import { readablizeBytes } from '@/utils/common'
 import { mapState } from 'vuex'
 
@@ -158,6 +158,7 @@ export default {
             keyOffset: 0,
             valueOffset: 0,
             userList: [],
+            userNum: 0,
             downloadData: 0,
             uploadData: 0,
             totalData: 0,
@@ -177,7 +178,7 @@ export default {
         this.$store.commit('SET_NPROGRESS', false)
         this.setOffset()
         this.getVersion()
-        this.getUserList()
+        this.getUserTotal()
     },
     mounted() {
         if (this.isAdmin) {
@@ -188,7 +189,7 @@ export default {
                 this.getServerInfo()
             }
             this.getVersion()
-            this.getUserList()
+            this.getUserTotal()
         }, 6000)
         window.onresize = () => {
             return (() => {
@@ -248,19 +249,13 @@ export default {
                 return '#F56C6C'
             }
         },
-        async getUserList() {
-            const result = await userList()
+        async getUserTotal() {
+            const result = await userTotal()
             if (result.Msg === 'success') {
-                const data = result.Data
-                this.userList = data.userList
-                let download = 0; let upload = 0
-                for (let i = 0; i < this.userList.length; i++) {
-                    download += this.userList[i].Download
-                    upload += this.userList[i].Upload
-                }
-                this.downloadData = readablizeBytes(download)
-                this.uploadData = readablizeBytes(upload)
-                this.totalData = readablizeBytes(download + upload)
+                this.userNum = result.Data.total
+                this.downloadData = readablizeBytes(result.Data.download)
+                this.uploadData = readablizeBytes(result.Data.upload)
+                this.totalData = readablizeBytes(result.Data.download + result.Data.upload)
             } else {
                 this.$message.error(result.Msg)
             }
