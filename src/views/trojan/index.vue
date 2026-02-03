@@ -47,6 +47,7 @@ import { version } from '@/api/common'
 import { Refresh, VideoPlay, VideoPause, RefreshRight } from '@element-plus/icons-vue'
 import { start, stop, restart, update, getLoglevel, setLoglevel, trojanSwitch } from '@/api/trojan'
 export default {
+    name: 'TrojanIndex',
     setup() {
         return {
             Refresh,

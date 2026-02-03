@@ -8,7 +8,8 @@
                 <span class="svg-container">
                     <svg-icon icon-class="user" />
                 </span>
-                <el-input ref="username" name="username" type="text" v-model="form.username" :placeholder="$t('inputName')"/>
+                <el-input ref="username" name="username" type="text" v-model="form.username"
+                    :placeholder="$t('inputName')" />
             </el-form-item>
             <el-form-item prop="password1">
                 <span class="svg-container">
@@ -28,7 +29,8 @@
                 <span class="svg-container">
                     <svg-icon icon-class="email" />
                 </span>
-                <el-input ref="useremail" name="useremail" type="text" v-model="form.useremail" :placeholder="$t('inputEmail')"/>
+                <el-input ref="useremail" name="useremail" type="text" v-model="form.useremail"
+                    :placeholder="$t('inputEmail')" />
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" style="width:100%;" :loading="loading" @click.prevent="register">
@@ -43,6 +45,7 @@
 import { mapState } from 'vuex'
 import { registerUser } from '@/api/permission'
 export default {
+    name: 'LoginRegister',
     data() {
         const validateUser = (rule, value, callback) => {
             const reg = /^(?![^A-Za-z]+$)(?![^0-9]+$)[0-9A-Za-z_]{4,15}$/;
@@ -60,12 +63,12 @@ export default {
                 callback(new Error(this.$t('passError')))
             } else if (!reg.test(value)) {
                 callback(new Error(this.$t('passError')))
-            }else {
+            } else {
                 callback()
             }
         }
         const validateMail = (rule, value, callback) => {
-              const reg = /^(([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5}){1,25})$/
+            const reg = /^(([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5}){1,25})$/
             if (!value) {
                 callback(new Error(this.$t('mailError')))
             } else if (!reg.test(value)) {
@@ -74,7 +77,7 @@ export default {
                 callback()
             }
         }
-    
+
         return {
             form: {
                 username: '',
@@ -109,7 +112,7 @@ export default {
     methods: {
         async register() {
             const formData = new FormData()
-             if (this.form.username === '' || this.form.password1 === '' || this.form.useremail === '') {
+            if (this.form.username === '' || this.form.password1 === '' || this.form.useremail === '') {
                 this.$message.error(this.$t('inputNotNull2'))
                 return
             }
@@ -156,6 +159,8 @@ $cursor: #fff;
             background: $bg;
             border: 0px;
             -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
             border-radius: 0px;
             padding: 12px 5px 12px 15px;
             color: $light_gray;
@@ -164,7 +169,7 @@ $cursor: #fff;
 
             &:-webkit-autofill {
                 box-shadow: 0 0 0px 1000px $bg inset !important;
-                -webkit-text-fill-color: $cursor  !important;
+                -webkit-text-fill-color: $cursor !important;
             }
         }
     }

@@ -1,12 +1,13 @@
 <template>
-  <component :is="type" v-bind="linkProps(to)">
-    <slot />
-  </component>
+    <component :is="type" v-bind="linkProps(to)">
+        <slot />
+    </component>
 </template>
 
 <script>
 import { isExternal } from '@/utils/common'
 export default {
+    name: 'SidebarLink',
     props: {
         to: {
             type: String,
