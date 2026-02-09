@@ -72,15 +72,33 @@ export default {
     },
     methods: {
         async register() {
-            const formData = new FormData()
-            if (this.form.password1 !== this.form.password2) {
-                this.$message.error(this.$t('passDifferentError'))
-                return
-            } else {
-                formData.set('password', CryptoJS.SHA224(this.form.password1).toString())
-            }
-            await register(formData)
-            this.$router.replace('/login').catch()
+            this.$refs.form.validate(async (valid) => {
+                if (!valid) return
+
+                if (this.form.password1 !== this.form.password2) {
+                    this.$message.error(this.$t('passDifferentError'))
+                    return
+                }
+
+                this.loading = true
+                try {
+                    const formData = new FormData()
+                    formData.set('password', CryptoJS.SHA224(this.form.password1).toString())
+
+                    const res = await register(formData)
+
+                    if (res.code === 200) {
+                        this.$message.success(this.$t('registerSuccess') || '注册成功')
+                        this.$router.replace('/login').catch()
+                    } else {
+                        this.$message.error(res.message || this.$t('registerFailed') || '注册失败')
+                    }
+                } catch (error) {
+                    this.$message.error(error.message || this.$t('registerError') || '注册出错，请重试')
+                } finally {
+                    this.loading = false
+                }
+            })
         }
     }
 }
