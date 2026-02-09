@@ -132,5 +132,12 @@ export default {
         notFound: '404 not found',
         serverError: 'server error',
         connectError: 'connect error'
-    }
+    },
+    verify: {
+        failTitle: 'Verification Failed',
+        failDescription: 'Sorry, the verification link is invalid or has expired. Link is usually valid for 24 hours.',
+        retryNote: 'Didn\'t receive the email? Try logging in again, and we will resend it.',
+        goLogin: 'Back to Login',
+        successMsg: '🎉 Email verified successfully! Please log in.'
+  }
 }

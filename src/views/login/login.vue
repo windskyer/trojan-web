@@ -76,8 +76,27 @@ export default {
   },
   mounted() {
     this.$refs.password.focus()
+
+    // --- 新增：检测邮箱验证成功参数 ---
+    this.checkEmailVerified()
   },
   methods: {
+    // 新增方法
+    checkEmailVerified() {
+      // 检查 URL 中是否有 verified=true
+      if (this.$route.query.verified === 'true') {
+        this.$message({
+          message: this.$t('verify.successMsg'),
+          type: 'success',
+          duration: 5000,
+          showClose: true
+        })
+
+        // 可选：清除 URL 中的参数，让地址栏变干净
+        this.$router.replace({ query: {} }).catch(() => { })
+      }
+    },
+
     registerUser() {
       this.$router.replace('/registerUser').catch()
     },
@@ -102,15 +121,25 @@ export default {
       }
       const loginInfo = Object.assign({}, this.loginForm)
       loginInfo.password = CryptoJS.SHA224(this.loginForm.password).toString()
-      const data = await login(loginInfo)
-      const token = data.token
-      let isAdmin = false
-      if (this.loginForm.username === 'admin') {
-        isAdmin = true
+      try {
+        const data = await login(loginInfo)
+        const token = data.token
+        let isAdmin = false
+        if (this.loginForm.username === 'admin') {
+          isAdmin = true
+        }
+        this.$store.commit('SET_ADMIN', isAdmin)
+        this.$store.commit('LOGIN_IN', token)
+        this.$router.replace('/').catch()
+      } catch (error) {
+        // 假设后端返回 403 代表邮箱未验证
+        if (error.response && error.response.status === 403) {
+          this.$alert(this.$t('emailNotVerified'), this.$t('Tip'), {
+            confirmButtonText: this.$t('Sure'),
+            type: 'warning'
+          })
+        }
       }
-      this.$store.commit('SET_ADMIN', isAdmin)
-      this.$store.commit('LOGIN_IN', token)
-      this.$router.replace('/').catch()
     }
   }
 }
@@ -136,7 +165,10 @@ $cursor: #fff;
     input {
       background: $bg;
       border: 0px;
+      appearance: none;
       -webkit-appearance: none;
+      -moz-appearance: none;
+
       border-radius: 0px;
       padding: 12px 5px 12px 15px;
       color: $light_gray;

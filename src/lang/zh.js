@@ -152,5 +152,12 @@ export default {
         notFound: '请求错误,未找到该资源',
         serverError: '服务端错误',
         connectError: '连接服务器失败'
-    }
+    },
+    verify: {
+        failTitle: '验证失败',
+        failDescription: '抱歉，该验证链接已过期或已被使用。验证邮件的有效期通常为 24 小时。',
+        retryNote: '没有收到邮件？请尝试重新登录，系统将再次发送。',
+        goLogin: '返回登录页',
+        successMsg: '🎉 邮箱验证成功！请登录您的账号。'
+  }
 }

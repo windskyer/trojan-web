@@ -30,6 +30,11 @@ import Layout from '@/views/layout'
  */
 export const constantRoutes = [
     {
+        path: '/verify-fail',
+        component: () => import('@/views/login/verifyFail'),
+        hidden: true // 如果你有侧边栏逻辑，这个页面不应该出现在菜单里
+    },
+    {
         path: '/login',
         component: () => import('@/views/login/login'),
         hidden: true
