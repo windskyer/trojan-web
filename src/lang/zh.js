@@ -36,6 +36,9 @@ export default {
     registerUser: '注册用户',
     inputNotNull: '用户名或密码不能为空!',
     inputNotNull2: '用户名或密码或邮件不能为空!',
+    registerSuccess: '注册成功!',
+    registerFailed: '注册失败!',
+    registerError:  '注册出错!',
     route: {
         dashboard: '首页',
         trojan: '管理',

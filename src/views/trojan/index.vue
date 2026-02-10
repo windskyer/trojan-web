@@ -7,7 +7,7 @@
                     <el-button type="primary" :icon="VideoPlay" @click="start()">{{ textShow($t('start')) }}</el-button>
                     <el-button type="primary" :icon="VideoPause" @click="stop()">{{ textShow($t('stop')) }}</el-button>
                     <el-button type="primary" :icon="RefreshRight" @click="restart()">{{ textShow($t('restart'))
-                    }}</el-button>
+                        }}</el-button>
                 </el-button-group>
             </el-form-item>
             <el-form-item :label="$t('type')">
@@ -20,7 +20,8 @@
             <el-form-item :label="$t('loglevel')">
                 <el-select v-model="loglevel" :placeholder="$t('choice')" filterable @change="setLoglevel()"
                     style="width: 110px;">
-                    <el-option v-for="item in loglevelOptions" :key="item.label" :label="item.label" :value="item.value">
+                    <el-option v-for="item in loglevelOptions" :key="item.label" :label="item.label"
+                        :value="item.value">
                     </el-option>
                 </el-select>
             </el-form-item>

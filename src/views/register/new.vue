@@ -68,7 +68,7 @@ export default {
             }
         }
         const validateMail = (rule, value, callback) => {
-            const reg = /^(([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5}){1,25})$/
+            const reg = /^(([a-zA-Z0-9_.-]+)@([a-zA-Z0-9_.-]+)\.([a-zA-Z]{2,5}){1,25})$/
             if (!value) {
                 callback(new Error(this.$t('mailError')))
             } else if (!reg.test(value)) {
@@ -111,21 +111,28 @@ export default {
     },
     methods: {
         async register() {
-            const formData = new FormData()
-            if (this.form.username === '' || this.form.password1 === '' || this.form.useremail === '') {
-                this.$message.error(this.$t('inputNotNull2'))
-                return
-            }
-            if (this.form.password1 !== this.form.password2) {
-                this.$message.error(this.$t('passDifferentError'))
-                return
-            } else {
+            this.$refs.form.validate(async (valid) => {
+                if (!valid) return
+
+                if (this.form.password1 !== this.form.password2) {
+                    this.$message.error(this.$t('passDifferentError'))
+                    return
+                }
+
+                const formData = new FormData()
                 formData.set('username', this.form.username)
                 formData.set('password', btoa(this.form.password1))
                 formData.set('useremail', this.form.useremail)
-            }
-            await registerUser(formData)
-            this.$router.replace('/login').catch()
+                this.loading = true
+                const result = await registerUser(formData)
+                if (result.code === 200 && result.Msg === 'success') {
+                    this.$message.success(this.$t('registerSuccess'))
+                    this.$router.replace('/login').catch()
+                } else {
+                    this.$message.error(result.Msg || this.$t('registerFailed'))
+                }
+                this.loading = false
+            })
         }
     }
 }

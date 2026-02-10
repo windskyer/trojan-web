@@ -80,7 +80,7 @@
                                     }}</el-dropdown-item>
                                 <el-dropdown-item @click="userItem = scope.row; handelEditUser()">{{
                                     $t('user.modifyUser')
-                                }}</el-dropdown-item>
+                                    }}</el-dropdown-item>
                                 <el-dropdown-item
                                     @click="userItem = scope.row; expiryShow = $t('user.setExpire'); expiryVisible = true"
                                     v-if="scope.row.ExpiryDate === ''">{{ $t('user.setExpire') }}</el-dropdown-item>
@@ -90,7 +90,7 @@
                                         {{ $t('user.editExpire') }}</el-dropdown-item>
                                     <el-dropdown-item @click="userItem = scope.row; cancelUserExpire()">{{
                                         $t('user.cancelExpire')
-                                        }}</el-dropdown-item>
+                                    }}</el-dropdown-item>
                                 </div>
                             </el-dropdown-menu>
                         </template>
@@ -102,10 +102,10 @@
                         <template #dropdown>
                             <el-dropdown-menu>
                                 <el-dropdown-item @click="userItem = scope.row; handleShare()">{{ $t('user.shareLink')
-                                }}
+                                    }}
                                 </el-dropdown-item>
                                 <el-dropdown-item @click="userItem = scope.row; handleClash()">{{ $t('user.importClash')
-                                }}
+                                    }}
                                 </el-dropdown-item>
                             </el-dropdown-menu>
                         </template>
@@ -135,7 +135,7 @@
                     <el-button @click="userVisible = false">{{ $root.$t('cancel') }}</el-button>
                     <el-button type="primary" @click="commonType === 2 ? handleAddUser() : handleUpdateUser()">{{
                         $root.$t('ok')
-                    }}</el-button>
+                        }}</el-button>
                 </span>
             </template>
         </el-dialog>

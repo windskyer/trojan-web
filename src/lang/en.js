@@ -15,6 +15,9 @@ export default {
     registerUser: 'register trojan username',
     inputNotNull: "username or password can't be null!",
     inputNotNull2: "username or password or email can't be null!",
+    registerSuccess: "register success!",
+    registerFailed: "register failed!",
+    registerError: "register error!",
     route: {
         dashboard: 'Dashboard',
         trojan: 'Management',

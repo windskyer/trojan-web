@@ -44,7 +44,7 @@ function validateStatus(status) {
 
 var instance = axios.create({
     timeout: 8000,
-    baseURL: process.env.NODE_ENV === 'production' ? 'https://user.flftuu.com/' : '/api',
+    baseURL: process.env.NODE_ENV === 'production' ? 'https://vpn.flftuu.com/' : '/api',
     validateStatus
 })
 
