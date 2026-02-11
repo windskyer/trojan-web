@@ -32,8 +32,9 @@ export const constantRoutes = [
     {
         path: '/verify-fail',
         component: () => import('@/views/login/verifyFail'),
-        hidden: true // 如果你有侧边栏逻辑，这个页面不应该出现在菜单里
+        hidden: true
     },
+    
     {
         path: '/login',
         component: () => import('@/views/login/login'),
@@ -43,12 +44,6 @@ export const constantRoutes = [
     {
         path: '/register',
         component: () => import('@/views/login/register'),
-        hidden: true
-    },
-
-    {
-        path: '/registerUser',
-        component: () => import('@/views/register/new'),
         hidden: true
     },
 

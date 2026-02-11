@@ -4,7 +4,7 @@ import request from '@/utils/request'
 export function login(data) {
     return request.post('/auth/login', data)
 }
-// admin用户注册接口
+// 用户注册接口
 export function register(data) {
     return request.post('/auth/register', data)
 }
@@ -19,8 +19,4 @@ export function resetPass(data) {
 // 获取请求用户名
 export function loginUser() {
     return request.get('/auth/loginUser')
-}
-// 正常用户注册接口
-export function registerUser(data) {
-    return request.post('/auth/registerUser', data)
 }

@@ -33,7 +33,7 @@
         {{ $t('login') }}
       </el-button>
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;margin-left:0px"
-        @click.prevent="registerUser">
+        @click.prevent="register">
         {{ $t('register') }}
       </el-button>
 
@@ -97,8 +97,8 @@ export default {
       }
     },
 
-    registerUser() {
-      this.$router.replace('/registerUser').catch()
+    register() {
+      this.$router.replace('/register').catch()
     },
     showPwd() {
       if (this.passwordType === 'password') {

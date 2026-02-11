@@ -36,13 +36,8 @@ export default {
         goLogin() {
             this.$router.replace('/login').catch(() => { })
         }
-    },
-    mounted() {
-        // 3秒后自动跳转到登录页
-        setTimeout(() => {
-            this.$router.replace('/login').catch(() => { })
-        }, 5000)
     }
+    // ❌ 删除 mounted() 钩子，不自动跳转
 }
 </script>
 

@@ -9,29 +9,37 @@ import 'virtual:svg-icons-register'
 import SvgIcon from '@/components/SvgIcon'// svg组件
 import '@/icons'
 
-const whiteList = ['/login', '/register', '/registerUser'] // no redirect whitelist
-const adminList = ['/trojan'] // need admin role
+const whiteList = ['/login', '/register', '/registerUser', '/verify-fail', '/verify-success', '/404'] // no redirect whitelist
+const adminList = ['/trojan', '/user'] // need admin role
 
 router.beforeEach(async (to, from, next) => {
     if (store.state.UserToken) {
         if (store.state.isAdmin === null) {
-            await store.dispatch('loginUser')
+            try {
+                await store.dispatch('loginUser')
+            } catch (error) {
+                // 权限获取失败，清除 Token 并跳转登录
+                store.commit('setUserToken', '')
+                next('/login')
+                return
+            }
         }
-        if (!store.state.isAdmin) {
-            router.options.routes.map((x) => {
-                if (adminList.indexOf(x.path) !== -1) {
-                    x.hidden = true
-                }
-            })
+        
+        // ✅ 权限检查：不是管理员访问管理页面
+        if (!store.state.isAdmin && adminList.includes(to.path)) {
+            next('/404')  // 禁止访问，跳转 404
+            return
         }
+        
+        // ✅ 已登录用户不能进入登录页
         if (to.path === '/login') {
-            // if is logged in, redirect to the home page
             next({ path: '/' })
         } else {
             next()
         }
     } else {
-        if (whiteList.indexOf(to.path) !== -1) {
+        // ✅ 白名单检查
+        if (whiteList.includes(to.path)) {
             next()
         } else {
             next('/login')
@@ -39,4 +47,10 @@ router.beforeEach(async (to, from, next) => {
     }
 })
 
-createApp(App).use(ElementPlus).use(router).use(store).use(i18n).component('svg-icon', SvgIcon).mount('#app')
+createApp(App)
+    .use(ElementPlus)
+    .use(router)
+    .use(store)
+    .use(i18n)
+    .component('svg-icon', SvgIcon)
+    .mount('#app')

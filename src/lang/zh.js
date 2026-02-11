@@ -39,6 +39,7 @@ export default {
     registerSuccess: '注册成功!',
     registerFailed: '注册失败!',
     registerError:  '注册出错!',
+    checkEmailActivation: '注册成功！请检查邮箱并点击激活链接来激活账号',
     route: {
         dashboard: '首页',
         trojan: '管理',

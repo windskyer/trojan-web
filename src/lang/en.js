@@ -18,6 +18,7 @@ export default {
     registerSuccess: "register success!",
     registerFailed: "register failed!",
     registerError: "register error!",
+    checkEmailActivation: 'Register success! Please check your email and click the activation link to activate your account',
     route: {
         dashboard: 'Dashboard',
         trojan: 'Management',

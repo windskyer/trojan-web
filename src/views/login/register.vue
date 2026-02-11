@@ -2,8 +2,15 @@
     <div class="register-container">
         <el-form class="register-form" :model="form" :rules="registerRules" ref="form" label-position="left">
             <div class="title-container">
-                <h3 class="title">{{ $t('setupPass') }}</h3>
+                <h3 class="title">{{ $t('register') }}</h3>
             </div>
+            <el-form-item prop="username">
+                <span class="svg-container">
+                    <svg-icon icon-class="user" />
+                </span>
+                <el-input ref="username" name="username" type="text" v-model="form.username"
+                    :placeholder="$t('inputName')" />
+            </el-form-item>
             <el-form-item prop="password1">
                 <span class="svg-container">
                     <svg-icon icon-class="password" />
@@ -18,6 +25,13 @@
                 <el-input name="password2" :type="pwdType" @keyup.enter="register" v-model="form.password2"
                     :placeholder="$t('inputPassAgain')" show-password />
             </el-form-item>
+            <el-form-item prop="useremail">
+                <span class="svg-container">
+                    <svg-icon icon-class="email" />
+                </span>
+                <el-input ref="useremail" name="useremail" type="text" v-model="form.useremail"
+                    :placeholder="$t('inputEmail')" />
+            </el-form-item>
             <el-form-item>
                 <el-button type="primary" style="width:100%;" :loading="loading" @click.prevent="register">
                     {{ $t('register') }}
@@ -29,29 +43,60 @@
 
 <script>
 import { mapState } from 'vuex'
-import { register, check } from '@/api/permission'
-import CryptoJS from 'crypto-js'
+import { register } from '@/api/permission'
 export default {
-    name: 'IndexRegister',
+    name: 'LoginRegister',
     data() {
-        const validatePass = (rule, value, callback) => {
-            if (value.length < 5) {
-                callback(new Error(this.$t('passLessError')))
+        const validateUser = (rule, value, callback) => {
+            const reg = /^(?![^A-Za-z]+$)(?![^0-9]+$)[0-9A-Za-z_]{4,15}$/;
+            if (value.length < 4) {
+                callback(new Error(this.$t('userError')))
+            } else if (!reg.test(value)) {
+                callback(new Error(this.$t('userError')))
             } else {
                 callback()
             }
         }
+        const validatePass = (rule, value, callback) => {
+            const reg = /^[a-zA-Z]\w{8,18}$/;
+            if (value.length < 8) {
+                callback(new Error(this.$t('passError')))
+            } else if (!reg.test(value)) {
+                callback(new Error(this.$t('passError')))
+            } else {
+                callback()
+            }
+        }
+        const validateMail = (rule, value, callback) => {
+            const reg = /^(([a-zA-Z0-9_.-]+)@([a-zA-Z0-9_.-]+)\.([a-zA-Z]{2,5}){1,25})$/
+            if (!value) {
+                callback(new Error(this.$t('mailError')))
+            } else if (!reg.test(value)) {
+                callback(new Error(this.$t('mailError')))
+            } else {
+                callback()
+            }
+        }
+
         return {
             form: {
+                username: '',
                 password1: '',
-                password2: ''
+                password2: '',
+                useremail: ''
             },
             registerRules: {
+                username: [
+                    { required: true, trigger: 'blur', validator: validateUser }
+                ],
                 password1: [
                     { required: true, trigger: 'blur', validator: validatePass }
                 ],
                 password2: [
                     { required: true, trigger: 'blur', validator: validatePass }
+                ],
+                useremail: [
+                    { required: true, trigger: 'blur', validator: validateMail }
                 ]
             },
             loading: false,
@@ -63,12 +108,6 @@ export default {
     },
     created() {
         document.title = this.docTitle
-        check().then((res) => {
-            if (res.code === 200) {
-                this.$store.commit('LOGIN_OUT')
-                this.$router.replace('/login').catch()
-            }
-        })
     },
     methods: {
         async register() {
@@ -80,24 +119,26 @@ export default {
                     return
                 }
 
+                const formData = new FormData()
+                formData.set('username', this.form.username)
+                formData.set('password', btoa(this.form.password1))
+                formData.set('useremail', this.form.useremail)
                 this.loading = true
-                try {
-                    const formData = new FormData()
-                    formData.set('password', CryptoJS.SHA224(this.form.password1).toString())
-
-                    const res = await register(formData)
-
-                    if (res.code === 200) {
-                        this.$message.success(this.$t('registerSuccess') || '注册成功')
-                        this.$router.replace('/login').catch()
-                    } else {
-                        this.$message.error(res.message || this.$t('registerFailed') || '注册失败')
-                    }
-                } catch (error) {
-                    this.$message.error(error.message || this.$t('registerError') || '注册出错，请重试')
-                } finally {
-                    this.loading = false
+                const result = await register(formData)
+                if (result.Msg === 'success') {
+                    this.$message({
+                        message: this.$t('checkEmailActivation'),
+                        type: 'success',
+                        duration: 5000,
+                        showClose: true
+                    })
+                    setTimeout(() => {
+                        this.$router.replace('/login').catch(() => { })
+                    }, 5000)
+                } else {
+                    this.$message.error(result.Msg || this.$t('registerFailed'))
                 }
+                this.loading = false
             })
         }
     }
@@ -132,6 +173,7 @@ $cursor: #fff;
             background: $bg;
             border: 0px;
             -webkit-appearance: none;
+            -moz-appearance: none;
             appearance: none;
             border-radius: 0px;
             padding: 12px 5px 12px 15px;
