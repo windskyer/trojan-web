@@ -1,77 +1,106 @@
 <template>
     <div class="register-container">
+
         <el-form class="register-form" :model="form" :rules="registerRules" ref="form" label-position="left">
             <div class="title-container">
                 <h3 class="title">{{ $t('register') }}</h3>
             </div>
+
+            <!-- 用户名 -->
             <el-form-item prop="username">
                 <span class="svg-container">
                     <svg-icon icon-class="user" />
                 </span>
-                <el-input ref="username" name="username" type="text" v-model="form.username"
-                    :placeholder="$t('inputName')" />
+                <el-input v-model="form.username" :placeholder="$t('inputName')" />
             </el-form-item>
+
+            <!-- 密码 -->
             <el-form-item prop="password1">
                 <span class="svg-container">
                     <svg-icon icon-class="password" />
                 </span>
-                <el-input name="password1" :type="pwdType" v-model="form.password1" :placeholder="$t('inputPass')"
-                    show-password />
+                <el-input :type="pwdType" v-model="form.password1" :placeholder="$t('inputPass')" show-password />
             </el-form-item>
+
+            <!-- 再次密码 -->
             <el-form-item prop="password2">
                 <span class="svg-container">
-                    <svg-icon icon-class="password"></svg-icon>
+                    <svg-icon icon-class="password" />
                 </span>
-                <el-input name="password2" :type="pwdType" @keyup.enter="register" v-model="form.password2"
-                    :placeholder="$t('inputPassAgain')" show-password />
+                <el-input :type="pwdType" v-model="form.password2" :placeholder="$t('inputPassAgain')" show-password
+                    @keyup.enter="register" />
             </el-form-item>
+
+            <!-- 邮箱 -->
             <el-form-item prop="useremail">
                 <span class="svg-container">
                     <svg-icon icon-class="email" />
                 </span>
-                <el-input ref="useremail" name="useremail" type="text" v-model="form.useremail"
-                    :placeholder="$t('inputEmail')" />
+                <el-input v-model="form.useremail" :placeholder="$t('inputEmail')" />
             </el-form-item>
+
+            <!-- 注册按钮 -->
             <el-form-item>
                 <el-button type="primary" style="width:100%;" :loading="loading" @click.prevent="register">
                     {{ $t('register') }}
                 </el-button>
             </el-form-item>
+
         </el-form>
+
+        <!-- 注册成功弹窗 -->
+        <el-dialog v-model:visible="showTelegramDialog" width="400px" center>
+            <div class="tg-popup">
+                <svg-icon icon-class="telegram" />
+                <h3>{{ $t('tgPopupTitle') }}</h3>
+                <p>{{ $t('tgPopupDesc') }}</p>
+
+                <el-button type="primary" style="width:100%;margin-top:15px" @click="handleTelegramClick('popup')">
+                    {{ $t('tgJoin') }}
+                </el-button>
+            </div>
+        </el-dialog>
+
+        <!-- 右下角浮动按钮 -->
+        <div class="telegram-float" @click="handleTelegramClick('float')">
+            <svg-icon icon-class="telegram" />
+        </div>
+
     </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import { register } from '@/api/permission'
+import { trackTelegramClick } from '@/api/track'
+
+
 export default {
     name: 'LoginRegister',
+
     data() {
+
         const validateUser = (rule, value, callback) => {
             const reg = /^(?![^A-Za-z]+$)(?![^0-9]+$)[0-9A-Za-z_]{4,15}$/;
-            if (value.length < 4) {
-                callback(new Error(this.$t('userError')))
-            } else if (!reg.test(value)) {
+            if (!value || !reg.test(value)) {
                 callback(new Error(this.$t('userError')))
             } else {
                 callback()
             }
         }
+
         const validatePass = (rule, value, callback) => {
             const reg = /^[a-zA-Z]\w{8,18}$/;
-            if (value.length < 8) {
-                callback(new Error(this.$t('passError')))
-            } else if (!reg.test(value)) {
+            if (!value || !reg.test(value)) {
                 callback(new Error(this.$t('passError')))
             } else {
                 callback()
             }
         }
+
         const validateMail = (rule, value, callback) => {
-            const reg = /^(([a-zA-Z0-9_.-]+)@([a-zA-Z0-9_.-]+)\.([a-zA-Z]{2,5}){1,25})$/
-            if (!value) {
-                callback(new Error(this.$t('mailError')))
-            } else if (!reg.test(value)) {
+            const reg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+            if (!value || !reg.test(value)) {
                 callback(new Error(this.$t('mailError')))
             } else {
                 callback()
@@ -86,32 +115,31 @@ export default {
                 useremail: ''
             },
             registerRules: {
-                username: [
-                    { required: true, trigger: 'blur', validator: validateUser }
-                ],
-                password1: [
-                    { required: true, trigger: 'blur', validator: validatePass }
-                ],
-                password2: [
-                    { required: true, trigger: 'blur', validator: validatePass }
-                ],
-                useremail: [
-                    { required: true, trigger: 'blur', validator: validateMail }
-                ]
+                username: [{ required: true, validator: validateUser, trigger: 'blur' }],
+                password1: [{ required: true, validator: validatePass, trigger: 'blur' }],
+                password2: [{ required: true, validator: validatePass, trigger: 'blur' }],
+                useremail: [{ required: true, validator: validateMail, trigger: 'blur' }]
             },
             loading: false,
-            pwdType: 'password'
+            pwdType: 'password',
+            showTelegramDialog: false
         }
     },
+
     computed: {
         ...mapState(['docTitle'])
     },
+
     created() {
         document.title = this.docTitle
     },
+
     methods: {
+
         async register() {
+
             this.$refs.form.validate(async (valid) => {
+
                 if (!valid) return
 
                 if (this.form.password1 !== this.form.password2) {
@@ -123,118 +151,83 @@ export default {
                 formData.set('username', this.form.username)
                 formData.set('password', btoa(this.form.password1))
                 formData.set('useremail', this.form.useremail)
+
                 this.loading = true
+
                 const result = await register(formData)
+
                 if (result.Msg === 'success') {
-                    this.$message({
-                        message: this.$t('checkEmailActivation'),
-                        type: 'success',
-                        duration: 5000,
-                        showClose: true
-                    })
+
+                    this.$message.success(this.$t('checkEmailActivation'))
+
+                    setTimeout(() => {
+                        this.showTelegramDialog = true
+                    }, 1000)
+
                     setTimeout(() => {
                         this.$router.replace('/login').catch(() => { })
-                    }, 5000)
+                    }, 8000)
+
                 } else {
                     this.$message.error(result.Msg || this.$t('registerFailed'))
                 }
+
                 this.loading = false
             })
+        },
+
+        async handleTelegramClick(source) {
+
+            // 异步统计
+            trackTelegramClick({
+                channel: 'trojan100',
+                source: source,
+                user_agent: navigator.userAgent
+            }).catch(() => { })
+
+            window.open(
+                `https://t.me/@trojan100`,
+                '_blank'
+            )
         }
+
     }
 }
 </script>
 
-<style lang="scss">
-/* 修复input 背景不协调 和光标变色 */
-/* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
-
-$bg: #283443;
-$light_gray: #fff;
-$cursor: #fff;
-
-/* reset element-ui css */
-.register-container {
-    .el-input {
-        height: 47px;
-        width: 92%;
-        position: static;
-
-        .el-input__wrapper {
-            padding: 0;
-            box-shadow: none;
-        }
-
-        .el-input__suffix {
-            background: $bg;
-        }
-
-        input {
-            background: $bg;
-            border: 0px;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            border-radius: 0px;
-            padding: 12px 5px 12px 15px;
-            color: $light_gray;
-            height: 47px;
-            caret-color: $cursor;
-
-            &:-webkit-autofill {
-                box-shadow: 0 0 0px 1000px $bg inset !important;
-                -webkit-text-fill-color: $cursor !important;
-            }
-        }
-    }
-
-    .el-form-item {
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        background: rgba(0, 0, 0, 0.1);
-        border-radius: 5px;
-        color: #454545;
-    }
-}
-</style>
-
 <style lang="scss" scoped>
-$bg: #2d3a4b;
-$dark_gray: #889aa4;
-$light_gray: #eee;
+.telegram-float {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background: #0088cc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(0, 136, 204, 0.4);
+    transition: all 0.3s ease;
+    z-index: 999;
+}
 
-.register-container {
-    min-height: 100%;
-    width: 100%;
-    background-color: $bg;
-    overflow: hidden;
+.telegram-float:hover {
+    transform: scale(1.1);
+}
 
-    .register-form {
-        position: relative;
-        width: 520px;
-        max-width: 100%;
-        padding: 160px 35px 0;
-        margin: 0 auto;
-        overflow: hidden;
-    }
+.tg-popup {
+    text-align: center;
+}
 
-    .svg-container {
-        padding: 6px 5px 6px 15px;
-        color: $dark_gray;
-        vertical-align: middle;
-        width: 30px;
-        display: inline-block;
-    }
+.tg-popup h3 {
+    margin-top: 15px;
+    font-size: 18px;
+}
 
-    .title-container {
-        position: relative;
-
-        .title {
-            font-size: 26px;
-            color: $light_gray;
-            margin: 0px auto 40px auto;
-            text-align: center;
-            font-weight: bold;
-        }
-    }
+.tg-popup p {
+    font-size: 14px;
+    opacity: 0.8;
 }
 </style>

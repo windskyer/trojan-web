@@ -19,6 +19,9 @@ export default {
     registerFailed: "register failed!",
     registerError: "register error!",
     checkEmailActivation: 'Register success! Please check your email and click the activation link to activate your account',
+    tgPopupTitle: 'Registration Successful 🎉',
+    tgPopupDesc: 'Join our Telegram channel for updates and benefits',
+    tgJoin: 'Join Now',
     route: {
         dashboard: 'Dashboard',
         trojan: 'Management',
