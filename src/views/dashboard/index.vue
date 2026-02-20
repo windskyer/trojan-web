@@ -171,6 +171,7 @@ export default {
             downloadData: 0,
             uploadData: 0,
             totalData: 0,
+            userTotalLoading: false,
             cpu: { percentage: 0, color: '' },
             memory: { percentage: 0, used: 0, total: 0, color: '' },
             swap: { percentage: 0, used: 0, total: 0, color: '' },
@@ -261,14 +262,27 @@ export default {
             }
         },
         async getUserTotal() {
-            const result = await userTotal()
-            if (result.message === 'success') {
-                this.userNum = result.data.total
-                this.downloadData = readableBytes(result.data.download)
-                this.uploadData = readableBytes(result.data.upload)
-                this.totalData = readableBytes(result.data.download + result.data.upload)
-            } else {
-                this.$message.error(result.message)
+            if (this.userTotalLoading) {
+                return
+            }
+
+            this.userTotalLoading = true
+
+            try {
+                const result = await userTotal()
+                if (result.message === 'success') {
+                    this.userNum = result.data.total
+                    this.downloadData = readableBytes(result.data.download)
+                    this.uploadData = readableBytes(result.data.upload)
+                    this.totalData = readableBytes(result.data.download + result.data.upload)
+                } else {
+                    this.$message.error(result.message)
+                }
+            } catch (error) {
+                // 请求错误由统一拦截器处理；这里兜底避免未捕获 Promise 异常。
+                console.error(error)
+            } finally {
+                this.userTotalLoading = false
             }
         },
         async getVersion() {

@@ -87,6 +87,7 @@ export default {
         switchSuccess: 'switch VPN type success!'
     },
     user: {
+        tg_username: "TG username",
         email: "Email",
         uuid: "uuid",
         upload: 'upload',
@@ -163,7 +164,8 @@ export default {
             qrcode: 'QR Code',
             qrcodeTitle: 'Subscription QR Code',
             renew: 'Renew',
-            renewUrgent: 'Expiring soon, Renew now'
+            renewUrgent: 'Expiring soon, Renew now',
+            viewDetail: 'View Details'
         }
     },
     request: {
@@ -179,6 +181,7 @@ export default {
         failDescription: 'Sorry, the verification link is invalid or has expired. Link is usually valid for 24 hours.',
         retryNote: 'Didn\'t receive the email? Try re registering, and we will {countdown} seconds later resend it.',
         goLogin: 'Back to Login',
+        goRegister: 'Back to register',
         goTelegram: 'View account details in Telegram',
         successMsg: '🎉 Email verified successfully! Please log in.',
         successTitle: 'Verification Successful!', // 新增

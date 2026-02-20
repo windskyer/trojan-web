@@ -1,7 +1,9 @@
 import request from '@/utils/request'
 
 export function userTotal() {
-   return request.get('/trojan/user/total')
+   return request.get('/trojan/user/total', {
+      timeout: 30000
+   })
 }
 
 export function userInfo(params) {

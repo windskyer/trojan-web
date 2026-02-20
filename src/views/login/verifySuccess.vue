@@ -76,9 +76,9 @@ export default {
             }
 
             try {
-                const { Msg } = await verifyToken(this.token)
+                const result = await verifyToken(this.token)
 
-                if (Msg === 'success') {
+                if (result.message === 'success') {
                     this.$message.success({
                         message: this.$t('verify.successMsg'),
                         duration: 3000
@@ -87,7 +87,7 @@ export default {
                     this.startCountdown()
                 } else {
                     this.$message.error(
-                        Msg || this.$t('verify.invalidToken')
+                        result.message || this.$t('verify.invalidToken')
                     )
                 }
 

@@ -329,7 +329,8 @@ export default {
             }
             const textarea = document.getElementById('logshow')
             textarea.innerText = ''
-            const prefix = '/ws'
+            const isProd = import.meta.env.PROD
+            const prefix = isProd ? '' : '/ws'
             const protocol = document.location.protocol === 'http:' ? 'ws' : 'wss'
             this.ws = new WebSocket(`${protocol}://${location.host}${prefix}/trojan/log?line=${this.line}&token=${this.userStore.token}`)
             this.ws.onopen = function () {

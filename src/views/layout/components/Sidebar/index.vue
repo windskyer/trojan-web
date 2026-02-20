@@ -92,10 +92,8 @@ export default {
       window.open('https://t.me/trojan100', '_blank')
     },
     openTelegramBot() {
-      const startParam = encodeURIComponent(this.encodeStartValue(this.currentUserEmail || ''))
-      const url = startParam
-        ? `https://t.me/TrojanAccess_bot?start=${startParam}`
-        : 'https://t.me/TrojanAccess_bot?start'
+      const startParam = encodeURIComponent(this.encodeStartValue('help'))
+      const url = `https://t.me/TrojanAccess_bot?start=${startParam}`
       window.open(url, '_blank')
     },
     filterForAdmin(routes = []) {

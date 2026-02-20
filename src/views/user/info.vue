@@ -23,7 +23,9 @@
       <p>{{ $t('user.info.expiryDate') }}: {{ user.expiryDate }}</p>
       <p>{{ $t('user.info.remainingDays') }}: {{ remainDays }} {{ $t('user.days') }}</p>
       <div class="expiry-actions">
-        <el-button :type="remainDays <= 7 ? 'danger' : 'primary'" @click="openRenewBot">{{ renewButtonText }}</el-button>
+        <el-button :type="remainDays <= 7 ? 'danger' : 'primary'" @click="openRenewBot">{{ renewButtonText
+          }}</el-button>
+        <el-button type="info" plain @click="openDetailPage">{{ $t('user.info.viewDetail') }}</el-button>
       </div>
     </div>
 
@@ -168,10 +170,13 @@ export default {
       }
     },
     openRenewBot() {
-      const startParam = encodeURIComponent(this.encodeStartValue(this.user.email || ''))
-      const url = startParam
-        ? `https://t.me/TrojanAccess_bot?start=${startParam}`
-        : 'https://t.me/TrojanAccess_bot?start'
+      const startParam = encodeURIComponent(this.encodeStartValue(`buy_${this.user.email}` || 'buy'))
+      const url = `https://t.me/TrojanAccess_bot?start=${startParam}`
+      window.open(url, '_blank')
+    },
+    openDetailPage() {
+      const startValue = encodeURIComponent(this.encodeStartValue(this.user.email ? `me_${this.user.email}` : 'me'))
+      const url = `https://t.me/TrojanAccess_bot?start=${startValue}`
       window.open(url, '_blank')
     },
     async getUserInfo() {

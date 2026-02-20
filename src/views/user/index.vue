@@ -32,6 +32,8 @@
                     <el-link type="primary" @click="goUserInfo(scope.row)">{{ scope.row.Username }}</el-link>
                 </template>
             </el-table-column>
+            <el-table-column :label="$t('user.tg_username')" prop="TG_Username">
+            </el-table-column>
             <el-table-column :label="$t('user.email')" prop="Email">
             </el-table-column>
             <el-table-column :label="$t('user.uuid')" prop="UUID">

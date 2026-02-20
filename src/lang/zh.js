@@ -108,6 +108,7 @@ export default {
         switchSuccess: '切换VPN类型成功!'
     },
     user: {
+        tg_username: "TG用户名",
         email: "邮箱",
         uuid: "uuid",
         upload: '上传流量',
@@ -183,7 +184,8 @@ export default {
             qrcode: '二维码',
             qrcodeTitle: '订阅链接二维码',
             renew: '续费',
-            renewUrgent: '即将到期，立即续费'
+            renewUrgent: '即将到期，立即续费',
+            viewDetail: '查看详情'
         }
     },
     request: {
@@ -199,6 +201,7 @@ export default {
         failDescription: '抱歉，该验证链接已过期或已被使用。验证邮件的有效期通常为 24 小时。',
         retryNote: '没有收到邮件？请尝试重新注册，系统将 {countdown} 秒后再次发送。',
         goLogin: '返回登录页',
+        goRegister: '返回注册页',
         goTelegram: '在Telegram里面查看账户详情',
         successMsg: '🎉 邮箱验证成功！请登录您的账号。',
         successTitle: '验证成功！', // 新增

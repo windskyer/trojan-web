@@ -49,11 +49,14 @@ function validateStatus(status) {
 /**
  * 创建 axios 实例
  */
+const isProd = import.meta.env.PROD
+
 const instance = axios.create({
   timeout: 10000,
-  baseURL: '/api',   // ✅ Vite 正确写法
+  baseURL: isProd ? '/' : '/api',
   validateStatus
 })
+
 
 /**
  * 不需要进度条的接口
