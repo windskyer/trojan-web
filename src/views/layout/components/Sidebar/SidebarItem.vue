@@ -1,14 +1,15 @@
 <template>
-  <div v-if="!item.hidden">
-    <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
-      <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
-        <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}">
-            <svg-icon :icon-class="onlyOneChild.meta.icon"/>
-            <template #title>{{ generateTitle(onlyOneChild.meta.title) }}</template>
-        </el-menu-item>
-      </app-link>
-    </template>
-  </div>
+    <div v-if="!item.hidden">
+        <template
+            v-if="hasOneShowingChild(item.children, item) && (!onlyOneChild.children || onlyOneChild.noShowingChildren) && !item.alwaysShow">
+            <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
+                <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{ 'submenu-title-noDropdown': !isNest }">
+                    <svg-icon :icon-class="onlyOneChild.meta.icon" />
+                    <template #title>{{ generateTitle(onlyOneChild.meta.title) }}</template>
+                </el-menu-item>
+            </app-link>
+        </template>
+    </div>
 </template>
 
 <script>
@@ -19,7 +20,7 @@ export default {
     name: 'SidebarItem',
     components: { AppLink },
     props: {
-    // route object
+        // route object
         item: {
             type: Object,
             required: true
@@ -34,8 +35,8 @@ export default {
         }
     },
     data() {
-    // To fix https://github.com/PanJiaChen/vue-admin-template/issues/237
-    // TODO: refactor with render function
+        // To fix https://github.com/PanJiaChen/vue-admin-template/issues/237
+        // TODO: refactor with render function
         this.onlyOneChild = null
         return {}
     },

@@ -4,8 +4,19 @@ export function userTotal() {
    return request.get('/trojan/user/total')
 }
 
-export function userList() {
-   return request.get('/trojan/user')
+export function userInfo(params) {
+   return request({
+      url: '/trojan/user',
+      method: 'get',
+      params
+   })
+}
+
+export function userCheck() {
+   return request({
+      url: '/trojan/user/check',
+      method: 'get',
+   })
 }
 
 export function pageUserList(curPage, pageSize) {

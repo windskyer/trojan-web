@@ -38,15 +38,35 @@
       </el-button>
 
     </el-form>
+
+    <!-- 右下角浮动按钮 -->
+    <div class="telegram-float" @click="handleTelegramClick('login')"> <svg viewBox="0 0 24 24" class="icon">
+        <path fill="#ffffff"
+          d="M9.993 15.674l-.396 5.578c.567 0 .813-.243 1.108-.534l2.662-2.547 5.517 4.03c1.012.556 1.733.264 1.999-.935l3.63-17.01.001-.001c.312-1.455-.526-2.024-1.514-1.656L1.064 9.435c-1.408.55-1.386 1.338-.241 1.69l5.623 1.756L19.51 4.72c.617-.37 1.179-.165.717.205" />
+      </svg>
+    </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import CryptoJS from 'crypto-js'
 import { check, login } from '@/api/permission'
+import { trackTelegramClick } from '@/api/track'
+import { useSettingsStore } from '@/store/settings'
+import { useUserStore } from '@/store/user'
+
 export default {
   name: 'IndexLogin',
+
+  setup() {
+    const settingsStore = useSettingsStore()
+    const userStore = useUserStore()
+    return {
+      settingsStore,
+      userStore
+    }
+  },
+
   data() {
     return {
       loginForm: {
@@ -60,45 +80,29 @@ export default {
     }
   },
   created() {
-    document.title = this.docTitle
+    document.title = this.settingsStore.docTitle
+    this.title = this.settingsStore.docTitle
     check().then((res) => {
       if (res.code === 201) {
         this.$router.replace('/register').catch()
       } else {
+        document.title = res.data.title
         this.title = res.data.title
-        document.title = this.title
-        this.$store.commit('SET_TITLE', this.title)
+        this.settingsStore.setDocTitle(res.data.title)
       }
     })
   },
   computed: {
-    ...mapState(['docTitle'])
+    docTitle() {
+      return this.settingsStore.docTitle
+    }
   },
   mounted() {
     this.$refs.password.focus()
-
-    // --- 新增：检测邮箱验证成功参数 ---
-    this.checkEmailVerified()
   },
   methods: {
-    // 新增方法
-    checkEmailVerified() {
-      // 检查 URL 中是否有 verified=true
-      if (this.$route.query.verified === 'true') {
-        this.$message({
-          message: this.$t('verify.successMsg'),
-          type: 'success',
-          duration: 5000,
-          showClose: true
-        })
-
-        // 可选：清除 URL 中的参数，让地址栏变干净
-        this.$router.replace({ query: {} }).catch(() => { })
-      }
-    },
-
     register() {
-      this.$router.replace('/register').catch()
+      this.$router.push('/register').catch()
     },
     showPwd() {
       if (this.passwordType === 'password') {
@@ -128,9 +132,10 @@ export default {
         if (this.loginForm.username === 'admin') {
           isAdmin = true
         }
-        this.$store.commit('SET_ADMIN', isAdmin)
-        this.$store.commit('LOGIN_IN', token)
-        this.$router.replace('/').catch()
+        this.userStore.setIsAdmin(isAdmin)
+        this.userStore.setToken(token)
+
+        this.$router.replace(isAdmin ? '/' : '/user/info').catch()
       } catch (error) {
         // 假设后端返回 403 代表邮箱未验证
         if (error.response && error.response.status === 403) {
@@ -140,7 +145,20 @@ export default {
           })
         }
       }
-    }
+    },
+    /* ===========================
+      Telegram 统计 + 跳转
+      =========================== */
+    async handleTelegramClick(source) {
+      trackTelegramClick({
+        channel: 'trojan100',
+        source,
+        user_agent: navigator.userAgent
+      }).catch(() => { })
+
+      // 注意不要带 @
+      window.open('https://t.me/trojan100', '_blank')
+    },
   }
 }
 </script>
@@ -240,5 +258,31 @@ $light_gray: #eee;
     cursor: pointer;
     user-select: none;
   }
+}
+
+.telegram-float {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #229ED9; // 官方 TG 蓝 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(34, 158, 217, 0.45);
+  transition: all 0.3s ease;
+  z-index: 9999;
+}
+
+.telegram-float:hover {
+  transform: scale(1.08);
+}
+
+.telegram-float .icon {
+  width: 26px;
+  height: 26px;
 }
 </style>

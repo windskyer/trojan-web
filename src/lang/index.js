@@ -1,42 +1,45 @@
 import { createI18n } from 'vue-i18n'
-import elementEnLocale from './element/en' // element-ui lang
-import elementZhLocale from './element/zh-cn'// element-ui lang
+import elementEnLocale from './element/en'       // ElementPlus 英文
+import elementZhLocale from './element/zh-cn'   // ElementPlus 中文
 import enLocale from './en'
 import zhLocale from './zh'
 
+// ==================
+// 合并消息
+// ==================
 const messages = {
-    en: {
-        ...enLocale,
-        ...elementEnLocale
-    },
-    zh: {
-        ...zhLocale,
-        ...elementZhLocale
-    }
+  en: {
+    ...enLocale,
+    ...elementEnLocale
+  },
+  zh: {
+    ...zhLocale,
+    ...elementZhLocale
+  }
 }
-export function getLanguage() {
-    const chooseLanguage = localStorage.getItem('language')
-    if (chooseLanguage) return chooseLanguage
 
-    // if has not choose language
-    const language = (navigator.language || navigator.browserLanguage).toLowerCase()
-    const locales = Object.keys(messages)
-    for (const locale of locales) {
-        if (language.indexOf(locale) > -1) {
-            return locale
-        }
-    }
-    return 'en'
+// ==================
+// 获取默认语言
+// ==================
+function getLanguage() {
+  const saved = localStorage.getItem('language')
+  if (saved) return saved
+
+  const browserLang = (navigator.language || navigator.browserLanguage || 'en').slice(0, 2)
+  return Object.keys(messages).includes(browserLang) ? browserLang : 'en'
 }
+
+// ==================
+// 创建 i18n 实例
+// ==================
 const i18n = createI18n({
-    // set locale
-    // options: en | zh
-    locale: getLanguage(),
-    // set locale messages
-    messages: messages,
-    fallbackLocale: 'en',
-    silentFallbackWarn: true,
-    silentTranslationWarn: true
+  legacy: false,          // 使用 Composition API
+  locale: getLanguage(),
+  fallbackLocale: 'en',
+  globalInjection: true,  // 允许模板中直接 $t('xxx')
+  messages,
+  warnHtmlMessage: false
 })
 
+export { getLanguage }
 export default i18n

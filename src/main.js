@@ -1,56 +1,81 @@
 import { createApp } from 'vue'
-import App from '@/App'
-import ElementPlus from 'element-plus'
-import '@/styles/index.scss' // global css
-import store from '@/store/index'
-import router from '@/router/index'
-import i18n from './lang/index' // internationalization
-import 'virtual:svg-icons-register'
-import SvgIcon from '@/components/SvgIcon'// svg组件
+import App from '@/App.vue'
+import router from '@/router'
+import pinia from '@/store'
+import i18n from '@/lang' // vue-i18n v11
+import { useUserStore } from '@/store/user'
 import '@/icons'
 
-const whiteList = ['/login', '/register', '/verify-fail', '/404'] // no redirect whitelist
-const adminList = ['/trojan', '/user'] // need admin role
+// ElementPlus 样式和组件
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
 
+// 全局样式
+import '@/styles/index.scss'
+
+// SVG Icons
+import 'virtual:svg-icons-register'
+import SvgIcon from '@/components/SvgIcon'
+import '@/icons' // svg-sprite 资源
+
+// ==================
+// 权限配置
+// ==================
+const whiteList = ['/login', '/register', '/verify-success', '/verify-fail', '/404']
+const userHomePath = '/user/info'
+
+// ==================
+// 路由守卫
+// ==================
 router.beforeEach(async (to, from, next) => {
-    if (store.state.UserToken) {
-        if (store.state.isAdmin === null) {
-            try {
-                await store.dispatch('loginUser')
-            } catch (error) {
-                // 权限获取失败，清除 Token 并跳转登录
-                store.commit('setUserToken', '')
-                next('/login')
-                return
-            }
-        }
-        
-        // ✅ 权限检查：不是管理员访问管理页面
-        if (!store.state.isAdmin && adminList.includes(to.path)) {
-            next('/404')  // 禁止访问，跳转 404
-            return
-        }
-        
-        // ✅ 已登录用户不能进入登录页
-        if (to.path === '/login') {
-            next({ path: '/' })
-        } else {
-            next()
-        }
-    } else {
-        // ✅ 白名单检查
-        if (whiteList.includes(to.path)) {
-            next()
-        } else {
-            next('/login')
-        }
+  const userStore = useUserStore(pinia)
+  const token = userStore.token
+
+  if (token) {
+    if (!userStore?.isAdmin) {
+      try {
+        await userStore.login()
+      } catch (error) {
+        userStore.logout()
+        return next('/login')
+      }
     }
+
+    if (!userStore.isAdmin) {
+      if (to.path === '/login') {
+        return next({ path: userHomePath })
+      }
+      const needAdmin = to.matched.some(record => record.meta?.isAdmin === true)
+      if (needAdmin) {
+        return next({ path: userHomePath })
+      }
+      return next()
+    }
+
+    if (to.path === '/login') {
+      return next({ path: '/' })
+    }
+
+    return next()
+  } else {
+    if (whiteList.includes(to.path)) {
+      return next()
+    }
+    return next('/login')
+  }
 })
 
-createApp(App)
-    .use(ElementPlus)
-    .use(router)
-    .use(store)
-    .use(i18n)
-    .component('svg-icon', SvgIcon)
-    .mount('#app')
+// ==================
+// 创建 App
+// ==================
+const app = createApp(App)
+app.use(pinia)
+app.use(ElementPlus)
+app.use(router)
+app.use(i18n)
+app.component('svg-icon', SvgIcon)
+
+// ==================
+// 挂载
+// ==================
+app.mount('#app')

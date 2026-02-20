@@ -19,9 +19,12 @@ export default {
     registerFailed: "register failed!",
     registerError: "register error!",
     checkEmailActivation: 'Register success! Please check your email and click the activation link to activate your account',
-    tgPopupTitle: 'Registration Successful 🎉',
+    tgPopupTitle: 'Registration Successful 🎉, Click the email verification link',
+    tgPopupNote: 'Join to get latest node notifications',
     tgPopupDesc: 'Join our Telegram channel for updates and benefits',
-    tgJoin: 'Join Now',
+    tgJoin: 'Join',
+    tgSkip: 'Skip',
+    tgRedirectNote: 'You will be redirected to the login page in {countdown} seconds...',
     route: {
         dashboard: 'Dashboard',
         trojan: 'Management',
@@ -53,6 +56,10 @@ export default {
         importSuccess: 'Import Success',
         importCsv: 'import csv file',
         exportCsv: 'export csv file'
+    },
+    sidebar: {
+        telegramChannel: 'Channel',
+        customerService: 'Support'
     },
     dashboard: {
         memory: 'memory',
@@ -130,7 +137,34 @@ export default {
         days: 'days',
         setExpireSuccess: 'setup expire success!',
         cancelExpireSuccess: 'cancel expire success!',
-        remaining: 'remaining days'
+        remaining: 'remaining days',
+        info: {
+            accountTitle: '👤 Profile - Account Status',
+            username: '🆔 Username',
+            email: '📧 Email',
+            linkPassword: '🔑 Link Password',
+            trafficTitle: '📊 Traffic Usage',
+            used: 'Used',
+            total: 'Total',
+            remaining: 'Remaining',
+            expiryTitle: '⏳ Expiry Status',
+            expiryDate: 'Expiry Date',
+            remainingDays: 'Remaining Days',
+            subscriptionTitle: '🚀 Your Exclusive Subscription Links:',
+            trojanLinkLabel: '📋 Stable Link (click to copy):',
+            hy2LinkLabel: '📋 High-Speed Link (click to copy):',
+            vlessLinkLabel: '📋 Anti-Block Link (click to copy):',
+            copySuccess: 'Link copied',
+            copyFail: 'Copy failed, please copy manually',
+            fetchFail: 'Failed to fetch user info',
+            linkName: 'Link',
+            clickToCopy: 'click to copy',
+            noLinks: 'No subscription links available',
+            qrcode: 'QR Code',
+            qrcodeTitle: 'Subscription QR Code',
+            renew: 'Renew',
+            renewUrgent: 'Expiring soon, Renew now'
+        }
     },
     request: {
         requestError: 'request error',
@@ -143,8 +177,13 @@ export default {
     verify: {
         failTitle: 'Verification Failed',
         failDescription: 'Sorry, the verification link is invalid or has expired. Link is usually valid for 24 hours.',
-        retryNote: 'Didn\'t receive the email? Try logging in again, and we will resend it.',
+        retryNote: 'Didn\'t receive the email? Try re registering, and we will {countdown} seconds later resend it.',
         goLogin: 'Back to Login',
-        successMsg: '🎉 Email verified successfully! Please log in.'
+        goTelegram: 'View account details in Telegram',
+        successMsg: '🎉 Email verified successfully! Please log in.',
+        successTitle: 'Verification Successful!', // 新增
+        successDescription: 'Your email has been successfully verified. You can now log in.', // 新增
+        redirectNote: 'You will be redirected to the Telegram customer in {countdown} seconds...', // 新增，可复用或自定义
+        invalidToken: 'Invalid verification link' // 新增
   }
 }

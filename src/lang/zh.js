@@ -40,9 +40,12 @@ export default {
     registerFailed: '注册失败!',
     registerError:  '注册出错!',
     checkEmailActivation: '注册成功！请检查邮箱并点击激活链接来激活账号',
-    tgPopupTitle: '注册成功 🎉',
+    tgPopupTitle: '注册成功 🎉, 点击邮件验证账户',
+    tgPopupNote: '加入可获取最新节点通知',
     tgPopupDesc: '加入官方 Telegram 频道获取最新公告与福利',
-    tgJoin: '立即加入',
+    tgJoin: '加入',
+    tgSkip: '跳过',
+    tgRedirectNote: '您将在 {countdown} 秒后跳转到登录页...',
     route: {
         dashboard: '首页',
         trojan: '管理',
@@ -74,6 +77,10 @@ export default {
         importSuccess: '导入成功',
         importCsv: '导入csv文件',
         exportCsv: '导出csv文件'
+    },
+    sidebar: {
+        telegramChannel: '频道',
+        customerService: '客服'
     },
     dashboard: {
         memory: '内存',
@@ -150,7 +157,34 @@ export default {
         days: '天数',
         setExpireSuccess: '设置用户限期成功!',
         cancelExpireSuccess: '取消用户限期成功!',
-        remaining: '剩余天数'
+        remaining: '剩余天数',
+        info: {
+            accountTitle: '👤 个人中心 - 账号状态',
+            username: '🆔 用户名',
+            email: '📧 绑定邮箱',
+            linkPassword: '🔑 链接密码',
+            trafficTitle: '📊 流量使用统计',
+            used: '已用',
+            total: '总共',
+            remaining: '剩余',
+            expiryTitle: '⏳ 有效期状态',
+            expiryDate: '到期日期',
+            remainingDays: '剩余天数',
+            subscriptionTitle: '🚀 您的专属订阅地址：',
+            trojanLinkLabel: '📋 稳定如磐，专属链接 (点击复制):',
+            hy2LinkLabel: '📋 暴力加速，专属链接 (点击复制):',
+            vlessLinkLabel: '📋 顶级抗封锁，专属链接 (点击复制):',
+            copySuccess: '链接已复制',
+            copyFail: '复制失败，请手动复制',
+            fetchFail: '获取用户信息失败',
+            linkName: '专属链接',
+            clickToCopy: '点击复制',
+            noLinks: '暂无可用订阅链接',
+            qrcode: '二维码',
+            qrcodeTitle: '订阅链接二维码',
+            renew: '续费',
+            renewUrgent: '即将到期，立即续费'
+        }
     },
     request: {
         requestError: '请求出错',
@@ -163,8 +197,13 @@ export default {
     verify: {
         failTitle: '验证失败',
         failDescription: '抱歉，该验证链接已过期或已被使用。验证邮件的有效期通常为 24 小时。',
-        retryNote: '没有收到邮件？请尝试重新登录，系统将再次发送。',
+        retryNote: '没有收到邮件？请尝试重新注册，系统将 {countdown} 秒后再次发送。',
         goLogin: '返回登录页',
-        successMsg: '🎉 邮箱验证成功！请登录您的账号。'
+        goTelegram: '在Telegram里面查看账户详情',
+        successMsg: '🎉 邮箱验证成功！请登录您的账号。',
+        successTitle: '验证成功！', // 新增
+        successDescription: '您的邮箱已成功验证。您现在可以登录了。', // 新增
+        redirectNote: '您将在 {countdown} 秒后跳转到Telegram客户...', // 新增，可复用或自定义
+        invalidToken: '无效的验证链接',
   }
 }

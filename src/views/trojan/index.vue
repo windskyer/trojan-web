@@ -11,14 +11,14 @@
                 </el-button-group>
             </el-form-item>
             <el-form-item :label="$t('type')">
-                <el-select v-model="type" :placeholder="$t('choice')" filterable @change="trojanSwitch()"
+                <el-select v-model="type" :placeholder="type || $t('choice')" filterable @change="trojanSwitch()"
                     style="width: 110px;">
                     <el-option v-for="item in typeOptions" :key="item.label" :label="item.label" :value="item.label">
                     </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item :label="$t('loglevel')">
-                <el-select v-model="loglevel" :placeholder="$t('choice')" filterable @change="setLoglevel()"
+                <el-select v-model="loglevel" :placeholder="loglevel || $t('choice')" filterable @change="setLoglevel()"
                     style="width: 110px;">
                     <el-option v-for="item in loglevelOptions" :key="item.label" :label="item.label"
                         :value="item.value">
@@ -26,7 +26,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item :label="$t('line')">
-                <el-select v-model="line" :placeholder="$t('choice')" filterable @change="getLog()"
+                <el-select v-model="line" :placeholder="line || $t('choice')" filterable @change="getLog()"
                     style="width: 110px;">
                     <el-option v-for="item in logLineOptions" :key="item.label" :label="item.label" :value="item.value">
                     </el-option>
@@ -41,15 +41,31 @@
 </template>
 
 <script>
-import store from '@/store/index.js'
-import { mapState } from 'vuex'
 import { version } from '@/api/common'
 import { Refresh, VideoPlay, VideoPause, RefreshRight } from '@element-plus/icons-vue'
-import { start, stop, restart, update, getLoglevel, setLoglevel, trojanSwitch } from '@/api/trojan'
+import {
+    start as apiStart,
+    stop as apiStop,
+    restart as apiRestart,
+    update as apiUpdate,
+    getLoglevel as apiGetLoglevel,
+    setLoglevel as apiSetLoglevel,
+    trojanSwitch as apiTrojanSwitch
+} from '@/api/trojan'
+import { useAppStore } from '@/store/app'
+import { useUserStore } from "@/store/user"
+import { useSettingsStore } from "@/store/settings"
+
 export default {
     name: 'TrojanIndex',
     setup() {
+        const appStore = useAppStore()
+        const userStore = useUserStore()
+        const settingsStore = useSettingsStore()
         return {
+            appStore,
+            userStore,
+            settingsStore,
             Refresh,
             VideoPlay,
             VideoPause,
@@ -71,13 +87,13 @@ export default {
                     label: 'xray-core'
                 },
                 {
-                    label: 'trojan'
-                },
-                {
                     label: 'trojan-go'
                 },
                 {
                     label: 'sing-box'
+                },
+                {
+                    label: 'trojan'
                 },
                 {
                     label: 'hysteria2'
@@ -134,7 +150,7 @@ export default {
         }
     },
     mounted() {
-        this.$store.commit('SET_NOERROR', true)
+        this.settingsStore.setNoError(true)
         this.mainStyle.height = (document.body.clientHeight - 85) + 'px'
         window.onresize = () => {
             this.mainStyle.height = (document.body.clientHeight - 85) + 'px'
@@ -149,38 +165,48 @@ export default {
             }
         }, true)
         this.getLog()
+        console.log(this.line)
         this.getLoglevel()
+        console.log(this.loglevel)
         this.getTrojanType()
+        console.log(this.type)
     },
     computed: {
-        ...mapState(['line', 'loglevel', 'type', 'dialogWidth']),
         line: {
             get() {
-                return this.$store.state.line
+                return this.settingsStore.line
             },
             set(val) {
-                this.$store.commit('SET_LINE', val)
+                this.settingsStore.setLine(val)
             }
         },
         loglevel: {
             get() {
-                return this.$store.state.loglevel
+                return this.settingsStore.loglevel
             },
             set(val) {
-                this.$store.commit('SET_LOGLEVEL', val)
+                this.settingsStore.setLoglevel(val)
             }
         },
         type: {
             get() {
-                return this.$store.state.type
+                return this.settingsStore.type
             },
             set(val) {
-                this.$store.commit('SET_TYPE', val)
+                this.settingsStore.setType(val)
+            }
+        },
+        dialogWidth: {
+            get() {
+                return this.settingsStore.dialogWidth
+            },
+            set(val) {
+                this.settingsStore.setDialogWidth(val)
             }
         }
     },
     unmounted() {
-        this.$store.commit('SET_NOERROR', false)
+        this.settingsStore.setNoError(false)
         clearInterval(this.timer)
         this.timer = null
         this.ws.close()
@@ -197,8 +223,8 @@ export default {
             try {
                 const formData = new FormData()
                 formData.set('level', this.loglevel)
-                const result = await setLoglevel(formData)
-                if (result.Msg === 'success') {
+                const result = await apiSetLoglevel(formData)
+                if (result.message === 'success') {
                     this.$message({
                         message: this.$t('trojan.loglevelSuccess'),
                         type: 'success'
@@ -209,25 +235,26 @@ export default {
             }
         },
         async getLoglevel() {
-            const result = await getLoglevel()
-            if (result.Msg === 'success') {
-                this.loglevel = result.Data.loglevel
+            const result = await apiGetLoglevel()
+            console.log(result)
+            if (result.message === 'success') {
+                this.loglevel = result.data.loglevel
             } else {
                 this.$message.error(result.Msg)
             }
         },
         async getTrojanType() {
             const result = await version()
-            if (result.Msg === 'success') {
-                this.type = result.Data.trojanType
+            if (result.message === 'success') {
+                this.type = result.data.trojanType
             } else {
                 this.$message.error(result.Msg)
             }
         },
         async start() {
             try {
-                const result = await start()
-                if (result.Msg === 'success') {
+                const result = await apiStart()
+                if (result.message === 'success') {
                     this.$message({
                         message: this.$t('trojan.startSuccess'),
                         type: 'success'
@@ -238,8 +265,8 @@ export default {
             }
         },
         async stop() {
-            const result = await stop()
-            if (result.Msg === 'success') {
+            const result = await apiStop()
+            if (result.message === 'success') {
                 this.$message({
                     message: this.$t('trojan.stopSuccess'),
                     type: 'success'
@@ -248,8 +275,8 @@ export default {
         },
         async restart() {
             try {
-                const result = await restart()
-                if (result.Msg === 'success') {
+                const result = await apiRestart()
+                if (result.message === 'success') {
                     this.$message({
                         message: this.$t('trojan.restartSuccess'),
                         type: 'success'
@@ -261,8 +288,8 @@ export default {
         },
         async update() {
             try {
-                const result = await update()
-                if (result.Msg === 'success') {
+                const result = await apiUpdate()
+                if (result.message === 'success') {
                     this.$message({
                         message: this.$t('trojan.updateSuccess'),
                         type: 'success'
@@ -276,8 +303,8 @@ export default {
             try {
                 const formData = new FormData()
                 formData.set('type', this.type)
-                const result = await trojanSwitch(formData)
-                if (result.Msg === 'success') {
+                const result = await apiTrojanSwitch(formData)
+                if (result.message === 'success') {
                     this.$message({
                         message: this.$t('trojan.switchSuccess'),
                         type: 'success'
@@ -288,8 +315,8 @@ export default {
             } catch (e) {
                 this.getLog()
                 this.$message({
-                    message: this.$t('trojan.switchSuccess'),
-                    type: 'success'
+                    message: this.$t('trojan.switchFailed'),
+                    type: 'error'
                 })
             }
         },
@@ -302,9 +329,9 @@ export default {
             }
             const textarea = document.getElementById('logshow')
             textarea.innerText = ''
-            const prefix = process.env.NODE_ENV === 'production' ? '' : '/ws'
+            const prefix = '/ws'
             const protocol = document.location.protocol === 'http:' ? 'ws' : 'wss'
-            this.ws = new WebSocket(`${protocol}://${location.host}${prefix}/trojan/log?line=${this.line}&token=${store.state.UserToken}`)
+            this.ws = new WebSocket(`${protocol}://${location.host}${prefix}/trojan/log?line=${this.line}&token=${this.userStore.token}`)
             this.ws.onopen = function () {
                 console.log('ws connected!')
             }

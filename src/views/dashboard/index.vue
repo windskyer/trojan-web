@@ -145,11 +145,20 @@
 <script>
 import { version, serverInfo } from '@/api/common'
 import { userTotal } from '@/api/user'
-import { readablizeBytes } from '@/utils/common'
-import { mapState } from 'vuex'
+import { readableBytes } from '@/utils/common'
+import { useSettingsStore } from '@/store/settings'
+import { useUserStore } from '@/store/user'
 
 export default {
-    name: 'DashboardIndex', // 添加这一行，定义组件名为 'DashboardIndex'
+    name: 'DashboardIndex',
+    setup() {
+        const settingsStore = useSettingsStore()
+        const userStore = useUserStore()
+        return {
+            settingsStore,
+            userStore
+        }
+    },
     data() {
         return {
             timer: null,
@@ -172,10 +181,12 @@ export default {
         }
     },
     computed: {
-        ...mapState(['isAdmin'])
+        isAdmin() {
+            return this.userStore.isAdmin
+        }
     },
     created() {
-        this.$store.commit('SET_NPROGRESS', false)
+        this.settingsStore.setNprogress(false)
         this.setOffset()
         this.getVersion()
         this.getUserTotal()
@@ -198,7 +209,7 @@ export default {
         }
     },
     unmounted() {
-        this.$store.commit('SET_NPROGRESS', true)
+        this.settingsStore.setNprogress(true)
         clearInterval(this.timer)
     },
     methods: {
@@ -219,14 +230,14 @@ export default {
         },
         getServerInfo() {
             serverInfo().then((res) => {
-                const data = res.Data
+                const data = res.data
                 this.cpu.percentage = parseFloat(data.cpu[0].toFixed(2))
                 this.cpu.color = this.computeColor(this.cpu.percentage)
                 this.memory = this.computePercent(data.memory)
                 this.swap = this.computePercent(data.swap)
                 this.disk = this.computePercent(data.disk)
-                this.netSpeed.up = readablizeBytes(data.speed.Up) + '/s'
-                this.netSpeed.down = readablizeBytes(data.speed.Down) + '/s'
+                this.netSpeed.up = readableBytes(data.speed.Up) + '/s'
+                this.netSpeed.down = readableBytes(data.speed.Down) + '/s'
                 this.netCount = data.netCount.tcp + ' / ' + data.netCount.udp
                 this.load = data.load.load1 + ', ' + data.load.load5 + ', ' + data.load.load15
             })
@@ -235,8 +246,8 @@ export default {
             const percent = parseFloat(data.usedPercent.toFixed(2))
             return {
                 percentage: percent,
-                used: readablizeBytes(data.used),
-                total: readablizeBytes(data.total),
+                used: readableBytes(data.used),
+                total: readableBytes(data.total),
                 color: this.computeColor(percent)
             }
         },
@@ -251,18 +262,18 @@ export default {
         },
         async getUserTotal() {
             const result = await userTotal()
-            if (result.Msg === 'success') {
-                this.userNum = result.Data.total
-                this.downloadData = readablizeBytes(result.Data.download)
-                this.uploadData = readablizeBytes(result.Data.upload)
-                this.totalData = readablizeBytes(result.Data.download + result.Data.upload)
+            if (result.message === 'success') {
+                this.userNum = result.data.total
+                this.downloadData = readableBytes(result.data.download)
+                this.uploadData = readableBytes(result.data.upload)
+                this.totalData = readableBytes(result.data.download + result.data.upload)
             } else {
-                this.$message.error(result.Msg)
+                this.$message.error(result.message)
             }
         },
         async getVersion() {
             const result = await version()
-            const data = result.Data
+            const data = result.data
             this.trojanVersion = data.trojanType + '/' + data.trojanVersion
             this.trojanUptime = data.trojanUptime
         }

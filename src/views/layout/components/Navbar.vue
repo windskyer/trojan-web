@@ -115,7 +115,7 @@
                     </template>
                 </el-dialog>
             </div>
-            <div @click="loginOut">
+            <div @click="logout">
                 <span class="iconfont icon-quit"></span>
             </div>
         </div>
@@ -125,7 +125,6 @@
 <script>
 import { ElMessage } from "element-plus"
 import { ArrowDown } from '@element-plus/icons-vue'
-import { mapGetters, mapState } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import CryptoJS from 'crypto-js'
@@ -133,12 +132,23 @@ import { sleep } from '@/utils/common'
 import { resetPass, check } from '@/api/permission'
 import { version, setLoginInfo, getClashRules, setClashRules, resetClashRules } from '@/api/common'
 import { getResetDay, updateResetDay } from '@/api/data'
+import { useAppStore } from '@/store/app'
+import { useUserStore } from "@/store/user"
+import { useSettingsStore } from "@/store/settings"
 
 export default {
-    name: 'LayoutNavBar',
+    name: 'NavBar',
     setup() {
+
+        const appStore = useAppStore()
+        const userStore = useUserStore()
+        const settingsStore = useSettingsStore()
+
         return {
-            ArrowDown
+            ArrowDown,
+            appStore,
+            userStore,
+            settingsStore
         }
     },
     data() {
@@ -188,10 +198,19 @@ export default {
         document.title = this.docTitle
     },
     computed: {
-        ...mapState(['docTitle', 'isAdmin', 'dialogWidth']),
-        ...mapGetters([
-            'sidebar'
-        ]),
+        docTitle() {
+            return this.settingsStore.docTitle
+        },
+        isAdmin() {
+            return this.userStore.isAdmin
+        },
+        dialogWidth() {
+            return this.settingsStore.dialogWidth
+        },
+        sidebar() {
+            return this.appStore.sidebar
+        },
+
         clashDialogWidth: () => {
             const clientWidth = document.body.clientWidth
             let clashWidth = '42%'
@@ -209,28 +228,28 @@ export default {
     methods: {
         handleSetLanguage(lang) {
             this.$i18n.locale = lang
-            this.$store.dispatch('app/setLanguage', lang)
+            this.appStore.setLanguage(lang)
             ElMessage({
                 message: lang === 'zh' ? '切换语言成功' : 'Switch Language Success',
                 type: 'success'
             })
         },
         toggleSideBar() {
-            this.$store.dispatch('app/toggleSideBar')
+            this.appStore.toggleSideBar()
         },
         downloadCsv() {
             const prefix = process.env.NODE_ENV === 'production' ? `${location.origin}` : 'api'
-            const downloadUrl = `${prefix}/trojan/export?token=${this.$store.state.UserToken}`
+            const downloadUrl = `${prefix}/trojan/export?token=${this.userStore.token}`
             window.open(downloadUrl)
         },
         uploadSuccess(res) {
-            if (res.Msg === 'success') {
+            if (res.message === 'success') {
                 ElMessage({
                     message: this.$t('navbar.importSuccess'),
                     type: 'success'
                 })
             } else {
-                ElMessage.error(res.Msg)
+                ElMessage.error(res.message)
             }
         },
         async getTitle() {
@@ -239,13 +258,13 @@ export default {
         },
         async getResetDay() {
             const result = await getResetDay()
-            this.resetDay = result.Data.resetDay
+            this.resetDay = result.data.resetDay
         },
         async handleResetDay() {
             const formData = new FormData()
             formData.set('day', this.resetDay)
             const result = await updateResetDay(formData)
-            if (result.Msg === 'success') {
+            if (result.message === 'success') {
                 if (this.resetDay === 0) {
                     ElMessage({
                         message: this.$t('navbar.closeResetSuccess'),
@@ -258,7 +277,7 @@ export default {
                     })
                 }
             } else {
-                ElMessage.error(result.Msg)
+                ElMessage.error(result.message)
             }
             this.resetDayVisible = false
         },
@@ -266,45 +285,45 @@ export default {
             const formData = new FormData()
             formData.set('title', this.title)
             const result = await setLoginInfo(formData)
-            if (result.Msg === 'success') {
+            if (result.message === 'success') {
                 ElMessage({
                     message: this.$t('navbar.changeTitleSuccess'),
                     type: 'success'
                 })
                 document.title = this.title
-                this.$store.commit('SET_TITLE', this.title)
+                this.settingsStore.setDocTitle(this.title)
             } else {
-                ElMessage.error(result.Msg)
+                ElMessage.error(result.message)
             }
             this.loginVisible = false
         },
         async getRules() {
             const result = await getClashRules()
-            this.rules = result.Data
+            this.rules = result.data
         },
         async resetClashRules() {
             const result = await resetClashRules()
-            if (result.Msg === 'success') {
+            if (result.message === 'success') {
                 ElMessage({
                     message: this.$t('navbar.resetRulesSuccess'),
                     type: 'success'
                 })
-                this.rules = result.Data
+                this.rules = result.data
             } else {
-                ElMessage.error(result.Msg)
+                ElMessage.error(result.message)
             }
         },
         async handleClashRules() {
             const formData = new FormData()
             formData.set('rules', this.rules)
             const result = await setClashRules(formData)
-            if (result.Msg === 'success') {
+            if (result.message === 'success') {
                 ElMessage({
                     message: this.$t('navbar.changeRulesSuccess'),
                     type: 'success'
                 })
             } else {
-                ElMessage.error(result.Msg)
+                ElMessage.error(result.message)
             }
             this.rulesVisible = false
         },
@@ -321,7 +340,7 @@ export default {
         },
         async systemVersion() {
             const result = await version()
-            this.versionList = result.Data
+            this.versionList = result.data
         },
         async changePass() {
             const formData = new FormData()
@@ -338,14 +357,14 @@ export default {
                     type: 'success'
                 })
                 await sleep(1000 * 2)
-                this.$store.commit('LOGIN_OUT')
+                this.userStore.logout()
                 this.$router.replace('/login').catch()
             } catch (e) {
                 console.log(e)
             }
         },
-        loginOut() {
-            this.$store.commit('LOGIN_OUT')
+        logout() {
+            this.userStore.logout()
             /* 防止切换角色时addRoutes重复添加路由导致出现警告 */
             window.location.reload()
         }

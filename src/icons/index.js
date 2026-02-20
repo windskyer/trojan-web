@@ -1,4 +1,5 @@
-const Mixins = import.meta.globEager("./svg/*.svg")
+const Mixins = import.meta.glob('./svg/*.svg', { eager: true })
+
 export default {
-    mixins: Object.values(Mixins).map((v) => v.default)
+  mixins: Object.values(Mixins).map(v => v.default)
 }

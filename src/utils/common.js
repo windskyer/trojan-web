@@ -1,26 +1,53 @@
-export function readablizeBytes(bytes) {
-    if (bytes === 0) {
-        return '0'
-    }
-    const s = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB']
-    const e = Math.floor(Math.log(bytes) / Math.log(1024))
-    const r = bytes / Math.pow(1024, Math.floor(e))
-    return ((r + '').indexOf('.') !== -1 ? r.toFixed(2) : r) + ' ' + s[e]
-}
+/**
+ * 将字节数转换为可读格式
+ * @param {number} bytes
+ * @param {number} decimals 小数位数（默认 2）
+ * @returns {string}
+ */
+export function readableBytes(bytes, decimals = 2) {
+  if (!Number.isFinite(bytes) || bytes < 0) return '0 Bytes'
+  if (bytes === 0) return '0 Bytes'
 
-export function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms))
-}
+  const units = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB']
+  const index = Math.min(
+    Math.floor(Math.log(bytes) / Math.log(1024)),
+    units.length - 1
+  )
 
-export function isValidIP(ip) {
-    var reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
-    return reg.test(ip)
+  const value = bytes / Math.pow(1024, index)
+
+  return `${parseFloat(value.toFixed(decimals))} ${units[index]}`
 }
 
 /**
- * @param {string} path
- * @returns {Boolean}
+ * Promise 版延迟函数
+ * @param {number} ms
+ * @returns {Promise<void>}
  */
- export function isExternal(path) {
-    return /^(https?:|mailto:|tel:)/.test(path)
+export function sleep(ms = 0) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+/**
+ * IPv4 校验
+ * @param {string} ip
+ * @returns {boolean}
+ */
+export function isValidIP(ip) {
+  if (typeof ip !== 'string') return false
+
+  const reg =
+    /^(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/
+
+  return reg.test(ip)
+}
+
+/**
+ * 是否外部链接
+ * @param {string} path
+ * @returns {boolean}
+ */
+export function isExternal(path) {
+  if (typeof path !== 'string') return false
+  return /^(https?:|mailto:|tel:)/i.test(path)
 }

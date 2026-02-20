@@ -28,6 +28,9 @@
             <el-table-column type="selection" width="55" v-if="isAdmin">
             </el-table-column>
             <el-table-column :label="$t('username')" prop="Username">
+                <template #default="scope">
+                    <el-link type="primary" @click="goUserInfo(scope.row)">{{ scope.row.Username }}</el-link>
+                </template>
             </el-table-column>
             <el-table-column :label="$t('user.email')" prop="Email">
             </el-table-column>
@@ -80,7 +83,7 @@
                                     }}</el-dropdown-item>
                                 <el-dropdown-item @click="userItem = scope.row; handelEditUser()">{{
                                     $t('user.modifyUser')
-                                    }}</el-dropdown-item>
+                                }}</el-dropdown-item>
                                 <el-dropdown-item
                                     @click="userItem = scope.row; expiryShow = $t('user.setExpire'); expiryVisible = true"
                                     v-if="scope.row.ExpiryDate === ''">{{ $t('user.setExpire') }}</el-dropdown-item>
@@ -90,7 +93,7 @@
                                         {{ $t('user.editExpire') }}</el-dropdown-item>
                                     <el-dropdown-item @click="userItem = scope.row; cancelUserExpire()">{{
                                         $t('user.cancelExpire')
-                                    }}</el-dropdown-item>
+                                        }}</el-dropdown-item>
                                 </div>
                             </el-dropdown-menu>
                         </template>
@@ -102,10 +105,10 @@
                         <template #dropdown>
                             <el-dropdown-menu>
                                 <el-dropdown-item @click="userItem = scope.row; handleShare()">{{ $t('user.shareLink')
-                                    }}
+                                }}
                                 </el-dropdown-item>
                                 <el-dropdown-item @click="userItem = scope.row; handleClash()">{{ $t('user.importClash')
-                                    }}
+                                }}
                                 </el-dropdown-item>
                             </el-dropdown-menu>
                         </template>
@@ -135,7 +138,7 @@
                     <el-button @click="userVisible = false">{{ $root.$t('cancel') }}</el-button>
                     <el-button type="primary" @click="commonType === 2 ? handleAddUser() : handleUpdateUser()">{{
                         $root.$t('ok')
-                        }}</el-button>
+                    }}</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -202,15 +205,24 @@ import { pageUserList, addUser, delUser, updateUser, setExpire, cancelExpire } f
 import { Refresh, Plus, RefreshLeft, Scissor, Delete } from '@element-plus/icons-vue'
 import { setQuota, cleanData } from '@/api/data'
 import { setDomain, } from '@/api/trojan'
-import { readablizeBytes, isValidIP } from '@/utils/common'
-import { mapState } from 'vuex'
-import * as QRCode from 'easyqrcodejs'
+import { readableBytes, isValidIP } from '@/utils/common'
+import QRCode from 'easyqrcodejs'
 import dayjs from 'dayjs'
+import { useAppStore } from '@/store/app'
+import { useUserStore } from "@/store/user"
+import { useSettingsStore } from "@/store/settings"
+
 
 export default {
     name: 'UserIndex', // 添加这一行，定义组件名为 'UserIndex'
     setup() {
+        const appStore = useAppStore()
+        const userStore = useUserStore()
+        const settingsStore = useSettingsStore()
         return {
+            appStore,
+            userStore,
+            settingsStore,
             Refresh,
             Plus,
             RefreshLeft,
@@ -286,7 +298,12 @@ export default {
         }
     },
     computed: {
-        ...mapState(['dialogWidth', 'isAdmin']),
+        dialogWidth() {
+            return this.settingsStore.dialogWidth
+        },
+        isAdmin() {
+            return this.userStore.isAdmin
+        },
         commonTitle: function () {
             let text = ''
             if (this.commonType === 2) {
@@ -350,19 +367,19 @@ export default {
             return atob(row.Password)
         },
         quotaFormatter(row) {
-            return row.Quota === -1 ? this.$t('user.unlimit') : readablizeBytes(row.Quota)
+            return row.Quota === -1 ? this.$t('user.unlimit') : readableBytes(row.Quota)
         },
         expiryFormatter(row) {
             return row.ExpiryDate === '' ? this.$t('user.unlimit') : row.ExpiryDate
         },
         uploadFormatter(row) {
-            return readablizeBytes(row.Upload)
+            return readableBytes(row.Upload)
         },
         downloadFormatter(row) {
-            return readablizeBytes(row.Download)
+            return readableBytes(row.Download)
         },
         totalFormatter(row) {
-            return readablizeBytes(row.Download + row.Upload)
+            return readableBytes(row.Download + row.Upload)
         },
         uploadSort(a, b) {
             return a.Upload - b.Upload
@@ -372,6 +389,14 @@ export default {
         },
         totalSort(a, b) {
             return (a.Download + a.Upload) - (b.Download + b.Upload)
+        },
+        goUserInfo(row) {
+            this.$router.push({
+                path: '/user/info',
+                query: {
+                    username: row.Username
+                }
+            })
         },
         handleShare() {
             let remark = encodeURIComponent(`${this.domain}:${this.port}`)
@@ -416,7 +441,7 @@ export default {
             formData.set('id', this.userItem.ID)
             formData.set('useDays', this.useDays)
             const result = await setExpire(formData)
-            if (result.Msg === 'success') {
+            if (result.message === 'success') {
                 this.$message({
                     message: `${this.$t('user.setExpireSuccess')}`,
                     type: 'success'
@@ -429,7 +454,7 @@ export default {
         },
         async cancelUserExpire() {
             const result = await cancelExpire(this.userItem.ID)
-            if (result.Msg === 'success') {
+            if (result.message === 'success') {
                 this.$message({
                     message: `${this.$t('user.cancelExpireSuccess')}`,
                     type: 'success'
@@ -445,7 +470,7 @@ export default {
             formData.set('id', this.userItem.ID)
             formData.set('quota', this.quota)
             const result = await setQuota(formData)
-            if (result.Msg === 'success') {
+            if (result.message === 'success') {
                 this.$message({
                     message: `${this.$t('user.limitUser2')} ${this.userItem.Username} ${this.$t('user.limitSuccess')}`,
                     type: 'success'
@@ -478,7 +503,7 @@ export default {
             let successText = ''
             let result = null
             if (this.commonType === 0) {
-                this.$store.commit('SET_NOERROR', true)
+                this.settingsStore.setNoError(true)
             }
             for (let i = 0; i < this.copySelection.length; i++) {
                 this.userItem = this.copySelection[i]
@@ -486,14 +511,14 @@ export default {
                     try {
                         result = await delUser(this.userItem.ID)
                     } catch {
-                        result = { Msg: 'success' }
+                        result = { message: 'success' }
                     }
                     successText = `${this.$t('user.delUser1')}${this.userItem.Username}${this.$t('user.success')}`
                 } else if (this.commonType === 1) {
                     result = await cleanData(this.userItem.ID)
                     successText = `${this.$t('user.resetUser1')}${this.userItem.Username}${this.$t('user.success')}`
                 }
-                if (result.Msg === 'success') {
+                if (result.message === 'success') {
                     this.$message({
                         message: successText,
                         type: 'success'
@@ -504,7 +529,7 @@ export default {
                 }
             }
             if (this.commonType === 0) {
-                this.$store.commit('SET_NOERROR', false)
+                this.settingsStore.setNoError(false)
             }
             this.refresh()
         },
@@ -512,19 +537,19 @@ export default {
             let successText = ''
             let result = null
             if (this.commonType === 0) {
-                this.$store.commit('SET_NOERROR', true)
+                this.settingsStore.setNoError(true)
                 try {
                     result = await delUser(this.userItem.ID)
                 } catch {
-                    result = { Msg: 'success' }
+                    result = { message: 'success' }
                 }
-                this.$store.commit('SET_NOERROR', false)
+                this.settingsStore.setNoError(false)
                 successText = `${this.$t('user.delUser1')}${this.userItem.Username}${this.$t('user.success')}`
             } else if (this.commonType === 1) {
                 result = await cleanData(this.userItem.ID)
                 successText = `${this.$t('user.resetUser1')}${this.userItem.Username}${this.$t('user.success')}`
             }
-            if (result.Msg === 'success') {
+            if (result.message === 'success') {
                 this.$message({
                     message: successText,
                     type: 'success'
@@ -556,12 +581,12 @@ export default {
             const result = await updateUser(formData)
             this.userVisible = false
             this.refresh()
-            if (result.Msg === 'success') {
+            if (result.message === 'success') {
                 this.$message({
                     message: `${this.$t('user.modifyUser2')}${this.userInfo.username}${this.$t('user.success')}`,
                     type: 'success'
                 })
-                this.$store.commit('SET_NOERROR', true)
+                this.settingsStore.setNoError(true)
             } else {
                 this.$message.error(result.Msg)
             }
@@ -585,7 +610,7 @@ export default {
                 return
             }
             const result = await addUser(formData)
-            if (result.Msg === 'success') {
+            if (result.message === 'success') {
                 this.$message({
                     message: `${this.$t('user.addUser2')}${this.userInfo.username}${this.$t('user.success')}`,
                     type: 'success'
@@ -611,28 +636,28 @@ export default {
         async getUserList() {
             // 调用修改后的 userList 函数，传入当前页码和每页大小
             const result = await pageUserList(this.currentPage, this.pageSize)
-            if (result.Msg === 'success') {
-                // 根据后端返回的结构，分页数据在 result.Data.pageData 中
-                const pageData = result.Data.pageData
-                this.dataList = pageData.DataList || [] // 更新表格数据为当前页的数据
-                this.totalUsers = pageData.Total || 0   // 更新总用户数
+            if (result.message === 'success') {
+                // 根据后端返回的结构，分页数据在 result.data.pageData 中
+                const pageData = result.data.pageData
+                this.dataList = pageData.datalist || [] // 更新表格数据为当前页的数据
+                this.totalUsers = pageData.total || 0   // 更新总用户数
 
-                this.port = result.Data.port
-                if (result.Data.domain !== '') {
-                    this.domain = result.Data.domain
+                this.port = result.data.port
+                if (result.data.domain !== '') {
+                    this.domain = result.data.domain
                 } else {
                     const hostname = window.location.hostname
                     if (!isValidIP(hostname)) {
                         this.domain = hostname
                         const formData = new FormData()
                         formData.set('domain', this.domain)
-                        this.$store.commit('SET_NPROGRESS', false)
-                        this.$store.commit('SET_NOERROR', true)
+                        this.settingsStore.setNprogress(false)
+                        this.settingsStore.setNoError(true)
                         try {
                             await setDomain(formData)
                         } catch (e) {
-                            this.$store.commit('SET_NPROGRESS', false)
-                            this.$store.commit('SET_NOERROR', false)
+                            this.$settingsStore.setNprogress(false)
+                            this.settingsStore.setNoError(false)
                         }
                     }
                 }

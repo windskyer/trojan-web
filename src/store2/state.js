@@ -1,9 +1,13 @@
 export default {
     get UserToken() {
-        return localStorage.getItem('token')
+        return localStorage.getItem('token') || ''
     },
     set UserToken(value) {
-        localStorage.setItem('token', value)
+        if (value) {
+            localStorage.setItem('token', value)
+        } else {
+            localStorage.removeItem('token')
+        }
     },
     loglevel: Object.prototype.hasOwnProperty.call(localStorage, 'loglevel') ? parseInt(localStorage.getItem('loglevel')) : 1,
     line: Object.prototype.hasOwnProperty.call(localStorage, 'line') ? parseInt(localStorage.getItem('line')) : 300,

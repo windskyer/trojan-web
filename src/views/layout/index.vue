@@ -14,6 +14,8 @@
 <script>
 import { Navbar, Sidebar, AppMain } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
+import { useSettingsStore } from '@/store/settings'
+import { useAppStore } from '@/store/app'
 
 export default {
   name: 'IndexLayout',
@@ -22,13 +24,21 @@ export default {
     Sidebar,
     AppMain
   },
+  setup() {
+    const settingsStore = useSettingsStore()
+    const appStore = useAppStore()
+    return {
+      settingsStore,
+      appStore
+    }
+  },
   mixins: [ResizeMixin],
   computed: {
     sidebar() {
-      return this.$store.state.app.sidebar
+      return this.appStore.sidebar
     },
     device() {
-      return this.$store.state.app.device
+      return this.appStore.device
     },
     classObj() {
       return {
@@ -47,7 +57,7 @@ export default {
   },
   methods: {
     handleClickOutside() {
-      this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
+      this.appStore.closeSideBar(false)
     },
     setDialogWidth() {
       const clientWidth = document.body.clientWidth
@@ -58,15 +68,15 @@ export default {
       } else {
         this.dialogWidth = '25%'
       }
-      this.$store.commit('SET_WIDTH', this.dialogWidth)
+      this.settingsStore.setDialogWidth(this.dialogWidth)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-@import "@/styles/mixin.scss";
-@import "@/styles/variables.scss";
+@use "@/styles/mixin.scss" as *;
+@use "@/styles/variables.scss" as *;
 
 .app-wrapper {
   // @include clearfix;
