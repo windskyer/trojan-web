@@ -365,8 +365,7 @@ export default {
         },
         logout() {
             this.userStore.logout()
-            /* 防止切换角色时addRoutes重复添加路由导致出现警告 */
-            window.location.reload()
+            this.$router.replace('/login').catch(() => { })
         }
     }
 }
