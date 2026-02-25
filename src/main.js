@@ -21,7 +21,7 @@ import '@/icons' // svg-sprite 资源
 // ==================
 // 权限配置
 // ==================
-const whiteList = ['/login', '/register', '/verify-success', '/verify-fail', '/404']
+const whiteList = ['/login', '/register', '/verify-success', '/verify-fail', '/404', '/free']
 const userHomePath = '/user/info'
 
 // ==================

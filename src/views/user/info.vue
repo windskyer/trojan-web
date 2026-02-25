@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { userInfo, } from '@/api/user'
+import { userInfo } from '@/api/user'
 import { readableBytes } from '@/utils/common'
 import QRCode from 'easyqrcodejs'
 

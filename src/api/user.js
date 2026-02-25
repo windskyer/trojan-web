@@ -14,6 +14,13 @@ export function userInfo(params) {
    })
 }
 
+export function freeUserInfo() {
+   return request({
+      url: '/trojan/user/free',
+      method: 'get',
+   })
+}
+
 export function userCheck() {
    return request({
       url: '/trojan/user/check',
