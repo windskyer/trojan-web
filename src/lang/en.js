@@ -159,6 +159,7 @@ export default {
             cta: '👇 Click the button below to upgrade!',
             register: 'register',
             upgradeButton: 'Upgrade',
+            telegramChannel: 'Join for perks',
             fetchFail: 'Failed to fetch free account info',
             adTitle: 'Advertisement',
             adLoadFail: 'Failed to load advertisement',

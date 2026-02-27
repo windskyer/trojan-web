@@ -179,6 +179,7 @@ export default {
             cta: '👇 点击下方按钮，升级套餐！',
             register: '注册账号',
             upgradeButton: '升级套餐',
+            telegramChannel: '进群领礼',
             fetchFail: '获取免费账号信息失败',
             adTitle: '广告',
             adLoadFail: '广告加载失败',

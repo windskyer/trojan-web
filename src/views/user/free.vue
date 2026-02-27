@@ -25,7 +25,6 @@
             <div class="separator">──────────</div>
             <p class="subtitle">{{ $t('user.free.accountInfo') }}</p>
             <p>{{ $t('user.free.username') }}：{{ account.username || '-' }}</p>
-            <p>{{ $t('user.free.uuid') }}：{{ account.uuid || '-' }}</p>
             <p>{{ $t('user.free.password') }}：{{ account.password || '-' }}</p>
             <p>{{ $t('user.free.traffic') }}：{{ account.used }} / {{ account.quota }}</p>
             <p>{{ $t('user.free.expiryDate') }}：{{ account.expiryDate || '-' }}</p>
@@ -50,6 +49,7 @@
             <div class="action-buttons">
                 <el-button type="primary" @click="goRegister">{{ $t('user.free.register') }}</el-button>
                 <el-button type="primary" @click="goUpgrade">{{ $t('user.free.upgradeButton') }}</el-button>
+                <el-button type="success" @click="openTelegramChannel">{{ $t('user.free.telegramChannel') }}</el-button>
             </div>
         </div>
 
@@ -183,6 +183,9 @@ export default {
             } catch (error) {
                 ElMessage.error(this.$t('user.free.fetchFail'))
             }
+        },
+        openTelegramChannel() {
+            window.open('https://t.me/trojan100', '_blank')
         },
         showQRCode(url) {
             this.shareLink = url
