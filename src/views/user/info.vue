@@ -24,7 +24,7 @@
       <p>{{ $t('user.info.remainingDays') }}: {{ remainDays }} {{ $t('user.days') }}</p>
       <div class="expiry-actions">
         <el-button :type="remainDays <= 7 ? 'danger' : 'primary'" @click="openRenewBot">{{ renewButtonText
-          }}</el-button>
+        }}</el-button>
         <el-button type="info" plain @click="openDetailPage">{{ $t('user.info.viewDetail') }}</el-button>
       </div>
     </div>

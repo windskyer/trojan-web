@@ -47,7 +47,10 @@
             <div class="separator">──────────</div>
             <p class="subtitle">{{ $t('user.free.cta') }}</p>
 
-            <el-button type="primary" @click="goUpgrade">{{ $t('user.free.upgradeButton') }}</el-button>
+            <div class="action-buttons">
+                <el-button type="primary" @click="goRegister">{{ $t('user.free.register') }}</el-button>
+                <el-button type="primary" @click="goUpgrade">{{ $t('user.free.upgradeButton') }}</el-button>
+            </div>
         </div>
 
         <el-dialog :title="$t('user.info.qrcodeTitle')" v-model="qrcodeVisible" width="420px" @close="closeQRCode">
@@ -203,8 +206,13 @@ export default {
             }
             this.shareLink = ''
         },
-        goUpgrade() {
+        goRegister() {
             this.$router.push('/login').catch(() => { })
+        },
+        goUpgrade() {
+            const start = encodeURIComponent(btoa('buy'))
+            const url = `https://t.me/TrojanAccess_bot?start=${start}`
+            window.open(url, '_blank')
         }
     }
 }
@@ -291,6 +299,12 @@ p {
     margin: 0;
 }
 
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
 .ad-float {
     position: fixed;
     right: 20px;
@@ -304,6 +318,7 @@ p {
     box-shadow: 0 14px 30px rgba(90, 66, 44, 0.2);
     z-index: 999;
     overflow: auto;
+    animation: noticeFloat 3.2s ease-in-out infinite;
 }
 
 .ad-float-title {
@@ -337,6 +352,23 @@ p {
     word-break: break-all;
 }
 
+@keyframes noticeFloat {
+    0% {
+        transform: translateY(0);
+        box-shadow: 0 14px 30px rgba(90, 66, 44, 0.2);
+    }
+
+    50% {
+        transform: translateY(-14px);
+        box-shadow: 0 18px 34px rgba(90, 66, 44, 0.24);
+    }
+
+    100% {
+        transform: translateY(0);
+        box-shadow: 0 14px 30px rgba(90, 66, 44, 0.2);
+    }
+}
+
 @media (max-width: 768px) {
     .ad-float {
         right: 10px;
@@ -344,6 +376,7 @@ p {
         bottom: 10px;
         width: auto;
         height: 220px;
+        animation: none;
     }
 }
 </style>

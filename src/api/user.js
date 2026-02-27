@@ -55,3 +55,13 @@ export function setExpire(data) {
 export function cancelExpire(id) {
     return request.delete(`/trojan/user/expire?id=${id}`)
 }
+
+
+export function planInfo(id) {
+   return request.get(`/trojan/user/plan?id=${id}`)
+}
+
+
+export function orderInfo(name) {
+   return request.get(`/trojan/user/order?name=${name}`)
+}

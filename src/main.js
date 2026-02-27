@@ -21,7 +21,7 @@ import '@/icons' // svg-sprite 资源
 // ==================
 // 权限配置
 // ==================
-const whiteList = ['/login', '/register', '/verify-success', '/verify-fail', '/404', '/free']
+const whiteList = ['/login', '/register', '/verify-success', '/verify-fail', '/404', '/free', '/pay']
 const userHomePath = '/user/info'
 
 // ==================
@@ -58,7 +58,7 @@ router.beforeEach(async (to, from, next) => {
 
     return next()
   } else {
-    if (whiteList.includes(to.path)) {
+    if (whiteList.includes(to.path) || to.path === '/pay' || to.path.startsWith('/pay/')) {
       return next()
     }
     return next('/login')
