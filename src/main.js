@@ -30,6 +30,13 @@ const userHomePath = '/user/info'
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore(pinia)
   const token = userStore.token
+  const isPayRoute = to.path === '/pay' || to.path.startsWith('/pay/')
+  const isWhiteRoute = whiteList.includes(to.path) || isPayRoute
+
+  // Public pages should not be blocked by stale/invalid token checks.
+  if (to.path !== '/login' && isWhiteRoute) {
+    return next()
+  }
 
   if (token) {
     if (!userStore?.isAdmin) {
@@ -58,7 +65,7 @@ router.beforeEach(async (to, from, next) => {
 
     return next()
   } else {
-    if (whiteList.includes(to.path) || to.path === '/pay' || to.path.startsWith('/pay/')) {
+    if (isWhiteRoute) {
       return next()
     }
     return next('/login')
