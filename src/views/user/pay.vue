@@ -3,7 +3,15 @@
     <div class="pay-card">
       <h1>{{ $t('user.pay.title') }}</h1>
       <div v-if="orderQrImage" class="qrcode-wrap">
-        <img :src="orderQrImage" :alt="`${orderName} qrcode`" class="qrcode-image" @click="previewQrImage" />
+        <img
+          :src="orderQrImage"
+          :alt="`${orderName} qrcode`"
+          class="qrcode-image"
+          @click="previewQrImage"
+          @touchstart.passive="onQrTouchStart"
+          @touchend="onQrTouchEnd"
+          @touchcancel="onQrTouchEnd"
+        />
       </div>
       <p v-if="isWechat && orderQrImage" class="qrcode-tip">{{ $t('user.pay.wechatRecognizeTip') }}</p>
       <p v-else-if="orderQrImage" class="qrcode-tip">{{ $t('user.pay.wechatOpenTip') }}</p>
@@ -87,7 +95,10 @@ export default {
       error: '',
       supportLink: 'https://t.me/TrojanAccess_bot',
       pollTimer: null,
-      redirected: false
+      redirected: false,
+      resumePollTimer: null,
+      qrTouchStartAt: 0,
+      suppressPreviewUntil: 0
     }
   },
   computed: {
@@ -163,6 +174,10 @@ export default {
   },
   beforeUnmount() {
     this.stopPolling()
+    if (this.resumePollTimer) {
+      clearTimeout(this.resumePollTimer)
+      this.resumePollTimer = null
+    }
   },
   watch: {
     '$route.fullPath'() {
@@ -217,6 +232,7 @@ export default {
     },
     previewQrImage() {
       if (!this.orderQrImage) return
+      if (Date.now() < this.suppressPreviewUntil) return
       const bridge = window.WeixinJSBridge
       if (this.isWechat && bridge && typeof bridge.invoke === 'function') {
         bridge.invoke('imagePreview', {
@@ -226,6 +242,28 @@ export default {
         return
       }
       window.open(this.orderQrImage, '_blank')
+    },
+    onQrTouchStart() {
+      this.qrTouchStartAt = Date.now()
+      if (this.resumePollTimer) {
+        clearTimeout(this.resumePollTimer)
+        this.resumePollTimer = null
+      }
+      this.stopPolling()
+    },
+    onQrTouchEnd() {
+      const touchDuration = Date.now() - (this.qrTouchStartAt || 0)
+      // Long-press on iOS/Android may still fire click after menu closes.
+      if (touchDuration > 450) {
+        this.suppressPreviewUntil = Date.now() + 1200
+      }
+      if (this.resumePollTimer) {
+        clearTimeout(this.resumePollTimer)
+      }
+      this.resumePollTimer = setTimeout(() => {
+        this.resumePollTimer = null
+        this.updatePollingByStatus((this.order || {}).status)
+      }, 8000)
     },
     startPolling() {
       this.stopPolling()
