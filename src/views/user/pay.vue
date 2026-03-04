@@ -3,7 +3,14 @@
     <div class="pay-card">
       <h1>{{ $t('user.pay.title') }}</h1>
       <div v-if="orderQrImage" class="qrcode-wrap">
-        <img :src="orderQrImage" :alt="`${orderName} qrcode`" class="qrcode-image" />
+        <img :src="orderQrImage" :alt="`${orderName} qrcode`" class="qrcode-image" @click="previewQrImage" />
+      </div>
+      <p v-if="isWechat && orderQrImage" class="qrcode-tip">{{ $t('user.pay.wechatRecognizeTip') }}</p>
+      <p v-else-if="orderQrImage" class="qrcode-tip">{{ $t('user.pay.wechatOpenTip') }}</p>
+      <div class="share-actions">
+        <button class="share-btn" type="button" @click="copyPayLink">
+          {{ $t('user.pay.copyPayLink') }}
+        </button>
       </div>
       <div class="notice-block">
         <p>{{ $t('user.pay.notice1') }}</p>
@@ -84,6 +91,9 @@ export default {
     }
   },
   computed: {
+    isWechat() {
+      return /micromessenger/i.test(navigator.userAgent || '')
+    },
     orderRows() {
       if (!this.orderName) return []
       const order = this.order || {}
@@ -172,11 +182,50 @@ export default {
     async copyOrderName() {
       if (!this.orderName) return
       try {
-        await navigator.clipboard.writeText(this.orderName)
+        await this.copyText(this.orderName)
         this.$message.success(this.$t('user.pay.copySuccess'))
       } catch (error) {
         this.$message.error(this.$t('user.pay.copyFail'))
       }
+    },
+    async copyPayLink() {
+      const currentUrl = window.location.href
+      try {
+        await this.copyText(currentUrl)
+        this.$message.success(this.$t('user.pay.copyPayLinkSuccess'))
+      } catch (error) {
+        this.$message.error(this.$t('user.pay.copyPayLinkFail'))
+      }
+    },
+    copyText(value) {
+      if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(value)
+      }
+      return new Promise((resolve, reject) => {
+        const el = document.createElement('textarea')
+        el.value = value
+        el.setAttribute('readonly', '')
+        el.style.position = 'absolute'
+        el.style.left = '-9999px'
+        document.body.appendChild(el)
+        el.select()
+        const ok = document.execCommand('copy')
+        document.body.removeChild(el)
+        if (ok) resolve()
+        else reject(new Error('copy failed'))
+      })
+    },
+    previewQrImage() {
+      if (!this.orderQrImage) return
+      const bridge = window.WeixinJSBridge
+      if (this.isWechat && bridge && typeof bridge.invoke === 'function') {
+        bridge.invoke('imagePreview', {
+          current: this.orderQrImage,
+          urls: [this.orderQrImage]
+        })
+        return
+      }
+      window.open(this.orderQrImage, '_blank')
     },
     startPolling() {
       this.stopPolling()
@@ -413,6 +462,38 @@ h1 {
   max-width: 100%;
   border-radius: 10px;
   border: 1px solid #e5e7eb;
+  cursor: zoom-in;
+}
+
+.qrcode-tip {
+  margin: 8px 0 0;
+  text-align: center;
+  color: #166534;
+  font-size: 13px;
+}
+
+.share-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.share-btn {
+  border: 0;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 999px;
+  height: 34px;
+  padding: 0 14px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.share-btn:hover {
+  background: #1d4ed8;
 }
 
 .notice-block {
