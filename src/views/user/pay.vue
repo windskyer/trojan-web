@@ -241,6 +241,20 @@ export default {
         })
         return
       }
+      if (this.isWechat && !bridge) {
+        const onBridgeReady = () => {
+          const nextBridge = window.WeixinJSBridge
+          if (nextBridge && typeof nextBridge.invoke === 'function') {
+            nextBridge.invoke('imagePreview', {
+              current: this.orderQrImage,
+              urls: [this.orderQrImage]
+            })
+          }
+          document.removeEventListener('WeixinJSBridgeReady', onBridgeReady)
+        }
+        document.addEventListener('WeixinJSBridgeReady', onBridgeReady, { once: true })
+        return
+      }
       window.open(this.orderQrImage, '_blank')
     },
     onQrTouchStart() {
@@ -256,6 +270,8 @@ export default {
       // Long-press on iOS/Android may still fire click after menu closes.
       if (touchDuration > 450) {
         this.suppressPreviewUntil = Date.now() + 1200
+      } else if (touchDuration > 0) {
+        this.previewQrImage()
       }
       if (this.resumePollTimer) {
         clearTimeout(this.resumePollTimer)
