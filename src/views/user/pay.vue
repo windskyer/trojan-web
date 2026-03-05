@@ -66,6 +66,10 @@
         </div>
       </div>
     </div>
+    <div v-if="previewVisible && orderQrImage" class="img-preview-mask" @click="closePreview">
+      <img :src="orderQrImage" class="img-preview-image" :alt="`${orderName} qrcode preview`" @click.stop />
+      <button class="img-preview-close" type="button" @click.stop="closePreview">×</button>
+    </div>
   </div>
 </template>
 
@@ -98,7 +102,8 @@ export default {
       redirected: false,
       resumePollTimer: null,
       qrTouchStartAt: 0,
-      suppressPreviewUntil: 0
+      suppressPreviewUntil: 0,
+      previewVisible: false
     }
   },
   computed: {
@@ -233,29 +238,10 @@ export default {
     previewQrImage() {
       if (!this.orderQrImage) return
       if (Date.now() < this.suppressPreviewUntil) return
-      const bridge = window.WeixinJSBridge
-      if (this.isWechat && bridge && typeof bridge.invoke === 'function') {
-        bridge.invoke('imagePreview', {
-          current: this.orderQrImage,
-          urls: [this.orderQrImage]
-        })
-        return
-      }
-      if (this.isWechat && !bridge) {
-        const onBridgeReady = () => {
-          const nextBridge = window.WeixinJSBridge
-          if (nextBridge && typeof nextBridge.invoke === 'function') {
-            nextBridge.invoke('imagePreview', {
-              current: this.orderQrImage,
-              urls: [this.orderQrImage]
-            })
-          }
-          document.removeEventListener('WeixinJSBridgeReady', onBridgeReady)
-        }
-        document.addEventListener('WeixinJSBridgeReady', onBridgeReady, { once: true })
-        return
-      }
-      window.open(this.orderQrImage, '_blank')
+      this.previewVisible = true
+    },
+    closePreview() {
+      this.previewVisible = false
     },
     onQrTouchStart() {
       this.qrTouchStartAt = Date.now()
@@ -307,13 +293,14 @@ export default {
         this.stopPolling()
       }
     },
-    showSuccessNotice() {
+    handleOrderStatus() {
       const status = String((this.order || {}).status || '').toLowerCase()
-      if (status !== 'success') return
+      this.updatePollingByStatus(status)
+      if (status === 'pending') return
       if (this.redirected) return
       this.redirected = true
-      this.$message.success(this.$t('user.pay.successTip'))
-      window.location.hash = '#/login'
+      this.$message.info(`${this.$t('user.pay.orderStatus')}：${this.orderStatusText || '-'}`)
+      this.$router.replace('/login').catch(() => { })
     },
     formatAmount(value) {
       if (value === undefined || value === null || value === '') return ''
@@ -360,8 +347,7 @@ export default {
         }
         const orderData = orderResult.data || {}
         this.order = orderData || null
-        this.showSuccessNotice()
-        this.updatePollingByStatus(this.order?.status)
+        this.handleOrderStatus()
         if (!isPolling) {
           const planId = orderData.plan_id || ''
           if (!planId) {
@@ -615,6 +601,38 @@ h1 {
 
 .empty {
   color: #98a2b3;
+}
+
+.img-preview-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.86);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.img-preview-image {
+  max-width: min(92vw, 760px);
+  max-height: 86vh;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.img-preview-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  font-size: 28px;
+  line-height: 1;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
 }
 
 .link {
