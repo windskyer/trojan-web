@@ -28,6 +28,11 @@ export const constantRoutes = [
         hidden: true
     },
     {
+        path: '/pay/exception',
+        component: () => import('@/views/user/payException'),
+        hidden: true
+    },
+    {
         path: '/pay/:order?',
         component: () => import('@/views/user/pay'),
         hidden: true

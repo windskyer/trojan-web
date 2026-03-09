@@ -49,23 +49,37 @@
             <div class="action-buttons">
                 <el-button type="primary" @click="goRegister">{{ $t('user.free.register') }}</el-button>
                 <el-button type="primary" @click="goUpgrade">{{ $t('user.free.upgradeButton') }}</el-button>
-                <el-button type="success" @click="openTelegramChannel">{{ $t('user.free.telegramChannel') }}</el-button>
+                <el-button class="join-group-btn" type="success" @click="openTelegramChannel">{{ $t('user.free.telegramChannel') }}</el-button>
             </div>
         </div>
 
-        <el-dialog :title="$t('user.info.qrcodeTitle')" v-model="qrcodeVisible" width="420px" @close="closeQRCode">
+        <el-dialog
+            class="qrcode-dialog"
+            title=""
+            v-model="qrcodeVisible"
+            width="280px"
+            :show-close="false"
+            :close-on-click-modal="true"
+            @close="closeQRCode"
+        >
             <div ref="qrcode" class="qrcodeCenter"></div>
-            <p class="qrcodeCenter">{{ shareLink }}</p>
         </el-dialog>
 
-        <div class="ad-float">
-            <p class="ad-float-title">{{ $t('user.free.noticeTitle') }}</p>
-            <div v-if="adNoticeHtml" class="ad-content" v-html="adNoticeHtml"></div>
-            <div v-else>
-                <p class="empty-text">{{ $t('user.free.noticeLoadFail') }}</p>
-                <a class="subscribe-url" :href="adNoticeApi" target="_blank" rel="noopener noreferrer">
-                    {{ adNoticeApi }}
-                </a>
+        <div class="ad-float" :class="{ 'is-collapsed': adCollapsed }">
+            <div class="ad-float-head">
+                <p class="ad-float-title">{{ $t('user.free.noticeTitle') }}</p>
+                <el-button class="ad-toggle-btn" type="primary" link @click="adCollapsed = !adCollapsed">
+                    {{ adCollapsed ? '+' : '-' }}
+                </el-button>
+            </div>
+            <div v-show="!adCollapsed">
+                <div v-if="adNoticeHtml" class="ad-content" v-html="adNoticeHtml"></div>
+                <div v-else>
+                    <p class="empty-text">{{ $t('user.free.noticeLoadFail') }}</p>
+                    <a class="subscribe-url" :href="adNoticeApi" target="_blank" rel="noopener noreferrer">
+                        {{ adNoticeApi }}
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -86,6 +100,7 @@ export default {
             noticeTime: '',
             adNoticeApi: 'https://pp.flftuu.com/img/notice.json',
             adNoticeHtml: '',
+            adCollapsed: false,
             qrcodeVisible: false,
             shareLink: '',
             account: {
@@ -308,12 +323,17 @@ p {
     flex-wrap: wrap;
 }
 
+.join-group-btn {
+    margin-left: auto;
+}
+
 .ad-float {
     position: fixed;
     right: 20px;
-    bottom: 20px;
+    top: 20px;
     width: 320px;
-    height: 320px;
+    height: auto;
+    max-height: 320px;
     padding: 12px;
     border-radius: 12px;
     background: rgba(255, 250, 243, 0.98);
@@ -325,10 +345,27 @@ p {
 }
 
 .ad-float-title {
-    margin: 0 0 8px;
+    margin: 0;
     font-weight: 600;
-    text-align: center;
     color: #8b5e34;
+}
+
+.ad-float-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.ad-toggle-btn {
+    font-size: 20px;
+    line-height: 1;
+    padding: 0;
+}
+
+.ad-float.is-collapsed {
+    height: auto;
 }
 
 .ad-content {
@@ -353,6 +390,15 @@ p {
 .qrcodeCenter {
     text-align: center;
     word-break: break-all;
+    margin: 0;
+}
+
+.qrcode-dialog :deep(.el-dialog__header) {
+    padding: 8px 8px 0;
+}
+
+.qrcode-dialog :deep(.el-dialog__body) {
+    padding: 8px;
 }
 
 @keyframes noticeFloat {
@@ -373,13 +419,31 @@ p {
 }
 
 @media (max-width: 768px) {
+    .free-page {
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        padding: 12px;
+    }
+
+    .card {
+        max-width: none;
+    }
+
     .ad-float {
-        right: 10px;
-        left: 10px;
-        bottom: 10px;
-        width: auto;
-        height: 220px;
+        position: sticky;
+        top: 10px;
+        order: -1;
+        width: 100%;
+        height: auto;
+        max-height: 220px;
+        margin-bottom: 12px;
         animation: none;
+        z-index: 20;
+    }
+
+    .ad-float.is-collapsed {
+        max-height: none;
     }
 }
 </style>

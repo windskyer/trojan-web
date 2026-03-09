@@ -231,6 +231,13 @@ export default {
             successTip: '✅ 账号已创建并发号，请前往个人中心查看订阅信息。',
             goLogin: '去登录'
         },
+        payException: {
+            title: '订单异常',
+            desc: '该订单当前无法继续支付，请查看订单状态并联系客服处理。',
+            goLogin: '返回登录',
+            repurchaseTip: '该订单已失效/已退款，请重新购买。',
+            repurchase: '重新购买'
+        },
         info: {
             accountTitle: '👤 个人中心 - 账号状态',
             username: '🆔 用户名',

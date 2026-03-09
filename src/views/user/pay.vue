@@ -197,6 +197,7 @@ export default {
     syncFromRoute() {
       const routeOrder = this.$route.params.order
       this.orderName = this.normalizeOrderName(routeOrder)
+      this.redirected = false
       this.fetchDetail()
     },
     async copyOrderName() {
@@ -299,6 +300,18 @@ export default {
       if (status === 'pending') return
       if (this.redirected) return
       this.redirected = true
+      if (status === 'success') {
+        this.$message.success(`${this.$t('user.pay.orderStatus')}：${this.orderStatusText || '-'}`)
+        this.$router.replace('/login').catch(() => { })
+        return
+      }
+      if (['fail', 'expired', 'refunded'].includes(status)) {
+        this.$router.replace({
+          path: '/pay/exception',
+          query: { order: this.orderName }
+        }).catch(() => { })
+        return
+      }
       this.$message.info(`${this.$t('user.pay.orderStatus')}：${this.orderStatusText || '-'}`)
       this.$router.replace('/login').catch(() => { })
     },

@@ -211,6 +211,13 @@ export default {
             successTip: '✅ Account created. Please check your profile for subscription details.',
             goLogin: 'Go to login'
         },
+        payException: {
+            title: 'Order Exception',
+            desc: 'This order cannot continue payment. Please check status and contact support.',
+            goLogin: 'Back to login',
+            repurchaseTip: 'This order is expired or refunded. Please purchase again.',
+            repurchase: 'Buy Again'
+        },
         info: {
             accountTitle: '👤 Profile - Account Status',
             username: '🆔 Username',
