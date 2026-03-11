@@ -48,6 +48,7 @@
       width="280px"
       :show-close="false"
       :close-on-click-modal="true"
+      @opened="renderQRCode"
       @close="closeQRCode"
     >
       <div ref="qrcode" class="qrcodeCenter"></div>
@@ -220,8 +221,10 @@ export default {
     showQRCode(url) {
       this.shareLink = url
       this.qrcodeVisible = true
+    },
+    renderQRCode() {
       this.$nextTick(() => {
-        if (!this.$refs.qrcode) {
+        if (!this.$refs.qrcode || !this.shareLink) {
           return
         }
         this.$refs.qrcode.innerHTML = ''
