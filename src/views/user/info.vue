@@ -41,9 +41,16 @@
       <p v-if="normalizedLinks.length === 0">{{ $t('user.info.noLinks') }}</p>
     </div>
 
-    <el-dialog :title="$t('user.info.qrcodeTitle')" v-model="qrcodeVisible" width="420px" @close="closeQRCode">
+    <el-dialog
+      class="qrcode-dialog"
+      title=""
+      v-model="qrcodeVisible"
+      width="280px"
+      :show-close="false"
+      :close-on-click-modal="true"
+      @close="closeQRCode"
+    >
       <div ref="qrcode" class="qrcodeCenter"></div>
-      <p class="qrcodeCenter">{{ shareLink }}</p>
     </el-dialog>
   </div>
 </template>
@@ -285,5 +292,17 @@ export default {
 
 .qrcodeCenter {
   text-align: center;
+  margin: 0;
+  word-break: break-all;
+  display: flex;
+  justify-content: center;
+}
+
+.qrcode-dialog :deep(.el-dialog__header) {
+  padding: 8px 8px 0;
+}
+
+.qrcode-dialog :deep(.el-dialog__body) {
+  padding: 8px;
 }
 </style>
