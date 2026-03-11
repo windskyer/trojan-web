@@ -2,48 +2,70 @@
     <div class="free-page">
         <div class="card">
             <p class="top-notice">{{ $t('user.free.notice', { time: noticeTime }) }}</p>
-            <h1>{{ $t('user.free.title') }}</h1>
+            <h2>{{ $t('user.free.title') }}</h2>
 
             <p>{{ $t('user.free.tip1') }}</p>
             <p>{{ $t('user.free.tip2') }}</p>
             <p>{{ $t('user.free.tip3') }}</p>
             <p>{{ $t('user.free.tip4') }}</p>
 
-            <div class="separator">──────────</div>
+            <div class="divider"></div>
             <p class="subtitle">{{ $t('user.free.subscription') }}</p>
 
             <div v-if="subscribeUrl" class="link-item">
-                <a class="subscribe-url" :href="subscribeUrl" target="_blank" rel="noopener noreferrer">
-                    {{ subscribeUrl }}
-                </a>
-                <el-button class="qrcode-btn" type="primary" link @click="showQRCode(subscribeUrl)">
-                    {{ $t('user.info.qrcode') }}
-                </el-button>
-            </div>
+                <div class="link-row">
+                    <span class="subscribe-url is-copy" @click="copyText(subscribeUrl)">
+                        {{ subscribeUrl }}
+                    </span>
+                        <div class="link-actions">
+                            <el-button class="link-action" type="primary" plain size="small" @click="showQRCode(subscribeUrl)">
+                                <el-tooltip :content="$t('user.info.qrcode')" placement="top">
+                                    <el-icon><Grid /></el-icon>
+                                </el-tooltip>
+                            </el-button>
+                            <el-button class="link-action" type="info" plain size="small" @click="openLink(subscribeUrl)">
+                                <el-tooltip :content="$t('user.info.openLink')" placement="top">
+                                    <el-icon><LinkIcon /></el-icon>
+                                </el-tooltip>
+                            </el-button>
+                        </div>
+                    </div>
+                </div>
             <p v-else class="empty-text">{{ $t('user.free.emptySubscription') }}</p>
 
-            <div class="separator">──────────</div>
+            <div class="divider"></div>
             <p class="subtitle">{{ $t('user.free.accountInfo') }}</p>
             <p>{{ $t('user.free.username') }}：{{ account.username || '-' }}</p>
             <p>{{ $t('user.free.password') }}：{{ account.password || '-' }}</p>
             <p>{{ $t('user.free.traffic') }}：{{ account.used }} / {{ account.quota }}</p>
             <p>{{ $t('user.free.expiryDate') }}：{{ account.expiryDate || '-' }}</p>
 
-            <div class="separator">──────────</div>
+            <div class="divider"></div>
             <p class="subtitle">{{ $t('user.free.nodeLinks') }}</p>
             <div v-if="links.length > 0" class="links">
                 <div v-for="(link, index) in links" :key="`${link}-${index}`" class="link-item">
-                    <a class="subscribe-url" :href="link" target="_blank" rel="noopener noreferrer">
-                        {{ index + 1 }}. {{ link }}
-                    </a>
-                    <el-button class="qrcode-btn" type="primary" link @click="showQRCode(link)">
-                        {{ $t('user.info.qrcode') }}
-                    </el-button>
+                    <div class="link-row">
+                        <span class="subscribe-url is-copy" @click="copyText(link)">
+                            {{ index + 1 }}. {{ link }}
+                        </span>
+                        <div class="link-actions">
+                            <el-button class="link-action" type="primary" plain size="small" @click="showQRCode(link)">
+                                <el-tooltip :content="$t('user.info.qrcode')" placement="top">
+                                    <el-icon><Grid /></el-icon>
+                                </el-tooltip>
+                            </el-button>
+                            <el-button class="link-action" type="info" plain size="small" @click="openLink(link)">
+                                <el-tooltip :content="$t('user.info.openLink')" placement="top">
+                                    <el-icon><LinkIcon /></el-icon>
+                                </el-tooltip>
+                            </el-button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <p v-else class="empty-text">{{ $t('user.free.emptyLinks') }}</p>
 
-            <div class="separator">──────────</div>
+            <div class="divider"></div>
             <p class="subtitle">{{ $t('user.free.cta') }}</p>
 
             <div class="action-buttons">
@@ -91,9 +113,14 @@ import { ElMessage } from 'element-plus'
 import { freeUserInfo } from '@/api/user'
 import { readableBytes } from '@/utils/common'
 import QRCode from 'easyqrcodejs'
+import { Grid, Link as LinkIcon } from '@element-plus/icons-vue'
 
 export default {
     name: 'FreePage',
+    components: {
+        Grid,
+        LinkIcon
+    },
     data() {
         return {
             subscribeUrl: '',
@@ -138,6 +165,14 @@ export default {
                 return atob(text)
             } catch (error) {
                 return text
+            }
+        },
+        async copyText(text) {
+            try {
+                await navigator.clipboard.writeText(text)
+                ElMessage.success(this.$t('user.info.copySuccess'))
+            } catch (error) {
+                ElMessage.error(this.$t('user.info.copyFail'))
             }
         },
         buildSubscribeUrl(username, encodedPassword) {
@@ -227,6 +262,10 @@ export default {
             }
             this.shareLink = ''
         },
+        openLink(url) {
+            if (!url) return
+            window.open(url, '_blank')
+        },
         goRegister() {
             this.$router.push('/login').catch(() => { })
         },
@@ -262,7 +301,7 @@ export default {
     word-break: break-word;
 }
 
-h1 {
+h2 {
     margin: 0 0 12px 0;
     font-size: 24px;
 }
@@ -282,9 +321,10 @@ p {
     font-weight: 600;
 }
 
-.separator {
-    margin: 14px 0;
-    color: #a08a73;
+.divider {
+    height: 1px;
+    margin: 10px 0 12px;
+    background: #ededed;
 }
 
 .links {
@@ -294,10 +334,50 @@ p {
 }
 
 .link-item {
+    display: block;
+}
+
+.link-row {
     display: flex;
-    flex-direction: column;
     align-items: flex-start;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.link-actions {
+    display: flex;
     gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+    margin-left: auto;
+    opacity: 0;
+    transform: translateY(-2px);
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.link-action {
+    padding: 0 6px;
+    min-width: 30px;
+}
+
+.link-action :deep(.el-icon) {
+    margin-right: 0;
+}
+
+.link-row:hover .link-actions,
+.link-row:focus-within .link-actions {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+@media (max-width: 768px) {
+    .link-actions {
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+    }
 }
 
 .subscribe-url {
@@ -305,6 +385,12 @@ p {
     color: #8a5a32;
     text-decoration: none;
     word-break: break-all;
+    flex: 1 1 100%;
+}
+
+.subscribe-url.is-copy {
+    cursor: pointer;
+    text-decoration: underline;
 }
 
 .subscribe-url:hover {
@@ -314,10 +400,6 @@ p {
 
 .empty-text {
     color: #9a8268;
-}
-
-.qrcode-btn {
-    margin: 0;
 }
 
 .action-buttons {
@@ -394,6 +476,10 @@ p {
     text-align: center;
     word-break: break-all;
     margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 
 .qrcode-dialog :deep(.el-dialog__header) {
@@ -402,6 +488,8 @@ p {
 
 .qrcode-dialog :deep(.el-dialog__body) {
     padding: 8px;
+    display: flex;
+    justify-content: center;
 }
 
 @keyframes noticeFloat {

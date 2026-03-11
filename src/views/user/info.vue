@@ -33,10 +33,43 @@
       <h2>{{ $t('user.info.subscriptionTitle') }}</h2>
       <div class="divider"></div>
 
+      <div v-if="subscribeUrl" class="link-block subscribe-block">
+        <p>{{ $t('user.info.subscriptionAddress') }}</p>
+        <div class="link-row">
+          <p class="link-text" @click="copyText(subscribeUrl)">{{ subscribeUrl }}</p>
+          <div class="link-actions">
+            <el-button class="link-action" type="primary" plain size="small" @click="showQRCode(subscribeUrl)">
+              <el-tooltip :content="$t('user.info.qrcode')" placement="top">
+                <el-icon><Grid /></el-icon>
+              </el-tooltip>
+            </el-button>
+            <el-button class="link-action" type="info" plain size="small" @click="openLink(subscribeUrl)">
+              <el-tooltip :content="$t('user.info.openLink')" placement="top">
+                <el-icon><LinkIcon /></el-icon>
+              </el-tooltip>
+            </el-button>
+          </div>
+        </div>
+      </div>
+
+      <p class="node-title">{{ $t('user.info.nodeLinks') }}</p>
       <div class="link-block" v-for="(item, index) in normalizedLinks" :key="`${item.url}-${index}`">
         <p>{{ item.name }}</p>
-        <p class="link-text" @click="copyText(item.url)">{{ item.url }}</p>
-        <el-button type="primary" link @click="showQRCode(item.url)">{{ $t('user.info.qrcode') }}</el-button>
+        <div class="link-row">
+          <p class="link-text" @click="copyText(item.url)">{{ item.url }}</p>
+          <div class="link-actions">
+            <el-button class="link-action" type="primary" plain size="small" @click="showQRCode(item.url)">
+              <el-tooltip :content="$t('user.info.qrcode')" placement="top">
+                <el-icon><Grid /></el-icon>
+              </el-tooltip>
+            </el-button>
+            <el-button class="link-action" type="info" plain size="small" @click="openLink(item.url)">
+              <el-tooltip :content="$t('user.info.openLink')" placement="top">
+                <el-icon><LinkIcon /></el-icon>
+              </el-tooltip>
+            </el-button>
+          </div>
+        </div>
       </div>
       <p v-if="normalizedLinks.length === 0">{{ $t('user.info.noLinks') }}</p>
     </div>
@@ -60,11 +93,16 @@
 import { userInfo } from '@/api/user'
 import { readableBytes } from '@/utils/common'
 import QRCode from 'easyqrcodejs'
+import { Grid, Link as LinkIcon } from '@element-plus/icons-vue'
 
 const BYTES_PER_GB = 1024 * 1024 * 1024
 
 export default {
   name: 'UserInfo',
+  components: {
+    Grid,
+    LinkIcon
+  },
   data() {
     return {
       user: {
@@ -126,6 +164,19 @@ export default {
           return { name, url }
         })
         .filter(Boolean)
+    },
+    subscribeUrl() {
+      const username = this.user.username
+      const password = this.user.password
+      if (!username || !password) {
+        return ''
+      }
+      try {
+        const userInfo = btoa(JSON.stringify({ user: username, pass: password }))
+        return `${window.location.origin}/trojan/user/subscribe?token=${userInfo}`
+      } catch (error) {
+        return ''
+      }
     },
     renewButtonText() {
       return this.remainDays <= 7 ? this.$t('user.info.renewUrgent') : this.$t('user.info.renew')
@@ -241,6 +292,10 @@ export default {
         this.$refs.qrcode.innerHTML = ''
       }
       this.shareLink = ''
+    },
+    openLink(url) {
+      if (!url) return
+      window.open(url, '_blank')
     }
   }
 }
@@ -282,11 +337,66 @@ export default {
   margin-top: 14px;
 }
 
+.subscribe-block {
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #e8e8e8;
+}
+
+.node-title {
+  margin-top: 6px;
+  font-weight: 600;
+}
+
 .link-text {
   margin: 6px 0 0;
   color: #0d6efd;
   cursor: pointer;
   text-decoration: underline;
+  flex: 1 1 100%;
+}
+
+.link-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.link-actions {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+  margin-left: auto;
+  opacity: 0;
+  transform: translateY(-2px);
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.link-action {
+  padding: 0 6px;
+  min-width: 30px;
+}
+
+.link-action :deep(.el-icon) {
+  margin-right: 0;
+}
+
+.link-row:hover .link-actions,
+.link-row:focus-within .link-actions {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+@media (max-width: 768px) {
+  .link-actions {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
 }
 
 .expiry-actions {
@@ -299,6 +409,8 @@ export default {
   word-break: break-all;
   display: flex;
   justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .qrcode-dialog :deep(.el-dialog__header) {
@@ -307,5 +419,7 @@ export default {
 
 .qrcode-dialog :deep(.el-dialog__body) {
   padding: 8px;
+  display: flex;
+  justify-content: center;
 }
 </style>
