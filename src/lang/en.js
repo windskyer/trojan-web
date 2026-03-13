@@ -87,9 +87,9 @@ export default {
         switchSuccess: 'switch VPN type success!'
     },
     user: {
-        tg_username: "TG username",
+        tg_username: "Telegram Username",
         email: "Email",
-        uuid: "uuid",
+        uuid: "UUID",
         upload: 'upload',
         download: 'download',
         total: 'total',

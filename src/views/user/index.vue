@@ -32,11 +32,7 @@
                     <el-link type="primary" @click="goUserInfo(scope.row)">{{ scope.row.Username }}</el-link>
                 </template>
             </el-table-column>
-            <el-table-column :label="$t('user.tg_username')" prop="TG_Username">
-            </el-table-column>
             <el-table-column :label="$t('user.email')" prop="Email">
-            </el-table-column>
-            <el-table-column :label="$t('user.uuid')" prop="UUID">
             </el-table-column>
             <el-table-column :label="$t('password')" :formatter="passwordFormatter">
             </el-table-column>
@@ -127,13 +123,32 @@
             @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 50, 100]"
             :page-size="pageSize" :layout="paginationLayout" :small="isMobile" :total="totalUsers" background>
         </el-pagination>
-        <el-dialog :title="commonTitle" v-model="userVisible" :width="dialogWidth">
-            <el-input type="text" v-model="userInfo.username" :placeholder="$root.$t('user.inputUsername')"
-                @keyup.enter="commonType === 2 ? handleAddUser() : handleUpdateUser()" />
-            <el-input type="email" v-model="userInfo.email" :placeholder="$root.$t('user.inputEmail')"
-                @keyup.enter="commonType === 2 ? handleAddUser() : handleUpdateUser()" />
-            <el-input type="text" v-model="userInfo.password" :placeholder="$root.$t('user.inputPassword')"
-                @keyup.enter="commonType === 2 ? handleAddUser() : handleUpdateUser()" />
+        <el-dialog class="user-info-dialog" :title="commonTitle" v-model="userVisible" :width="dialogWidth">
+            <el-form class="user-info-form" label-position="top">
+                <el-row :gutter="12">
+                    <el-col :xs="24" :sm="24" :md="12" :lg="8">
+                        <el-form-item :label="$t('username')">
+                            <el-input type="text" v-model="userInfo.username" :placeholder="$root.$t('user.inputUsername')"
+                                clearable
+                                @keyup.enter="commonType === 2 ? handleAddUser() : handleUpdateUser()" />
+                        </el-form-item>
+                    </el-col>
+                    <el-col :xs="24" :sm="24" :md="12" :lg="8">
+                        <el-form-item :label="$t('user.email')">
+                            <el-input type="email" v-model="userInfo.email" :placeholder="$root.$t('user.inputEmail')"
+                                clearable
+                                @keyup.enter="commonType === 2 ? handleAddUser() : handleUpdateUser()" />
+                        </el-form-item>
+                    </el-col>
+                    <el-col :xs="24" :sm="24" :md="12" :lg="8">
+                        <el-form-item :label="$t('user.password')">
+                            <el-input type="password" v-model="userInfo.password" :placeholder="$root.$t('user.inputPassword')"
+                                show-password clearable
+                                @keyup.enter="commonType === 2 ? handleAddUser() : handleUpdateUser()" />
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+            </el-form>
             <template #footer>
                 <span class="dialog-footer">
 
@@ -174,9 +189,17 @@
                 </span>
             </template>
         </el-dialog>
-        <el-dialog :title="$t('user.shareLink')" v-model="qrcodeVisible" :width="dialogWidth" @close="closeQRCode">
+        <el-dialog
+            class="qrcode-dialog"
+            title=""
+            v-model="qrcodeVisible"
+            width="280px"
+            :show-close="false"
+            :close-on-click-modal="true"
+            @opened="renderQRCode"
+            @close="closeQRCode"
+        >
             <div id="qrcode" ref="qrcode" class="qrcodeCenter"></div>
-            <p class="qrcodeCenter"> {{ shareLink }} </p>
         </el-dialog>
         <el-dialog :title="expiryShow" v-model="expiryVisible" :width="dialogWidth">
             <el-form>
@@ -403,15 +426,21 @@ export default {
         handleShare() {
             let remark = encodeURIComponent(`${this.domain}:${this.port}`)
             this.shareLink = `trojan://${atob(this.userItem.Password)}@${this.domain}:${this.port}#${remark}`
+            this.qrcodeVisible = true
+        },
+        renderQRCode() {
             this.$nextTick(() => {
+                if (!this.$refs.qrcode || !this.shareLink) {
+                    return
+                }
+                this.$refs.qrcode.innerHTML = ''
                 // eslint-disable-next-line
                 new QRCode(this.$refs.qrcode, {
-                    width: 200,
-                    height: 200,
+                    width: 220,
+                    height: 220,
                     text: this.shareLink
                 })
             })
-            this.qrcodeVisible = true
         },
         handleClash() {
             let userInfo = btoa(`{"user": "${this.userItem.Username}", "pass": "${atob(this.userItem.Password)}"}`)
@@ -433,7 +462,10 @@ export default {
             }
         },
         closeQRCode() {
-            this.$refs.qrcode.innerHTML = ''
+            if (this.$refs.qrcode) {
+                this.$refs.qrcode.innerHTML = ''
+            }
+            this.shareLink = ''
         },
         calculateDay(day) {
             return dayjs(day).diff(dayjs(dayjs().format('YYYY-MM-DD')), 'day')
@@ -701,8 +733,42 @@ export default {
 
 <style lang="scss">
 .qrcodeCenter {
-    margin: 0 auto;
-    width: 200px;
+    text-align: center;
+    word-break: break-all;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.qrcode-dialog :deep(.el-dialog__header) {
+    padding: 8px 8px 0;
+}
+
+.qrcode-dialog :deep(.el-dialog__body) {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.user-info-dialog :deep(.el-dialog__body) {
+    padding: 16px 16px 8px;
+}
+
+.user-info-form :deep(.el-form-item) {
+    margin-bottom: 12px;
+}
+
+.user-info-form :deep(.el-form-item__label) {
+    padding-bottom: 6px;
+    font-weight: 600;
+}
+
+.user-info-dialog :deep(.el-dialog__footer) {
+    text-align: right;
 }
 
 .tableShow {

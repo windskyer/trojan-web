@@ -306,25 +306,27 @@ export default {
   max-width: 980px;
   margin: 20px auto;
   padding: 0 16px 24px;
+  font-size: 14px;
 }
 
 .card {
   margin-bottom: 16px;
   padding: 16px;
   border-radius: 10px;
-  background: #fff;
-  border: 1px solid #e8e8e8;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
 }
 
 .card h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .divider {
   height: 1px;
   margin: 10px 0 12px;
-  background: #ededed;
+  background: var(--el-border-color-lighter);
 }
 
 .card p {

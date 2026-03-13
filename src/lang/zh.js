@@ -108,9 +108,9 @@ export default {
         switchSuccess: '切换VPN类型成功!'
     },
     user: {
-        tg_username: "TG用户名",
+        tg_username: "Telegram 用户名",
         email: "邮箱",
-        uuid: "uuid",
+        uuid: "UUID",
         upload: '上传流量',
         download: '下载流量',
         total: '总流量',
