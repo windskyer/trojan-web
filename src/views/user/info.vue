@@ -53,7 +53,7 @@
       </div>
 
       <p class="node-title">{{ $t('user.info.nodeLinks') }}</p>
-      <div class="link-block" v-for="(item, index) in normalizedLinks" :key="`${item.url}-${index}`">
+      <div class="link-block node-block" v-for="(item, index) in normalizedLinks" :key="`${item.url}-${index}`">
         <p>{{ item.name }}</p>
         <div class="link-row">
           <p class="link-text" @click="copyText(item.url)">{{ item.url }}</p>
@@ -336,40 +336,44 @@ export default {
 }
 
 .link-block+.link-block {
-  margin-top: 14px;
+  margin-top: 8px;
 }
 
 .subscribe-block {
-  margin-bottom: 12px;
-  padding-bottom: 10px;
-  border-bottom: 1px dashed #e8e8e8;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed var(--el-border-color-lighter);
 }
 
 .node-title {
-  margin-top: 6px;
+  margin-top: 4px;
   font-weight: 600;
 }
 
 .link-text {
-  margin: 6px 0 0;
+  margin: 0;
   color: #0d6efd;
   cursor: pointer;
   text-decoration: underline;
-  flex: 1 1 100%;
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .link-row {
   display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
 }
 
 .link-actions {
   display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-  margin-top: 4px;
+  gap: 2px;
+  flex-wrap: nowrap;
+  margin-top: 2px;
   margin-left: auto;
   opacity: 0;
   transform: translateY(-2px);
@@ -394,6 +398,17 @@ export default {
 }
 
 @media (max-width: 768px) {
+  .link-row {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .link-text {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
   .link-actions {
     opacity: 1;
     transform: none;
@@ -425,3 +440,8 @@ export default {
   justify-content: center;
 }
 </style>
+.node-block {
+  padding: 4px 0;
+  border-top: 1px dashed rgba(0, 0, 0, 0.2);
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
+}
