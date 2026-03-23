@@ -1,7 +1,9 @@
 <template>
     <div class="free-page">
         <div class="card">
-            <p class="top-notice">{{ $t('user.free.notice', { time: noticeTime }) }}</p>
+            <p class="top-notice">
+                {{ $t('user.free.notice', { time: noticeTime }) }}
+            </p>
             <h2>{{ $t('user.free.title') }}</h2>
 
             <p>{{ $t('user.free.tip1') }}</p>
@@ -14,48 +16,103 @@
 
             <div v-if="subscribeUrl" class="link-item">
                 <div class="link-row">
-                    <span class="subscribe-url is-copy" @click="copyText(subscribeUrl)">
+                    <span
+                        class="subscribe-url is-copy"
+                        @click="copyText(subscribeUrl)"
+                    >
                         {{ subscribeUrl }}
                     </span>
-                        <div class="link-actions">
-                            <el-button class="link-action" type="primary" plain size="small" @click="showQRCode(subscribeUrl)">
-                                <el-tooltip :content="$t('user.info.qrcode')" placement="top">
-                                    <el-icon><Grid /></el-icon>
-                                </el-tooltip>
-                            </el-button>
-                            <el-button class="link-action" type="info" plain size="small" @click="openLink(subscribeUrl)">
-                                <el-tooltip :content="$t('user.info.openLink')" placement="top">
-                                    <el-icon><LinkIcon /></el-icon>
-                                </el-tooltip>
-                            </el-button>
-                        </div>
+                    <div class="link-actions">
+                        <el-button
+                            class="link-action"
+                            type="primary"
+                            plain
+                            size="small"
+                            @click="showQRCode(subscribeUrl)"
+                        >
+                            <el-tooltip
+                                :content="$t('user.info.qrcode')"
+                                placement="top"
+                            >
+                                <el-icon><Grid /></el-icon>
+                            </el-tooltip>
+                        </el-button>
+                        <el-button
+                            class="link-action"
+                            type="info"
+                            plain
+                            size="small"
+                            @click="openLink(subscribeUrl)"
+                        >
+                            <el-tooltip
+                                :content="$t('user.info.openLink')"
+                                placement="top"
+                            >
+                                <el-icon><LinkIcon /></el-icon>
+                            </el-tooltip>
+                        </el-button>
                     </div>
                 </div>
-            <p v-else class="empty-text">{{ $t('user.free.emptySubscription') }}</p>
+            </div>
+            <p v-else class="empty-text">
+                {{ $t('user.free.emptySubscription') }}
+            </p>
 
             <div class="divider"></div>
             <p class="subtitle">{{ $t('user.free.accountInfo') }}</p>
             <p>{{ $t('user.free.username') }}：{{ account.username || '-' }}</p>
             <p>{{ $t('user.free.password') }}：{{ account.password || '-' }}</p>
-            <p>{{ $t('user.free.traffic') }}：{{ account.used }} / {{ account.quota }}</p>
-            <p>{{ $t('user.free.expiryDate') }}：{{ account.expiryDate || '-' }}</p>
+            <p>
+                {{ $t('user.free.traffic') }}：{{ account.used }} /
+                {{ account.quota }}
+            </p>
+            <p>
+                {{ $t('user.free.expiryDate') }}：{{
+                    account.expiryDate || '-'
+                }}
+            </p>
 
             <div class="divider"></div>
             <p class="subtitle">{{ $t('user.free.nodeLinks') }}</p>
             <div v-if="links.length > 0" class="links">
-                <div v-for="(link, index) in links" :key="`${link}-${index}`" class="link-item">
+                <div
+                    v-for="(link, index) in links"
+                    :key="`${link}-${index}`"
+                    class="link-item"
+                >
                     <div class="link-row">
-                        <span class="subscribe-url is-copy" @click="copyText(link)">
+                        <span
+                            class="subscribe-url is-copy"
+                            @click="copyText(link)"
+                        >
                             {{ index + 1 }}. {{ link }}
                         </span>
                         <div class="link-actions">
-                            <el-button class="link-action" type="primary" plain size="small" @click="showQRCode(link)">
-                                <el-tooltip :content="$t('user.info.qrcode')" placement="top">
+                            <el-button
+                                class="link-action"
+                                type="primary"
+                                plain
+                                size="small"
+                                @click="showQRCode(link)"
+                            >
+                                <el-tooltip
+                                    :content="$t('user.info.qrcode')"
+                                    placement="top"
+                                >
                                     <el-icon><Grid /></el-icon>
                                 </el-tooltip>
                             </el-button>
-                            <el-button class="link-action" type="info" plain size="small" @click="openLink(link)">
-                                <el-tooltip :content="$t('user.info.openLink')" placement="top">
+                            <el-button
+                                class="link-action"
+                                type="info"
+                                plain
+                                size="small"
+                                @click="openLink(link)"
+                            >
+                                <el-tooltip
+                                    :content="$t('user.info.openLink')"
+                                    placement="top"
+                                >
                                     <el-icon><LinkIcon /></el-icon>
                                 </el-tooltip>
                             </el-button>
@@ -69,9 +126,18 @@
             <p class="subtitle">{{ $t('user.free.cta') }}</p>
 
             <div class="action-buttons">
-                <el-button type="primary" @click="goRegister">{{ $t('user.free.register') }}</el-button>
-                <el-button type="primary" @click="goUpgrade">{{ $t('user.free.upgradeButton') }}</el-button>
-                <el-button class="join-group-btn" type="success" @click="openTelegramChannel">{{ $t('user.free.telegramChannel') }}</el-button>
+                <el-button type="primary" @click="goLogin">{{
+                    $t('user.free.login')
+                }}</el-button>
+                <el-button type="primary" @click="goUpgrade">{{
+                    $t('user.free.upgradeButton')
+                }}</el-button>
+                <el-button
+                    class="join-group-btn"
+                    type="success"
+                    @click="openTelegramChannel"
+                    >{{ $t('user.free.telegramChannel') }}</el-button
+                >
             </div>
         </div>
 
@@ -91,15 +157,31 @@
         <div class="ad-float" :class="{ 'is-collapsed': adCollapsed }">
             <div class="ad-float-head">
                 <p class="ad-float-title">{{ $t('user.free.noticeTitle') }}</p>
-                <el-button class="ad-toggle-btn" type="primary" link @click="adCollapsed = !adCollapsed">
+                <el-button
+                    class="ad-toggle-btn"
+                    type="primary"
+                    link
+                    @click="adCollapsed = !adCollapsed"
+                >
                     {{ adCollapsed ? '+' : '-' }}
                 </el-button>
             </div>
             <div v-show="!adCollapsed">
-                <div v-if="adNoticeHtml" class="ad-content" v-html="adNoticeHtml"></div>
+                <div
+                    v-if="adNoticeHtml"
+                    class="ad-content"
+                    v-html="adNoticeHtml"
+                ></div>
                 <div v-else>
-                    <p class="empty-text">{{ $t('user.free.noticeLoadFail') }}</p>
-                    <a class="subscribe-url" :href="adNoticeApi" target="_blank" rel="noopener noreferrer">
+                    <p class="empty-text">
+                        {{ $t('user.free.noticeLoadFail') }}
+                    </p>
+                    <a
+                        class="subscribe-url"
+                        :href="adNoticeApi"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
                         {{ adNoticeApi }}
                     </a>
                 </div>
@@ -109,17 +191,17 @@
 </template>
 
 <script>
-import { ElMessage } from 'element-plus'
 import { freeUserInfo } from '@/api/user'
 import { readableBytes } from '@/utils/common'
-import QRCode from 'easyqrcodejs'
 import { Grid, Link as LinkIcon } from '@element-plus/icons-vue'
+import QRCode from 'easyqrcodejs'
+import { ElMessage } from 'element-plus'
 
 export default {
     name: 'FreePage',
     components: {
         Grid,
-        LinkIcon
+        LinkIcon,
     },
     data() {
         return {
@@ -137,8 +219,8 @@ export default {
                 password: '',
                 used: '0 Bytes',
                 quota: '0 Bytes',
-                expiryDate: ''
-            }
+                expiryDate: '',
+            },
         }
     },
     created() {
@@ -180,7 +262,9 @@ export default {
                 return ''
             }
             const decodedPassword = this.decodeBase64(encodedPassword)
-            const userInfo = btoa(`{"user": "${username}", "pass": "${decodedPassword}"}`)
+            const userInfo = btoa(
+                `{"user": "${username}", "pass": "${decodedPassword}"}`,
+            )
             return `${window.location.origin}/trojan/user/subscribe?token=${userInfo}`
         },
         normalizeAdNotice(raw) {
@@ -197,7 +281,9 @@ export default {
         },
         async getAdNotice() {
             try {
-                const response = await fetch(this.adNoticeApi, { method: 'GET' })
+                const response = await fetch(this.adNoticeApi, {
+                    method: 'GET',
+                })
                 if (!response.ok) {
                     return
                 }
@@ -211,7 +297,9 @@ export default {
             try {
                 const result = await freeUserInfo()
                 if (result.code !== 200 || result.message !== 'success') {
-                    ElMessage.error(result.message || this.$t('user.free.fetchFail'))
+                    ElMessage.error(
+                        result.message || this.$t('user.free.fetchFail'),
+                    )
                     return
                 }
                 const data = result.data || {}
@@ -222,14 +310,23 @@ export default {
                 const used = upload + download
                 const quota = Number(userinfo.Quota ?? 0)
                 this.links = links
-                this.subscribeUrl = this.buildSubscribeUrl(userinfo.Username || '', userinfo.Password || '') || links[0] || ''
+                this.subscribeUrl =
+                    this.buildSubscribeUrl(
+                        userinfo.Username || '',
+                        userinfo.Password || '',
+                    ) ||
+                    links[0] ||
+                    ''
                 this.account = {
                     username: userinfo.Username || '',
                     uuid: userinfo.UUID || '',
                     password: this.decodeBase64(userinfo.Password || ''),
                     used: readableBytes(used),
-                    quota: quota === -1 ? this.$t('user.unlimit') : readableBytes(quota),
-                    expiryDate: userinfo.ExpiryDate || ''
+                    quota:
+                        quota === -1
+                            ? this.$t('user.unlimit')
+                            : readableBytes(quota),
+                    expiryDate: userinfo.ExpiryDate || '',
                 }
             } catch (error) {
                 ElMessage.error(this.$t('user.free.fetchFail'))
@@ -252,7 +349,7 @@ export default {
                 new QRCode(this.$refs.qrcode, {
                     width: 220,
                     height: 220,
-                    text: this.shareLink
+                    text: this.shareLink,
                 })
             })
         },
@@ -266,15 +363,15 @@ export default {
             if (!url) return
             window.open(url, '_blank')
         },
-        goRegister() {
-            this.$router.push('/login').catch(() => { })
+        goLogin() {
+            this.$router.push('/login').catch(() => {})
         },
         goUpgrade() {
             const start = encodeURIComponent(btoa('buy'))
             const url = `https://t.me/TrojanAccess_bot?start=${start}`
             window.open(url, '_blank')
-        }
-    }
+        },
+    },
 }
 </script>
 
@@ -353,7 +450,9 @@ p {
     opacity: 0;
     transform: translateY(-2px);
     pointer-events: none;
-    transition: opacity 0.15s ease, transform 0.15s ease;
+    transition:
+        opacity 0.15s ease,
+        transform 0.15s ease;
 }
 
 .link-action {

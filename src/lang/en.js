@@ -157,7 +157,7 @@ export default {
             nodeLinks: 'Node links:',
             emptyLinks: 'No node links',
             cta: '👇 Click the button below to upgrade!',
-            register: 'register',
+            login: 'login',
             upgradeButton: 'Upgrade',
             telegramChannel: 'Join for perks',
             fetchFail: 'Failed to fetch free account info',

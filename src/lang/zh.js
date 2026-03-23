@@ -177,7 +177,7 @@ export default {
             nodeLinks: '节点链接:',
             emptyLinks: '暂无节点链接',
             cta: '👇 点击下方按钮，升级套餐！',
-            register: '注册账号',
+            login: '登入账号',
             upgradeButton: '升级套餐',
             telegramChannel: '进群领礼',
             fetchFail: '获取免费账号信息失败',
