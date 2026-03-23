@@ -1,5 +1,5 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
 import Layout from '@/views/layout'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 export const constantRoutes = [
     {

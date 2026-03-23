@@ -1,6 +1,6 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import { loginUser as apiLoginUser } from '@/api/permission' // 引入 API
+import { loginUser as apiLoginUser } from '@/api/permission'; // 引入 API
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
 
 // 辅助函数：将数据持久化到 localStorage
 const persistToLocalStorage = (key, value) => {

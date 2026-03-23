@@ -12,7 +12,11 @@
             </p>
 
             <div class="action-buttons">
-                <el-button type="primary" style="width:100%;" @click="goRegister">
+                <el-button
+                    type="primary"
+                    style="width: 100%"
+                    @click="goRegister"
+                >
                     {{ $t('verify.goRegister') }}
                 </el-button>
                 <p class="redirect-text">
@@ -24,8 +28,10 @@
         <!-- 右下角浮动按钮 -->
         <div class="telegram-float" @click="handleTelegramClick('verify_fail')">
             <svg viewBox="0 0 24 24" class="icon">
-                <path fill="#ffffff"
-                    d="M9.993 15.674l-.396 5.578c.567 0 .813-.243 1.108-.534l2.662-2.547 5.517 4.03c1.012.556 1.733.264 1.999-.935l3.63-17.01.001-.001c.312-1.455-.526-2.024-1.514-1.656L1.064 9.435c-1.408.55-1.386 1.338-.241 1.69l5.623 1.756L19.51 4.72c.617-.37 1.179-.165.717.205" />
+                <path
+                    fill="#ffffff"
+                    d="M9.993 15.674l-.396 5.578c.567 0 .813-.243 1.108-.534l2.662-2.547 5.517 4.03c1.012.556 1.733.264 1.999-.935l3.63-17.01.001-.001c.312-1.455-.526-2.024-1.514-1.656L1.064 9.435c-1.408.55-1.386 1.338-.241 1.69l5.623 1.756L19.51 4.72c.617-.37 1.179-.165.717.205"
+                />
             </svg>
         </div>
     </div>
@@ -33,17 +39,17 @@
 
 <script>
 // 如果你使用的是 Element Plus，需要引入图标
-import { CircleCloseFilled } from '@element-plus/icons-vue'
 import { trackTelegramClick } from '@/api/track'
+import { CircleCloseFilled } from '@element-plus/icons-vue'
 
 export default {
     name: 'VerifyFail',
     components: {
-        CircleCloseFilled
+        CircleCloseFilled,
     },
     data() {
         return {
-            countdown: 5 // 新增：倒计时秒数
+            countdown: 5, // 新增：倒计时秒数
         }
     },
 
@@ -59,7 +65,7 @@ export default {
     },
     methods: {
         goRegister() {
-            this.$router.replace('/register').catch(() => { })
+            this.$router.replace('/register').catch(() => {})
         },
 
         async handleTelegramClick(source) {
@@ -70,12 +76,9 @@ export default {
             formData.set('user_agent', navigator.userAgent)
             trackTelegramClick(formData)
             // 🔹 立即跳转
-            window.open(
-                'https://t.me/trojan100',
-                '_blank'
-            )
-        }
-    }
+            window.open('https://t.me/trojan100', '_blank')
+        },
+    },
 }
 </script>
 
@@ -133,7 +136,7 @@ $light_gray: #eee;
     width: 58px;
     height: 58px;
     border-radius: 50%;
-    background: #229ED9; // 官方 TG 蓝
+    background: #229ed9; // 官方 TG 蓝
     display: flex;
     justify-content: center;
     align-items: center;

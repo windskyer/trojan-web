@@ -1,10 +1,10 @@
+import i18n from '@/lang'
+import pinia from '@/store'
+import { useSettingsStore } from '@/store/settings'
+import { useUserStore } from '@/store/user'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import NProgress from 'nprogress'
-import i18n from '@/lang'
-import pinia from '@/store'
-import { useUserStore } from '@/store/user'
-import { useSettingsStore } from '@/store/settings'
 
 NProgress.configure({ showSpinner: false })
 

@@ -1,7 +1,12 @@
 <template>
     <div class="register-container">
-
-        <el-form class="register-form" :model="form" :rules="registerRules" ref="form" label-position="left">
+        <el-form
+            class="register-form"
+            :model="form"
+            :rules="registerRules"
+            ref="form"
+            label-position="left"
+        >
             <div class="title-container">
                 <h3 class="title">{{ $t('register') }}</h3>
             </div>
@@ -11,7 +16,10 @@
                 <span class="svg-container">
                     <svg-icon icon-class="user" />
                 </span>
-                <el-input v-model="form.username" :placeholder="$t('inputName')" />
+                <el-input
+                    v-model="form.username"
+                    :placeholder="$t('inputName')"
+                />
             </el-form-item>
 
             <!-- 密码 -->
@@ -19,13 +27,20 @@
                 <span class="svg-container">
                     <svg-icon icon-class="password" />
                 </span>
-                <el-input ref="password1" v-model="form.password1" :type="passwordType1"
-                    :placeholder="$t('inputPass')" />
+                <el-input
+                    ref="password1"
+                    v-model="form.password1"
+                    :type="passwordType1"
+                    :placeholder="$t('inputPass')"
+                />
 
                 <span class="show-pwd" @click="togglePwd(1)">
-                    <svg-icon :icon-class="passwordType1 === 'password' ? 'eye' : 'eye-open'" />
+                    <svg-icon
+                        :icon-class="
+                            passwordType1 === 'password' ? 'eye' : 'eye-open'
+                        "
+                    />
                 </span>
-
             </el-form-item>
 
             <!-- 再次密码 -->
@@ -33,11 +48,19 @@
                 <span class="svg-container">
                     <svg-icon icon-class="password" />
                 </span>
-                <el-input ref="password2" v-model="form.password2" :type="passwordType2"
-                    :placeholder="$t('inputPassAgain')" />
+                <el-input
+                    ref="password2"
+                    v-model="form.password2"
+                    :type="passwordType2"
+                    :placeholder="$t('inputPassAgain')"
+                />
 
                 <span class="show-pwd" @click="togglePwd(2)">
-                    <svg-icon :icon-class="passwordType2 === 'password' ? 'eye' : 'eye-open'" />
+                    <svg-icon
+                        :icon-class="
+                            passwordType2 === 'password' ? 'eye' : 'eye-open'
+                        "
+                    />
                 </span>
             </el-form-item>
 
@@ -46,26 +69,35 @@
                 <span class="svg-container">
                     <svg-icon icon-class="email" />
                 </span>
-                <el-input v-model="form.useremail" :placeholder="$t('inputEmail')" />
+                <el-input
+                    v-model="form.useremail"
+                    :placeholder="$t('inputEmail')"
+                />
             </el-form-item>
 
             <!-- 注册按钮 -->
             <el-form-item>
-                <el-button type="primary" style="width:100%;" :loading="loading" @click.prevent="register">
+                <el-button
+                    type="primary"
+                    style="width: 100%"
+                    :loading="loading"
+                    @click.prevent="register"
+                >
                     {{ $t('register') }}
                 </el-button>
             </el-form-item>
-
         </el-form>
 
         <!-- 注册成功弹窗 -->
-        <el-dialog v-model="showTelegramDialog" center class="tg-dialog" :show-close="false">
+        <el-dialog
+            v-model="showTelegramDialog"
+            center
+            class="tg-dialog"
+            :show-close="false"
+        >
             <div class="tg-popup">
-
                 <!-- 成功图标 -->
-                <div class="success-icon">
-                    ✓
-                </div>
+                <div class="success-icon">✓</div>
 
                 <h3 class="tg-title">
                     {{ $t('tgPopupTitle') }}
@@ -78,14 +110,21 @@
                 </p>
                 <!-- Telegram 按钮行 -->
                 <div class="tg-button-row">
-
                     <!-- Telegram 主按钮 -->
-                    <el-button type="primary" class="tg-common-btn" @click="handleTelegramClick('popup')">
+                    <el-button
+                        type="primary"
+                        class="tg-common-btn"
+                        @click="handleTelegramClick('popup')"
+                    >
                         {{ $t('tgJoin') }}
                     </el-button>
 
                     <!-- 次按钮 -->
-                    <el-button type="primary" class="tg-common-btn" @click="handleLoginClick()">
+                    <el-button
+                        type="primary"
+                        class="tg-common-btn"
+                        @click="handleLoginClick()"
+                    >
                         {{ $t('tgSkip') }}
                     </el-button>
                     <p class="redirect-text">
@@ -95,14 +134,15 @@
             </div>
         </el-dialog>
 
-
         <!-- 右下角浮动按钮 -->
-        <div class="telegram-float" @click="handleTelegramClick('register')"> <svg viewBox="0 0 24 24" class="icon">
-                <path fill="#ffffff"
-                    d="M9.993 15.674l-.396 5.578c.567 0 .813-.243 1.108-.534l2.662-2.547 5.517 4.03c1.012.556 1.733.264 1.999-.935l3.63-17.01.001-.001c.312-1.455-.526-2.024-1.514-1.656L1.064 9.435c-1.408.55-1.386 1.338-.241 1.69l5.623 1.756L19.51 4.72c.617-.37 1.179-.165.717.205" />
+        <div class="telegram-float" @click="handleTelegramClick('register')">
+            <svg viewBox="0 0 24 24" class="icon">
+                <path
+                    fill="#ffffff"
+                    d="M9.993 15.674l-.396 5.578c.567 0 .813-.243 1.108-.534l2.662-2.547 5.517 4.03c1.012.556 1.733.264 1.999-.935l3.63-17.01.001-.001c.312-1.455-.526-2.024-1.514-1.656L1.064 9.435c-1.408.55-1.386 1.338-.241 1.69l5.623 1.756L19.51 4.72c.617-.37 1.179-.165.717.205"
+                />
             </svg>
         </div>
-
     </div>
 </template>
 
@@ -132,36 +172,52 @@ export default {
                 username: '',
                 password1: '',
                 password2: '',
-                useremail: ''
+                useremail: '',
             },
 
             registerRules: {
                 username: [
-                    { required: true, validator: this.validateUser, trigger: 'blur' }
+                    {
+                        required: true,
+                        validator: this.validateUser,
+                        trigger: 'blur',
+                    },
                 ],
                 password1: [
-                    { required: true, validator: this.validatePass, trigger: 'blur' }
+                    {
+                        required: true,
+                        validator: this.validatePass,
+                        trigger: 'blur',
+                    },
                 ],
                 password2: [
-                    { required: true, validator: this.validatePassAgain, trigger: 'blur' }
+                    {
+                        required: true,
+                        validator: this.validatePassAgain,
+                        trigger: 'blur',
+                    },
                 ],
                 useremail: [
-                    { required: true, validator: this.validateMail, trigger: 'blur' }
-                ]
+                    {
+                        required: true,
+                        validator: this.validateMail,
+                        trigger: 'blur',
+                    },
+                ],
             },
 
             loading: false,
             passwordType1: 'password',
             passwordType2: 'password',
             showTelegramDialog: false,
-            countdown: 10
+            countdown: 10,
         }
     },
 
     computed: {
         docTitle() {
             return this.settingsStore.docTitle
-        }
+        },
     },
 
     created() {
@@ -256,9 +312,10 @@ export default {
                         }
                     }, 1000)
                 } else {
-                    this.$message.error(result.message || this.$t('registerFailed'))
+                    this.$message.error(
+                        result.message || this.$t('registerFailed'),
+                    )
                 }
-
             } catch (err) {
                 console.error(err)
                 this.$message.error(this.$t('registerFailed'))
@@ -272,23 +329,22 @@ export default {
         =========================== */
 
         async handleTelegramClick(source) {
-            trackTelegramClick({
-                channel: 'trojan100',
-                source,
-                user_agent: navigator.userAgent
-            }).catch(() => { })
-
+            const formData = new FormData()
+            formData.set('channel', 'trojan100')
+            formData.set('source', source)
+            formData.set('lang', this.$i18n.locale)
+            formData.set('user_agent', navigator.userAgent)
+            trackTelegramClick(formData)
             // 注意不要带 @
             window.open('https://t.me/trojan100', '_blank')
         },
 
         handleLoginClick() {
-            this.$router.push('/login').catch(() => { })
-        }
-    }
+            this.$router.push('/login').catch(() => {})
+        },
+    },
 }
 </script>
-
 
 <style lang="scss">
 $bg: #283443;
@@ -361,7 +417,6 @@ $cursor: #fff;
 }
 </style>
 
-
 <style lang="scss" scoped>
 $bg: #2d3a4b;
 $dark_gray: #889aa4;
@@ -426,7 +481,7 @@ $light_gray: #eee;
     width: 58px;
     height: 58px;
     border-radius: 50%;
-    background: #229ED9; // 官方 TG 蓝 
+    background: #229ed9; // 官方 TG 蓝
     display: flex;
     justify-content: center;
     align-items: center;

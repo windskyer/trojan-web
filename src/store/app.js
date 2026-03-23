@@ -1,6 +1,6 @@
-import { defineStore } from 'pinia'
-import { reactive, ref } from 'vue'
-import { getLanguage } from '@/lang/index' // 假设此路径正确
+import { getLanguage } from '@/lang/index'; // 假设此路径正确
+import { defineStore } from 'pinia';
+import { reactive, ref } from 'vue';
 
 export const useAppStore = defineStore('app', () => {
     // 侧边栏状态逻辑，确保正确处理 localStorage 中的字符串 '0'
