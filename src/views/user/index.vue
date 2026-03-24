@@ -10,11 +10,11 @@
                         type="primary"
                         :icon="Plus"
                         @click="
-                            commonType = 2
-                            userInfo.username = ''
-                            userInfo.password = ''
-                            userInfo.email = ''
-                            userVisible = true
+                            commonType = 2;
+                            userInfo.username = '';
+                            userInfo.password = '';
+                            userInfo.email = '';
+                            userVisible = true;
                         "
                         v-if="isAdmin"
                     >
@@ -24,10 +24,10 @@
                         type="primary"
                         :icon="RefreshLeft"
                         @click="
-                            copySelection = multipleSelection
-                            patchButton = true
-                            commonType = 1
-                            confirmVisible = true
+                            copySelection = multipleSelection;
+                            patchButton = true;
+                            commonType = 1;
+                            confirmVisible = true;
                         "
                         v-if="isAdmin"
                         >{{ textShow($t('user.reset')) }}</el-button
@@ -36,9 +36,9 @@
                         type="primary"
                         :icon="Scissor"
                         @click="
-                            copySelection = multipleSelection
-                            patchButton = true
-                            quotaVisible = true
+                            copySelection = multipleSelection;
+                            patchButton = true;
+                            quotaVisible = true;
                         "
                         v-if="isAdmin"
                         >{{ textShow($t('user.limitData')) }}</el-button
@@ -47,10 +47,10 @@
                         type="danger"
                         :icon="Delete"
                         @click="
-                            copySelection = multipleSelection
-                            patchButton = true
-                            commonType = 0
-                            confirmVisible = true
+                            copySelection = multipleSelection;
+                            patchButton = true;
+                            commonType = 0;
+                            confirmVisible = true;
                         "
                         v-if="isAdmin"
                         >{{ textShow($t('delete')) }}</el-button
@@ -160,9 +160,9 @@
                             <el-dropdown-menu>
                                 <el-dropdown-item
                                     @click="
-                                        userItem = scope.row
-                                        patchButton = false
-                                        quotaVisible = true
+                                        userItem = scope.row;
+                                        patchButton = false;
+                                        quotaVisible = true;
                                     "
                                     >{{
                                         $t('user.limitData')
@@ -170,17 +170,17 @@
                                 >
                                 <el-dropdown-item
                                     @click="
-                                        userItem = scope.row
-                                        commonType = 1
-                                        patchButton = false
-                                        confirmVisible = true
+                                        userItem = scope.row;
+                                        commonType = 1;
+                                        patchButton = false;
+                                        confirmVisible = true;
                                     "
                                     >{{ $t('user.reset') }}</el-dropdown-item
                                 >
                                 <el-dropdown-item
                                     @click="
-                                        userItem = scope.row
-                                        handelEditUser()
+                                        userItem = scope.row;
+                                        handelEditUser();
                                     "
                                     >{{
                                         $t('user.modifyUser')
@@ -188,9 +188,9 @@
                                 >
                                 <el-dropdown-item
                                     @click="
-                                        userItem = scope.row
-                                        expiryShow = $t('user.setExpire')
-                                        expiryVisible = true
+                                        userItem = scope.row;
+                                        expiryShow = $t('user.setExpire');
+                                        expiryVisible = true;
                                     "
                                     v-if="scope.row.ExpiryDate === ''"
                                     >{{
@@ -200,9 +200,9 @@
                                 <div v-else>
                                     <el-dropdown-item
                                         @click="
-                                            userItem = scope.row
-                                            expiryShow = $t('user.editExpire')
-                                            expiryVisible = true
+                                            userItem = scope.row;
+                                            expiryShow = $t('user.editExpire');
+                                            expiryVisible = true;
                                         "
                                     >
                                         {{
@@ -211,8 +211,8 @@
                                     >
                                     <el-dropdown-item
                                         @click="
-                                            userItem = scope.row
-                                            cancelUserExpire()
+                                            userItem = scope.row;
+                                            cancelUserExpire();
                                         "
                                         >{{
                                             $t('user.cancelExpire')
@@ -234,15 +234,15 @@
                             <el-dropdown-menu>
                                 <el-dropdown-item
                                     @click="
-                                        userItem = scope.row
-                                        handleShare()
+                                        userItem = scope.row;
+                                        handleShare();
                                     "
                                     >{{ $t('user.shareLink') }}
                                 </el-dropdown-item>
                                 <el-dropdown-item
                                     @click="
-                                        userItem = scope.row
-                                        handleClash()
+                                        userItem = scope.row;
+                                        handleClash();
                                     "
                                     >{{ $t('user.importClash') }}
                                 </el-dropdown-item>
@@ -255,10 +255,10 @@
                         type="primary"
                         link
                         @click="
-                            userItem = scope.row
-                            commonType = 0
-                            patchButton = false
-                            confirmVisible = true
+                            userItem = scope.row;
+                            commonType = 0;
+                            patchButton = false;
+                            confirmVisible = true;
                         "
                         >{{ $t('delete') }}</el-button
                     >
@@ -362,16 +362,16 @@
                 <span class="dialog-footer">
                     <el-button
                         @click="
-                            confirmVisible = false
-                            copySelection = []
+                            confirmVisible = false;
+                            copySelection = [];
                         "
                         >{{ $root.$t('cancel') }}</el-button
                     >
                     <el-button
                         type="primary"
                         @click="
-                            confirmVisible = false
-                            patchButton ? handlePatchOpera() : handleOpera()
+                            confirmVisible = false;
+                            patchButton ? handlePatchOpera() : handleOpera();
                         "
                         >{{ $root.$t('ok') }}</el-button
                     >
@@ -417,8 +417,8 @@
                     <el-button
                         type="primary"
                         @click="
-                            quotaVisible = false
-                            handleSetQuota()
+                            quotaVisible = false;
+                            handleSetQuota();
                         "
                         >{{ $root.$t('ok') }}
                     </el-button>
@@ -474,8 +474,8 @@
                     <el-button
                         type="primary"
                         @click="
-                            expiryVisible = false
-                            setUserExpire()
+                            expiryVisible = false;
+                            setUserExpire();
                         "
                         >{{ $root.$t('ok') }}
                     </el-button>
