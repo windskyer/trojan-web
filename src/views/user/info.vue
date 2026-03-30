@@ -5,6 +5,7 @@
             <div class="divider"></div>
             <p>{{ $t('user.info.username') }}: {{ user.username }}</p>
             <p>{{ $t('user.info.email') }}: {{ user.email }}</p>
+            <p>{{ $t('user.info.tgUsername') }}: {{ user.tgUsername }}</p>
             <p>{{ $t('user.info.linkPassword') }}: {{ user.password }}</p>
         </div>
 
@@ -166,6 +167,7 @@ export default {
             user: {
                 username: '',
                 email: '',
+                tgUsername: '',
                 password: '',
                 usedBytes: 0,
                 totalBytes: 0,
@@ -346,6 +348,11 @@ export default {
                 this.user = {
                     username: userinfo.username || userinfo.Username || '',
                     email: userinfo.email || userinfo.Email || '',
+                    tgUsername:
+                        userinfo.TG_Username ||
+                        userinfo.tg_username ||
+                        userinfo.tgUsername ||
+                        '',
                     password: this.decodePassword(
                         userinfo.password || userinfo.Password || '',
                     ),

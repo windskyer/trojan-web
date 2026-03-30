@@ -18,7 +18,7 @@
                 <el-input
                     ref="username"
                     v-model="loginForm.username"
-                    placeholder="Username"
+                    :placeholder="$t('loginAccountOrEmail')"
                     name="username"
                     type="text"
                     tabindex="1"
@@ -26,38 +26,43 @@
                 />
             </el-form-item>
 
-            <el-tooltip
-                v-model:visible="capsTooltip"
-                content="Caps lock is On"
-                placement="right"
-                manual
-            >
-                <el-form-item prop="password">
-                    <span class="svg-container">
-                        <svg-icon icon-class="password" />
-                    </span>
-                    <el-input
-                        :key="passwordType"
-                        ref="password"
-                        v-model="loginForm.password"
-                        :type="passwordType"
-                        placeholder="Password"
-                        name="password"
-                        tabindex="2"
-                        auto-complete="on"
-                        @keyup="checkCapslock"
-                        @blur="capsTooltip = false"
-                        @keyup.enter="handleLogin"
+            <el-form-item prop="password">
+                <span class="svg-container">
+                    <svg-icon icon-class="password" />
+                </span>
+                <el-input
+                    :key="passwordType"
+                    ref="password"
+                    v-model="loginForm.password"
+                    :type="passwordType"
+                    :placeholder="$t('inputPass')"
+                    name="password"
+                    tabindex="2"
+                    auto-complete="on"
+                    @keydown="checkCapslock"
+                    @keyup="checkCapslock"
+                    @blur="capsTooltip = false"
+                    @keyup.enter="handleLogin"
+                />
+                <span
+                    class="show-pwd"
+                    :title="
+                        passwordType === 'password'
+                            ? $t('showPassword')
+                            : $t('hidePassword')
+                    "
+                    @click="showPwd"
+                >
+                    <svg-icon
+                        :icon-class="
+                            passwordType === 'password' ? 'eye' : 'eye-open'
+                        "
                     />
-                    <span class="show-pwd" @click="showPwd">
-                        <svg-icon
-                            :icon-class="
-                                passwordType === 'password' ? 'eye' : 'eye-open'
-                            "
-                        />
-                    </span>
-                </el-form-item>
-            </el-tooltip>
+                </span>
+            </el-form-item>
+            <p v-if="capsTooltip" class="caps-lock-tip">
+                {{ $t('capsLockOn') }}
+            </p>
 
             <el-button
                 :loading="loading"
@@ -114,8 +119,8 @@ export default {
                 username: '',
                 password: '',
             },
-            loading: false,
             capsTooltip: false,
+            loading: false,
             passwordType: 'password',
             title: '',
         }
@@ -156,16 +161,29 @@ export default {
             })
         },
         checkCapslock(e) {
-            const { key } = e
-            this.capsTooltip =
-                key && key.length === 1 && key >= 'A' && key <= 'Z'
+            const { key, shiftKey } = e
+            const isCapsLockOn =
+                typeof e.getModifierState === 'function' &&
+                e.getModifierState('CapsLock')
+
+            if (!key || key.length !== 1) {
+                this.capsTooltip = isCapsLockOn
+                return
+            }
+
+            const isUppercaseLetter = key >= 'A' && key <= 'Z'
+            const isShiftUppercase =
+                shiftKey &&
+                ((key >= 'a' && key <= 'z') || isUppercaseLetter)
+
+            this.capsTooltip = isCapsLockOn || isUppercaseLetter || isShiftUppercase
         },
         async handleLogin() {
             if (
                 this.loginForm.username === '' ||
                 this.loginForm.password === ''
             ) {
-                this.$message.error(this.$t('inputNotNull'))
+                this.$message.error(this.$t('loginInputNotNull'))
                 return
             }
             const loginInfo = Object.assign({}, this.loginForm)
@@ -274,6 +292,13 @@ $light_gray: #eee;
         padding: 160px 35px 0;
         margin: 0 auto;
         overflow: hidden;
+    }
+
+    .caps-lock-tip {
+        margin: -18px 0 18px;
+        color: #f7c948;
+        font-size: 12px;
+        line-height: 1.4;
     }
 
     .svg-container {
