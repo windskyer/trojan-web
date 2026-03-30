@@ -21,6 +21,13 @@ export function freeUserInfo() {
    })
 }
 
+export function planList() {
+   return request({
+      url: '/trojan/user/planlist',
+      method: 'get',
+   })
+}
+
 export function userCheck() {
    return request({
       url: '/trojan/user/check',

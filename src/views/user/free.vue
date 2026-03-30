@@ -116,13 +116,35 @@
                 <p v-else class="empty-text">{{ $t('user.free.emptyLinks') }}</p>
 
                 <div class="divider"></div>
+                <p class="subtitle">{{ $t('user.free.planListTitle') }}</p>
+                <div v-if="plans.length > 0" class="plan-grid">
+                    <div
+                        v-for="plan in plans"
+                        :key="plan.name"
+                        class="plan-card"
+                    >
+                        <p class="plan-label">{{ plan.label }}</p>
+                        <p class="plan-price">¥{{ formatPlanPrice(plan.price) }}</p>
+                        <p>
+                            {{ $t('user.free.planDuration') }}:
+                            {{ plan.duration_days }} {{ $t('user.days') }}
+                        </p>
+                        <p>
+                            {{ $t('user.free.planTraffic') }}:
+                            {{ plan.total_data_gb }}GB
+                        </p>
+                    </div>
+                </div>
+                <p v-else class="empty-text">{{ $t('user.free.emptyPlans') }}</p>
+
+                <div class="divider"></div>
                 <p class="subtitle">{{ $t('user.free.cta') }}</p>
 
                 <div class="action-buttons">
                     <el-button type="primary" plain @click="goLogin">{{
                         $t('user.free.login')
                     }}</el-button>
-                    <el-button type="primary" plain @click="goRegister">{{
+                    <el-button class="upgrade-btn" type="success" @click="goRegister">{{
                         $t('user.free.registerButton')
                     }}</el-button>
                     <el-button
@@ -151,7 +173,7 @@
 </template>
 
 <script>
-import { freeUserInfo } from '@/api/user'
+import { freeUserInfo, planList } from '@/api/user'
 import { readableBytes } from '@/utils/common'
 import { Grid, Link as LinkIcon } from '@element-plus/icons-vue'
 import QRCode from 'easyqrcodejs'
@@ -167,6 +189,7 @@ export default {
         return {
             subscribeUrl: '',
             links: [],
+            plans: [],
             qrcodeVisible: false,
             shareLink: '',
             account: {
@@ -181,6 +204,7 @@ export default {
     },
     created() {
         this.getFreeUserInfo()
+        this.getPlanList()
     },
     methods: {
         decodeBase64(text) {
@@ -230,6 +254,13 @@ export default {
 
             return `${label} (${this.$t('user.info.clickToCopy')})`
         },
+        formatPlanPrice(price) {
+            const value = Number(price)
+            if (!Number.isFinite(value)) {
+                return '0.00'
+            }
+            return value.toFixed(2)
+        },
         async getFreeUserInfo() {
             try {
                 const result = await freeUserInfo()
@@ -267,6 +298,17 @@ export default {
                 }
             } catch (error) {
                 ElMessage.error(this.$t('user.free.fetchFail'))
+            }
+        },
+        async getPlanList() {
+            try {
+                const result = await planList()
+                if (result.code !== 200 || result.message !== 'success') {
+                    return
+                }
+                this.plans = Array.isArray(result.data) ? result.data : []
+            } catch (error) {
+                this.plans = []
             }
         },
         openTelegramChannel() {
@@ -452,6 +494,31 @@ export default {
     color: var(--el-text-color-secondary);
 }
 
+.plan-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.plan-card {
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid var(--el-border-color-lighter);
+    background: var(--el-fill-color-extra-light);
+}
+
+.plan-label {
+    margin: 0 0 6px;
+    font-weight: 600;
+}
+
+.plan-price {
+    margin: 0 0 8px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #0d6efd;
+}
+
 .action-buttons {
     display: flex;
     gap: 10px;
@@ -461,6 +528,10 @@ export default {
 
 .action-buttons :deep(.el-button) {
     text-transform: uppercase;
+}
+
+.upgrade-btn {
+    margin-left: auto;
 }
 
 .qrcodeCenter {
@@ -490,8 +561,16 @@ export default {
         align-items: stretch;
     }
 
+    .plan-grid {
+        grid-template-columns: 1fr;
+    }
+
     .action-buttons :deep(.el-button) {
         width: 100%;
+        margin-left: 0;
+    }
+
+    .upgrade-btn {
         margin-left: 0;
     }
 }

@@ -160,9 +160,13 @@ export default {
             expiryDate: 'Expiry Date',
             nodeLinks: 'Node links:',
             emptyLinks: 'No node links',
+            planListTitle: 'Plan List',
+            planDuration: 'Duration',
+            planTraffic: 'Traffic',
+            emptyPlans: 'No plans available',
             cta: '👇 Choose an action below:',
             login: 'LOGIN',
-            registerButton: 'REGISTER & UPGRADE',
+            registerButton: 'UPGRADE PLAN',
             telegramChannel: 'JOIN FOR PERKS',
             fetchFail: 'Failed to fetch free account info'
         },
@@ -248,7 +252,11 @@ export default {
             qrcodeTitle: 'Subscription QR Code',
             renew: 'Renew',
             renewUrgent: 'Expiring soon, Renew now',
-            viewDetail: 'View Details'
+            viewDetail: 'View Details',
+            planListTitle: 'Plan List',
+            planDuration: 'Duration',
+            planTraffic: 'Traffic',
+            emptyPlans: 'No plans available'
         }
     },
     request: {

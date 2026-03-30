@@ -180,9 +180,13 @@ export default {
             expiryDate: '到期时间',
             nodeLinks: '节点链接:',
             emptyLinks: '暂无节点链接',
+            planListTitle: '套餐列表',
+            planDuration: '时长',
+            planTraffic: '流量',
+            emptyPlans: '暂无套餐信息',
             cta: '👇 请选择下方操作：',
             login: '登入账号',
-            registerButton: '注册升级',
+            registerButton: '升级套餐',
             telegramChannel: '进群领礼',
             fetchFail: '获取免费账号信息失败'
         },
@@ -268,7 +272,11 @@ export default {
             qrcodeTitle: '链接二维码',
             renew: '续费',
             renewUrgent: '即将到期，立即续费',
-            viewDetail: '查看详情'
+            viewDetail: '查看详情',
+            planListTitle: '套餐列表',
+            planDuration: '时长',
+            planTraffic: '流量',
+            emptyPlans: '暂无套餐信息'
         }
     },
     request: {

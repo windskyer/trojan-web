@@ -23,26 +23,6 @@
         </div>
 
         <div class="card">
-            <h2>{{ $t('user.info.expiryTitle') }}</h2>
-            <div class="divider"></div>
-            <p>{{ $t('user.info.expiryDate') }}: {{ user.expiryDate }}</p>
-            <p>
-                {{ $t('user.info.remainingDays') }}: {{ remainDays }}
-                {{ $t('user.days') }}
-            </p>
-            <div class="expiry-actions">
-                <el-button
-                    :type="remainDays <= 7 ? 'danger' : 'primary'"
-                    @click="openRenewBot"
-                    >{{ renewButtonText }}</el-button
-                >
-                <el-button type="info" plain @click="openDetailPage">{{
-                    $t('user.info.viewDetail')
-                }}</el-button>
-            </div>
-        </div>
-
-        <div class="card">
             <h2>{{ $t('user.info.subscriptionTitle') }}</h2>
             <div class="divider"></div>
 
@@ -133,6 +113,47 @@
             </p>
         </div>
 
+        <div class="card">
+            <h2>{{ $t('user.info.planListTitle') }}</h2>
+            <div class="divider"></div>
+
+            <div v-if="plans.length > 0" class="plan-grid">
+                <div v-for="plan in plans" :key="plan.name" class="plan-card">
+                    <p class="plan-label">{{ plan.label }}</p>
+                    <p class="plan-price">¥{{ formatPlanPrice(plan.price) }}</p>
+                    <p>
+                        {{ $t('user.info.planDuration') }}:
+                        {{ plan.duration_days }} {{ $t('user.days') }}
+                    </p>
+                    <p>
+                        {{ $t('user.info.planTraffic') }}:
+                        {{ plan.total_data_gb }}GB
+                    </p>
+                </div>
+            </div>
+            <p v-else>{{ $t('user.info.emptyPlans') }}</p>
+        </div>
+
+        <div class="card">
+            <h2>{{ $t('user.info.expiryTitle') }}</h2>
+            <div class="divider"></div>
+            <p>{{ $t('user.info.expiryDate') }}: {{ user.expiryDate }}</p>
+            <p>
+                {{ $t('user.info.remainingDays') }}: {{ remainDays }}
+                {{ $t('user.days') }}
+            </p>
+            <div class="expiry-actions">
+                <el-button
+                    :type="remainDays <= 7 ? 'danger' : 'primary'"
+                    @click="openRenewBot"
+                    >{{ renewButtonText }}</el-button
+                >
+                <el-button type="info" plain @click="openDetailPage">{{
+                    $t('user.info.viewDetail')
+                }}</el-button>
+            </div>
+        </div>
+
         <el-dialog
             class="qrcode-dialog"
             title=""
@@ -149,7 +170,7 @@
 </template>
 
 <script>
-import { userInfo } from '@/api/user'
+import { userInfo, planList } from '@/api/user'
 import { readableBytes } from '@/utils/common'
 import { Grid, Link as LinkIcon } from '@element-plus/icons-vue'
 import QRCode from 'easyqrcodejs'
@@ -176,12 +197,14 @@ export default {
                 expiryDate: '',
                 links: [],
             },
+            plans: [],
             qrcodeVisible: false,
             shareLink: '',
         }
     },
     created() {
         this.getUserInfo()
+        this.getPlanList()
     },
     computed: {
         usedPercent() {
@@ -268,6 +291,13 @@ export default {
         },
         formatBytes(bytes) {
             return readableBytes(Number(bytes || 0))
+        },
+        formatPlanPrice(price) {
+            const value = Number(price)
+            if (!Number.isFinite(value)) {
+                return '0.00'
+            }
+            return value.toFixed(2)
         },
         decodePassword(password) {
             if (!password) {
@@ -366,6 +396,17 @@ export default {
                 }
             } catch (error) {
                 this.$message.error(this.$t('user.info.fetchFail'))
+            }
+        },
+        async getPlanList() {
+            try {
+                const result = await planList()
+                if (result.code !== 200 || result.message !== 'success') {
+                    return
+                }
+                this.plans = Array.isArray(result.data) ? result.data : []
+            } catch (error) {
+                this.plans = []
             }
         },
         showQRCode(url) {
@@ -521,6 +562,31 @@ export default {
     margin-top: 12px;
 }
 
+.plan-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.plan-card {
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid var(--el-border-color-lighter);
+    background: var(--el-fill-color-extra-light);
+}
+
+.plan-label {
+    margin: 0 0 6px;
+    font-weight: 600;
+}
+
+.plan-price {
+    margin: 0 0 8px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #0d6efd;
+}
+
 .qrcodeCenter {
     text-align: center;
     margin: 0;
@@ -540,6 +606,10 @@ export default {
     display: flex;
     justify-content: center;
 }
+
+.node-block {
+    padding: 4px 0;
+    border-top: 1px dashed rgba(0, 0, 0, 0.2);
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
+}
 </style>
-.node-block { padding: 4px 0; border-top: 1px dashed rgba(0, 0, 0, 0.2);
-border-bottom: 1px dashed rgba(0, 0, 0, 0.2); }
