@@ -1,99 +1,29 @@
 <template>
     <div class="free-page">
-        <div class="card">
-            <p class="top-notice">
-                {{ $t('user.free.notice', { time: noticeTime }) }}
-            </p>
-            <h2>{{ $t('user.free.title') }}</h2>
+        <div class="info-page">
+            <div class="card">
+                <h2>{{ $t('user.free.title') }}</h2>
 
-            <p>{{ $t('user.free.tip1') }}</p>
-            <p>{{ $t('user.free.tip2') }}</p>
-            <p>{{ $t('user.free.tip3') }}</p>
-            <p>{{ $t('user.free.tip4') }}</p>
+                <p>{{ $t('user.free.tip1') }}</p>
+                <p>{{ $t('user.free.tip2') }}</p>
+                <p>{{ $t('user.free.tip3') }}</p>
+                <p>{{ $t('user.free.tip4') }}</p>
 
-            <div class="divider"></div>
-            <p class="subtitle">{{ $t('user.free.subscription') }}</p>
+                <div class="divider"></div>
+                <p class="node-title">{{ $t('user.info.subscriptionTitle') }}</p>
 
-            <div v-if="subscribeUrl" class="link-item">
-                <div class="link-row">
-                    <span
-                        class="subscribe-url is-copy"
-                        @click="copyText(subscribeUrl)"
-                    >
-                        {{ subscribeUrl }}
-                    </span>
-                    <div class="link-actions">
-                        <el-button
-                            class="link-action"
-                            type="primary"
-                            plain
-                            size="small"
-                            @click="showQRCode(subscribeUrl)"
-                        >
-                            <el-tooltip
-                                :content="$t('user.info.qrcode')"
-                                placement="top"
-                            >
-                                <el-icon><Grid /></el-icon>
-                            </el-tooltip>
-                        </el-button>
-                        <el-button
-                            class="link-action"
-                            type="info"
-                            plain
-                            size="small"
-                            @click="openLink(subscribeUrl)"
-                        >
-                            <el-tooltip
-                                :content="$t('user.info.openLink')"
-                                placement="top"
-                            >
-                                <el-icon><LinkIcon /></el-icon>
-                            </el-tooltip>
-                        </el-button>
-                    </div>
-                </div>
-            </div>
-            <p v-else class="empty-text">
-                {{ $t('user.free.emptySubscription') }}
-            </p>
-
-            <div class="divider"></div>
-            <p class="subtitle">{{ $t('user.free.accountInfo') }}</p>
-            <p>{{ $t('user.free.username') }}：{{ account.username || '-' }}</p>
-            <p>{{ $t('user.free.password') }}：{{ account.password || '-' }}</p>
-            <p>
-                {{ $t('user.free.traffic') }}：{{ account.used }} /
-                {{ account.quota }}
-            </p>
-            <p>
-                {{ $t('user.free.expiryDate') }}：{{
-                    account.expiryDate || '-'
-                }}
-            </p>
-
-            <div class="divider"></div>
-            <p class="subtitle">{{ $t('user.free.nodeLinks') }}</p>
-            <div v-if="links.length > 0" class="links">
-                <div
-                    v-for="(link, index) in links"
-                    :key="`${link}-${index}`"
-                    class="link-item"
-                >
+                <div v-if="subscribeUrl" class="link-block subscribe-block">
                     <div class="link-row">
-                        <span
-                            class="subscribe-url is-copy"
-                            @click="copyText(link)"
-                        >
-                            {{ index + 1 }}. {{ link }}
-                        </span>
+                        <p class="link-text" @click="copyText(subscribeUrl)">
+                            {{ subscribeUrl }}
+                        </p>
                         <div class="link-actions">
                             <el-button
                                 class="link-action"
                                 type="primary"
                                 plain
                                 size="small"
-                                @click="showQRCode(link)"
+                                @click="showQRCode(subscribeUrl)"
                             >
                                 <el-tooltip
                                     :content="$t('user.info.qrcode')"
@@ -107,7 +37,7 @@
                                 type="info"
                                 plain
                                 size="small"
-                                @click="openLink(link)"
+                                @click="openLink(subscribeUrl)"
                             >
                                 <el-tooltip
                                     :content="$t('user.info.openLink')"
@@ -119,25 +49,94 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <p v-else class="empty-text">{{ $t('user.free.emptyLinks') }}</p>
+                <p v-else class="empty-text">
+                    {{ $t('user.free.emptySubscription') }}
+                </p>
 
-            <div class="divider"></div>
-            <p class="subtitle">{{ $t('user.free.cta') }}</p>
+                <div class="divider"></div>
+                <p class="subtitle">{{ $t('user.free.accountInfo') }}</p>
+                <p>{{ $t('user.free.username') }}：{{ account.username || '-' }}</p>
+                <p>{{ $t('user.free.password') }}：{{ account.password || '-' }}</p>
+                <p>
+                    {{ $t('user.free.traffic') }}：{{ account.used }} /
+                    {{ account.quota }}
+                </p>
+                <p>
+                    {{ $t('user.free.expiryDate') }}：{{
+                        account.expiryDate || '-'
+                    }}
+                </p>
 
-            <div class="action-buttons">
-                <el-button type="primary" @click="goLogin">{{
-                    $t('user.free.login')
-                }}</el-button>
-                <el-button type="primary" @click="goUpgrade">{{
-                    $t('user.free.upgradeButton')
-                }}</el-button>
-                <el-button
-                    class="join-group-btn"
-                    type="success"
-                    @click="openTelegramChannel"
-                    >{{ $t('user.free.telegramChannel') }}</el-button
-                >
+                <div class="divider"></div>
+                <p class="node-title">{{ $t('user.free.nodeLinks') }}</p>
+                <div v-if="links.length > 0" class="links">
+                    <div
+                        v-for="(link, index) in links"
+                        :key="`${link}-${index}`"
+                        class="link-block node-block"
+                    >
+                        <p>{{ getLinkLabel(link, index) }}</p>
+                        <div class="link-row">
+                            <p class="link-text" @click="copyText(link)">
+                                {{ link }}
+                            </p>
+                            <div class="link-actions">
+                                <el-button
+                                    class="link-action"
+                                    type="primary"
+                                    plain
+                                    size="small"
+                                    @click="showQRCode(link)"
+                                >
+                                    <el-tooltip
+                                        :content="$t('user.info.qrcode')"
+                                        placement="top"
+                                    >
+                                        <el-icon><Grid /></el-icon>
+                                    </el-tooltip>
+                                </el-button>
+                                <el-button
+                                    class="link-action"
+                                    type="info"
+                                    plain
+                                    size="small"
+                                    @click="openLink(link)"
+                                >
+                                    <el-tooltip
+                                        :content="$t('user.info.openLink')"
+                                        placement="top"
+                                    >
+                                        <el-icon><LinkIcon /></el-icon>
+                                    </el-tooltip>
+                                </el-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p v-else class="empty-text">{{ $t('user.free.emptyLinks') }}</p>
+
+                <div class="divider"></div>
+                <p class="subtitle">{{ $t('user.free.cta') }}</p>
+
+                <div class="action-buttons">
+                    <el-button type="primary" plain @click="goLogin">{{
+                        $t('user.free.login')
+                    }}</el-button>
+                    <el-button type="primary" plain @click="goRegister">{{
+                        $t('user.free.registerButton')
+                    }}</el-button>
+                    <div class="join-group-actions">
+                        <el-button
+                            class="join-group-btn"
+                            type="success"
+                            @click="openTelegramChannel"
+                            >{{ $t('user.free.telegramChannel') }}</el-button
+                        >
+                        <el-button type="success" @click="goUpgrade">{{
+                            $t('user.free.upgradeButton')
+                        }}</el-button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -153,40 +152,6 @@
         >
             <div ref="qrcode" class="qrcodeCenter"></div>
         </el-dialog>
-
-        <div class="ad-float" :class="{ 'is-collapsed': adCollapsed }">
-            <div class="ad-float-head">
-                <p class="ad-float-title">{{ $t('user.free.noticeTitle') }}</p>
-                <el-button
-                    class="ad-toggle-btn"
-                    type="primary"
-                    link
-                    @click="adCollapsed = !adCollapsed"
-                >
-                    {{ adCollapsed ? '+' : '-' }}
-                </el-button>
-            </div>
-            <div v-show="!adCollapsed">
-                <div
-                    v-if="adNoticeHtml"
-                    class="ad-content"
-                    v-html="adNoticeHtml"
-                ></div>
-                <div v-else>
-                    <p class="empty-text">
-                        {{ $t('user.free.noticeLoadFail') }}
-                    </p>
-                    <a
-                        class="subscribe-url"
-                        :href="adNoticeApi"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        {{ adNoticeApi }}
-                    </a>
-                </div>
-            </div>
-        </div>
     </div>
 </template>
 
@@ -207,10 +172,6 @@ export default {
         return {
             subscribeUrl: '',
             links: [],
-            noticeTime: '',
-            adNoticeApi: 'https://pp.flftuu.com/img/notice.json',
-            adNoticeHtml: '',
-            adCollapsed: false,
             qrcodeVisible: false,
             shareLink: '',
             account: {
@@ -224,21 +185,9 @@ export default {
         }
     },
     created() {
-        this.noticeTime = this.formatNow()
-        this.getAdNotice()
         this.getFreeUserInfo()
     },
     methods: {
-        formatNow() {
-            const now = new Date()
-            const pad = (n) => String(n).padStart(2, '0')
-            const yyyy = now.getFullYear()
-            const mm = pad(now.getMonth() + 1)
-            const dd = pad(now.getDate())
-            const hh = pad(now.getHours())
-            const mi = pad(now.getMinutes())
-            return `${yyyy}-${mm}-${dd} ${hh}:${mi}`
-        },
         decodeBase64(text) {
             if (!text) {
                 return ''
@@ -267,31 +216,24 @@ export default {
             )
             return `${window.location.origin}/trojan/user/subscribe?token=${userInfo}`
         },
-        normalizeAdNotice(raw) {
-            if (Array.isArray(raw) && raw.length > 0) {
-                return this.normalizeAdNotice(raw[0])
+        getLinkLabel(link, index) {
+            const protocol = String(link || '')
+                .split('://')[0]
+                .trim()
+                .toLowerCase()
+
+            const protocolMap = {
+                trojan: 'TROJAN',
+                vless: 'VLESS',
+                hysteria2: 'HYSTERIA2',
+                hy2: 'HYSTERIA2',
             }
-            if (typeof raw === 'string') {
-                return raw
-            }
-            if (!raw || typeof raw !== 'object') {
-                return ''
-            }
-            return raw.html || raw.content || raw.text || raw.notice || ''
-        },
-        async getAdNotice() {
-            try {
-                const response = await fetch(this.adNoticeApi, {
-                    method: 'GET',
-                })
-                if (!response.ok) {
-                    return
-                }
-                const raw = await response.json()
-                this.adNoticeHtml = this.normalizeAdNotice(raw)
-            } catch (error) {
-                this.adNoticeHtml = ''
-            }
+
+            const label =
+                protocolMap[protocol] ||
+                `${this.$t('user.info.linkName')} ${index + 1}`
+
+            return `${label} (${this.$t('user.info.clickToCopy')})`
         },
         async getFreeUserInfo() {
             try {
@@ -366,6 +308,9 @@ export default {
         goLogin() {
             this.$router.push('/login').catch(() => {})
         },
+        goRegister() {
+            this.$router.push('/register').catch(() => {})
+        },
         goUpgrade() {
             const start = encodeURIComponent(btoa('buy'))
             const url = `https://t.me/TrojanAccess_bot?start=${start}`
@@ -377,41 +322,37 @@ export default {
 
 <style lang="scss" scoped>
 .free-page {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
+    min-height: 100%;
+    width: 100%;
     background-color: #2d3a4b;
+    overflow: hidden;
+}
+
+.info-page {
+    max-width: 980px;
+    margin: 20px auto;
+    padding: 0 16px 24px;
+    font-size: 14px;
 }
 
 .card {
-    width: 100%;
-    max-width: 860px;
-    background: rgba(255, 251, 245, 0.96);
-    border-radius: 12px;
-    padding: 24px;
-    border: 1px solid #e8dcc9;
-    box-shadow: 0 12px 30px rgba(90, 66, 44, 0.14);
-    line-height: 1.9;
-    color: #3d3124;
-    word-break: break-word;
+    margin-bottom: 16px;
+    padding: 16px;
+    border-radius: 10px;
+    background: var(--el-bg-color);
+    border: 1px solid var(--el-border-color-lighter);
 }
 
-h2 {
-    margin: 0 0 12px 0;
-    font-size: 24px;
-}
-
-p {
-    margin: 6px 0;
-}
-
-.top-notice {
-    margin: 0 0 10px;
-    text-align: center;
+.card h2 {
+    margin: 0;
+    font-size: 16px;
     font-weight: 600;
-    color: #8b5e34;
+}
+
+.card p {
+    margin: 6px 0;
+    line-height: 1.7;
+    word-break: break-all;
 }
 
 .subtitle {
@@ -421,31 +362,41 @@ p {
 .divider {
     height: 1px;
     margin: 10px 0 12px;
-    background: #ededed;
+    background: var(--el-border-color-lighter);
 }
 
 .links {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 0;
 }
 
-.link-item {
-    display: block;
+.node-block + .node-block {
+    margin-top: 8px;
+}
+
+.link-block + .link-block {
+    margin-top: 8px;
+}
+
+.subscribe-block {
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed var(--el-border-color-lighter);
 }
 
 .link-row {
     display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
 }
 
 .link-actions {
     display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
-    margin-top: 4px;
+    gap: 2px;
+    flex-wrap: nowrap;
+    margin-top: 2px;
     margin-left: auto;
     opacity: 0;
     transform: translateY(-2px);
@@ -472,6 +423,17 @@ p {
 }
 
 @media (max-width: 768px) {
+    .link-row {
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+
+    .link-text {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+    }
+
     .link-actions {
         opacity: 1;
         transform: none;
@@ -479,96 +441,47 @@ p {
     }
 }
 
-.subscribe-url {
-    display: block;
-    color: #8a5a32;
-    text-decoration: none;
-    word-break: break-all;
-    flex: 1 1 100%;
+.node-title {
+    margin-top: 4px;
+    font-weight: 600;
 }
 
-.subscribe-url.is-copy {
+.link-text {
+    margin: 0;
+    color: #0d6efd;
     cursor: pointer;
     text-decoration: underline;
-}
-
-.subscribe-url:hover {
-    text-decoration: underline;
-    color: #6f451f;
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .empty-text {
-    color: #9a8268;
+    color: var(--el-text-color-secondary);
 }
 
 .action-buttons {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
-}
-
-.join-group-btn {
-    margin-left: auto;
-}
-
-.ad-float {
-    position: fixed;
-    right: 20px;
-    top: 20px;
-    width: 320px;
-    height: auto;
-    max-height: 320px;
-    padding: 12px;
-    border-radius: 12px;
-    background: rgba(255, 250, 243, 0.98);
-    border: 1px solid #e6d8c3;
-    box-shadow: 0 14px 30px rgba(90, 66, 44, 0.2);
-    z-index: 999;
-    overflow: auto;
-    animation: noticeFloat 3.2s ease-in-out infinite;
-}
-
-.ad-float-title {
-    margin: 0;
-    font-weight: 600;
-    color: #8b5e34;
-}
-
-.ad-float-head {
-    display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 8px;
 }
 
-.ad-toggle-btn {
-    font-size: 20px;
-    line-height: 1;
-    padding: 0;
+.action-buttons :deep(.el-button) {
+    text-transform: uppercase;
 }
 
-.ad-float.is-collapsed {
-    height: auto;
+.join-group-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
-.ad-content {
-    text-align: center;
-    word-break: break-word;
-}
-
-.ad-content :deep(a) {
-    color: #6f451f;
-    font-weight: 600;
-    text-decoration: underline;
-}
-
-.ad-content :deep(h1),
-.ad-content :deep(h2),
-.ad-content :deep(h3),
-.ad-content :deep(p),
-.ad-content :deep(div) {
-    margin: 6px 0;
+.join-group-actions :deep(.el-button + .el-button) {
+    margin-left: 0;
 }
 
 .qrcodeCenter {
@@ -591,49 +504,26 @@ p {
     justify-content: center;
 }
 
-@keyframes noticeFloat {
-    0% {
-        transform: translateY(0);
-        box-shadow: 0 14px 30px rgba(90, 66, 44, 0.2);
-    }
-
-    50% {
-        transform: translateY(-14px);
-        box-shadow: 0 18px 34px rgba(90, 66, 44, 0.24);
-    }
-
-    100% {
-        transform: translateY(0);
-        box-shadow: 0 14px 30px rgba(90, 66, 44, 0.2);
-    }
-}
-
 @media (max-width: 768px) {
-    .free-page {
+    .action-buttons {
+        width: 100%;
         flex-direction: column;
         align-items: stretch;
-        justify-content: flex-start;
-        padding: 12px;
     }
 
-    .card {
-        max-width: none;
-    }
-
-    .ad-float {
-        position: sticky;
-        top: 10px;
-        order: -1;
+    .action-buttons :deep(.el-button) {
         width: 100%;
-        height: auto;
-        max-height: 220px;
-        margin-bottom: 12px;
-        animation: none;
-        z-index: 20;
+        margin-left: 0;
     }
 
-    .ad-float.is-collapsed {
-        max-height: none;
+    .join-group-actions {
+        margin-left: 0;
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .join-group-actions :deep(.el-button) {
+        margin-left: 0;
     }
 }
 </style>
