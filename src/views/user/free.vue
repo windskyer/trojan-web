@@ -125,17 +125,12 @@
                     <el-button type="primary" plain @click="goRegister">{{
                         $t('user.free.registerButton')
                     }}</el-button>
-                    <div class="join-group-actions">
-                        <el-button
-                            class="join-group-btn"
-                            type="success"
-                            @click="openTelegramChannel"
-                            >{{ $t('user.free.telegramChannel') }}</el-button
-                        >
-                        <el-button type="success" @click="goUpgrade">{{
-                            $t('user.free.upgradeButton')
-                        }}</el-button>
-                    </div>
+                    <el-button
+                        class="join-group-btn"
+                        type="success"
+                        @click="openTelegramChannel"
+                        >{{ $t('user.free.telegramChannel') }}</el-button
+                    >
                 </div>
             </div>
         </div>
@@ -311,11 +306,6 @@ export default {
         goRegister() {
             this.$router.push('/register').catch(() => {})
         },
-        goUpgrade() {
-            const start = encodeURIComponent(btoa('buy'))
-            const url = `https://t.me/TrojanAccess_bot?start=${start}`
-            window.open(url, '_blank')
-        },
     },
 }
 </script>
@@ -473,17 +463,6 @@ export default {
     text-transform: uppercase;
 }
 
-.join-group-actions {
-    margin-left: auto;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.join-group-actions :deep(.el-button + .el-button) {
-    margin-left: 0;
-}
-
 .qrcodeCenter {
     text-align: center;
     word-break: break-all;
@@ -513,16 +492,6 @@ export default {
 
     .action-buttons :deep(.el-button) {
         width: 100%;
-        margin-left: 0;
-    }
-
-    .join-group-actions {
-        margin-left: 0;
-        width: 100%;
-        flex-direction: column;
-    }
-
-    .join-group-actions :deep(.el-button) {
         margin-left: 0;
     }
 }

@@ -182,8 +182,7 @@ export default {
             emptyLinks: '暂无节点链接',
             cta: '👇 请选择下方操作：',
             login: '登入账号',
-            registerButton: '注册账号',
-            upgradeButton: '升级套餐',
+            registerButton: '注册升级',
             telegramChannel: '进群领礼',
             fetchFail: '获取免费账号信息失败'
         },

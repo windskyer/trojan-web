@@ -162,8 +162,7 @@ export default {
             emptyLinks: 'No node links',
             cta: '👇 Choose an action below:',
             login: 'LOGIN',
-            registerButton: 'REGISTER',
-            upgradeButton: 'UPGRADE',
+            registerButton: 'REGISTER & UPGRADE',
             telegramChannel: 'JOIN FOR PERKS',
             fetchFail: 'Failed to fetch free account info'
         },
