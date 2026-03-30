@@ -346,7 +346,7 @@ export default {
             this.$router.push('/login').catch(() => {})
         },
         goRegister() {
-            this.$router.push('/register').catch(() => {})
+            window.open('https://t.me/TrojanAccess_bot?start=YnV5', '_blank')
         },
     },
 }
