@@ -184,11 +184,22 @@ export default {
             planDuration: '时长',
             planTraffic: '流量',
             emptyPlans: '暂无套餐信息',
+            planEmailPlaceholder: '请输入邮箱',
+            planEmailTip: '请输入收件邮箱后扫码付款。',
+            planQrEmpty: '暂无付款码',
+            getCode: '获取验证码',
+            codeSent: '验证码已发送',
+            codeInvalid: '请输入 6 位验证码',
+            createOrder: '生成订单',
+            orderChecking: '订单核实中',
             cta: '👇 请选择下方操作：',
             login: '登入账号',
             registerButton: '升级套餐',
             telegramChannel: '进群领礼',
-            fetchFail: '获取免费账号信息失败'
+            fetchFail: '获取免费账号信息失败',
+            orderCreateFail: '创建订单失败，请重试',
+            orderSuccess: '订单支付成功',
+            orderFail: '订单支付失败'
         },
         pay: {
             title: '订单支付',

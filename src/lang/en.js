@@ -164,11 +164,22 @@ export default {
             planDuration: 'Duration',
             planTraffic: 'Traffic',
             emptyPlans: 'No plans available',
+            planEmailPlaceholder: 'Enter your email',
+            planEmailTip: 'Enter your email, then scan the QR code to pay.',
+            planQrEmpty: 'No payment QR code available',
+            getCode: 'Get Code',
+            codeSent: 'Verification code sent',
+            codeInvalid: 'Please enter the 6-digit code',
+            createOrder: 'Create Order',
+            orderChecking: 'Order verification in progress',
             cta: '👇 Choose an action below:',
             login: 'LOGIN',
             registerButton: 'UPGRADE PLAN',
             telegramChannel: 'JOIN FOR PERKS',
-            fetchFail: 'Failed to fetch free account info'
+            fetchFail: 'Failed to fetch free account info',
+            orderCreateFail: 'Failed to create order, please try again',
+            orderSuccess: 'Order payment successful',
+            orderFail: 'Order payment failed'
         },
         pay: {
             title: 'Order Payment',

@@ -10,53 +10,25 @@
                 <p>{{ $t('user.free.tip4') }}</p>
 
                 <div class="divider"></div>
-                <p class="node-title">{{ $t('user.info.subscriptionTitle') }}</p>
-
-                <div v-if="subscribeUrl" class="link-block subscribe-block">
-                    <div class="link-row">
-                        <p class="link-text" @click="copyText(subscribeUrl)">
-                            {{ subscribeUrl }}
-                        </p>
-                        <div class="link-actions">
-                            <el-button
-                                class="link-action"
-                                type="primary"
-                                plain
-                                size="small"
-                                @click="showQRCode(subscribeUrl)"
-                            >
-                                <el-tooltip
-                                    :content="$t('user.info.qrcode')"
-                                    placement="top"
-                                >
-                                    <el-icon><Grid /></el-icon>
-                                </el-tooltip>
-                            </el-button>
-                            <el-button
-                                class="link-action"
-                                type="info"
-                                plain
-                                size="small"
-                                @click="openLink(subscribeUrl)"
-                            >
-                                <el-tooltip
-                                    :content="$t('user.info.openLink')"
-                                    placement="top"
-                                >
-                                    <el-icon><LinkIcon /></el-icon>
-                                </el-tooltip>
-                            </el-button>
-                        </div>
-                    </div>
-                </div>
-                <p v-else class="empty-text">
-                    {{ $t('user.free.emptySubscription') }}
-                </p>
-
-                <div class="divider"></div>
                 <p class="subtitle">{{ $t('user.free.accountInfo') }}</p>
-                <p>{{ $t('user.free.username') }}：{{ account.username || '-' }}</p>
-                <p>{{ $t('user.free.password') }}：{{ account.password || '-' }}</p>
+                <p>
+                    {{ $t('user.free.username') }}：
+                    <span
+                        class="copy-value"
+                        @click="account.username && copyText(account.username)"
+                    >
+                        {{ account.username || '-' }}
+                    </span>
+                </p>
+                <p>
+                    {{ $t('user.free.password') }}：
+                    <span
+                        class="copy-value"
+                        @click="account.password && copyText(account.password)"
+                    >
+                        {{ account.password || '-' }}
+                    </span>
+                </p>
                 <p>
                     {{ $t('user.free.traffic') }}：{{ account.used }} /
                     {{ account.quota }}
@@ -113,7 +85,9 @@
                         </div>
                     </div>
                 </div>
-                <p v-else class="empty-text">{{ $t('user.free.emptyLinks') }}</p>
+                <p v-else class="empty-text">
+                    {{ $t('user.free.emptyLinks') }}
+                </p>
 
                 <div class="divider"></div>
                 <p class="subtitle">{{ $t('user.free.planListTitle') }}</p>
@@ -122,9 +96,12 @@
                         v-for="plan in plans"
                         :key="plan.name"
                         class="plan-card"
+                        @click="openPlanDialog(plan)"
                     >
                         <p class="plan-label">{{ plan.label }}</p>
-                        <p class="plan-price">¥{{ formatPlanPrice(plan.price) }}</p>
+                        <p class="plan-price">
+                            ¥{{ formatPlanPrice(plan.price) }}
+                        </p>
                         <p>
                             {{ $t('user.free.planDuration') }}:
                             {{ plan.duration_days }} {{ $t('user.days') }}
@@ -135,7 +112,9 @@
                         </p>
                     </div>
                 </div>
-                <p v-else class="empty-text">{{ $t('user.free.emptyPlans') }}</p>
+                <p v-else class="empty-text">
+                    {{ $t('user.free.emptyPlans') }}
+                </p>
 
                 <div class="divider"></div>
                 <p class="subtitle">{{ $t('user.free.cta') }}</p>
@@ -143,9 +122,6 @@
                 <div class="action-buttons">
                     <el-button type="primary" plain @click="goLogin">{{
                         $t('user.free.login')
-                    }}</el-button>
-                    <el-button class="upgrade-btn" type="success" @click="goRegister">{{
-                        $t('user.free.registerButton')
                     }}</el-button>
                     <el-button
                         class="join-group-btn"
@@ -169,15 +145,94 @@
         >
             <div ref="qrcode" class="qrcodeCenter"></div>
         </el-dialog>
+
+        <el-dialog
+            class="plan-dialog"
+            :title="
+                selectedPlan
+                    ? selectedPlan.label
+                    : $t('user.free.planListTitle')
+            "
+            v-model="planDialogVisible"
+            width="360px"
+        >
+            <div v-if="selectedPlan" class="plan-dialog-content">
+                <p class="plan-dialog-price">
+                    ¥{{ formatPlanPrice(selectedPlan.price) }}
+                </p>
+                <template v-if="!planOrderCreated">
+                    <el-input
+                        v-model="planEmail"
+                        type="email"
+                        :placeholder="$t('user.free.planEmailPlaceholder')"
+                        clearable
+                        @keyup.enter="handleCreatePlanOrder"
+                    />
+                    <p class="plan-dialog-tip">
+                        {{ $t('user.free.planEmailTip') }}
+                    </p>
+                    <el-button
+                        type="info"
+                        plain
+                        class="plan-submit-btn"
+                        @click="handleGetPlanCode"
+                    >
+                        {{ $t('user.free.getCode') }}
+                    </el-button>
+                    <div class="plan-code-row">
+                        <input
+                            v-for="(digit, index) in planCodeDigits"
+                            :key="`plan-code-${index}`"
+                            :ref="setPlanCodeRef"
+                            v-model="planCodeDigits[index]"
+                            class="plan-code-input"
+                            type="text"
+                            inputmode="numeric"
+                            maxlength="1"
+                            @input="handlePlanCodeInput(index, $event)"
+                            @keydown="handlePlanCodeKeydown(index, $event)"
+                        />
+                    </div>
+                    <el-button
+                        type="primary"
+                        class="plan-submit-btn"
+                        :disabled="!isPlanCodeComplete"
+                        @click="handleCreatePlanOrder"
+                    >
+                        {{ $t('user.free.createOrder') }}
+                    </el-button>
+                </template>
+                <template v-else>
+                    <div v-if="selectedPlanImage" class="plan-dialog-qrcode">
+                        <img
+                            :src="selectedPlanImage"
+                            :alt="selectedPlan.label"
+                            class="plan-dialog-image"
+                        />
+                    </div>
+                    <p v-else class="empty-text">
+                        {{ $t('user.free.planQrEmpty') }}
+                    </p>
+                    <div class="plan-order-status">
+                        <span class="plan-order-spinner"></span>
+                        <span>{{ $t('user.free.orderChecking') }}</span>
+                    </div>
+                </template>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
+import { generateOrder, orderStatus, sendCode } from '@/api/email'
 import { freeUserInfo, planList } from '@/api/user'
 import { readableBytes } from '@/utils/common'
 import { Grid, Link as LinkIcon } from '@element-plus/icons-vue'
 import QRCode from 'easyqrcodejs'
 import { ElMessage } from 'element-plus'
+
+const BASE_URL = import.meta.env.BASE_URL || '/'
+const mailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export default {
     name: 'FreePage',
@@ -190,8 +245,15 @@ export default {
             subscribeUrl: '',
             links: [],
             plans: [],
+            selectedPlan: null,
+            planDialogVisible: false,
+            planEmail: '',
+            planOrderCreated: false,
+            planCodeDigits: ['', '', '', '', '', ''],
+            planCodeRefs: [],
             qrcodeVisible: false,
             shareLink: '',
+            orderPollingInterval: null,
             account: {
                 username: '',
                 uuid: '',
@@ -205,6 +267,13 @@ export default {
     created() {
         this.getFreeUserInfo()
         this.getPlanList()
+    },
+    watch: {
+        planDialogVisible(newVal) {
+            if (!newVal) {
+                this.stopOrderPolling()
+            }
+        },
     },
     methods: {
         decodeBase64(text) {
@@ -261,6 +330,19 @@ export default {
             }
             return value.toFixed(2)
         },
+        resolvePlanImage(path) {
+            if (!path) {
+                return ''
+            }
+            if (/^https?:\/\//.test(path)) {
+                return path
+            }
+            const normalizedBase = BASE_URL.endsWith('/')
+                ? BASE_URL
+                : `${BASE_URL}/`
+            const normalizedPath = String(path).replace(/^\/+/, '')
+            return `${normalizedBase}${normalizedPath}`
+        },
         async getFreeUserInfo() {
             try {
                 const result = await freeUserInfo()
@@ -311,6 +393,88 @@ export default {
                 this.plans = []
             }
         },
+        openPlanDialog(plan) {
+            if (!plan || String(plan.name || '').toLowerCase() === 'free') {
+                return
+            }
+            this.stopOrderPolling()
+            this.selectedPlan = plan || null
+            this.planEmail = ''
+            this.planOrderCreated = false
+            this.planCodeDigits = ['', '', '', '', '', '']
+            this.planCodeRefs = []
+            this.planDialogVisible = true
+        },
+        async handleGetPlanCode() {
+            if (!this.planEmail || !mailReg.test(this.planEmail)) {
+                ElMessage.error(this.$t('mailError'))
+                return
+            }
+            const formData = new FormData()
+            formData.set('email', this.planEmail)
+            const result = await sendCode(formData)
+            if (result.code !== 200 || result.message !== 'success') {
+                return
+            }
+            ElMessage.success(this.$t('user.free.codeSent'))
+            this.$nextTick(() => {
+                const firstInput = this.planCodeRefs[0]
+                if (firstInput?.focus) {
+                    firstInput.focus()
+                }
+            })
+        },
+        setPlanCodeRef(el) {
+            if (!el) {
+                return
+            }
+            if (!this.planCodeRefs.includes(el)) {
+                this.planCodeRefs.push(el)
+            }
+        },
+        handlePlanCodeInput(index, event) {
+            const value = String(event?.target?.value || '').replace(/\D/g, '')
+            this.planCodeDigits[index] = value.slice(-1)
+            if (value && index < this.planCodeRefs.length - 1) {
+                this.planCodeRefs[index + 1]?.focus?.()
+            }
+        },
+        handlePlanCodeKeydown(index, event) {
+            if (
+                event.key === 'Backspace' &&
+                !this.planCodeDigits[index] &&
+                index > 0
+            ) {
+                this.planCodeRefs[index - 1]?.focus?.()
+            }
+        },
+        async handleCreatePlanOrder() {
+            if (!this.planEmail || !mailReg.test(this.planEmail)) {
+                ElMessage.error(this.$t('mailError'))
+                return
+            }
+            if (this.planCodeDigits.join('').length !== 6) {
+                ElMessage.error(this.$t('user.free.codeInvalid'))
+                return
+            }
+            const formData = new FormData()
+            formData.set('email', this.planEmail)
+            formData.set('code', this.planCodeDigits.join(''))
+            formData.set('plan_name', this.selectedPlan.name)
+            try {
+                const result = await generateOrder(formData)
+                if (result.code !== 200 || result.message !== 'success') {
+                    ElMessage.error(
+                        result.message || this.$t('user.free.orderCreateFail'),
+                    )
+                    return
+                }
+                this.planOrderCreated = true
+                this.startOrderPolling()
+            } catch (error) {
+                ElMessage.error(this.$t('user.free.orderCreateFail'))
+            }
+        },
         openTelegramChannel() {
             window.open('https://t.me/trojan100', '_blank')
         },
@@ -345,8 +509,58 @@ export default {
         goLogin() {
             this.$router.push('/login').catch(() => {})
         },
-        goRegister() {
-            window.open('https://t.me/TrojanAccess_bot?start=YnV5', '_blank')
+        startOrderPolling() {
+            this.stopOrderPolling() // 确保没有重复的轮询
+            this.orderPollingInterval = setInterval(() => {
+                this.orderStatus()
+            }, 60000) // 每分钟调用一次
+        },
+        stopOrderPolling() {
+            if (this.orderPollingInterval) {
+                clearInterval(this.orderPollingInterval)
+                this.orderPollingInterval = null
+            }
+        },
+        async orderStatus() {
+            if (
+                !this.planEmail ||
+                !this.planCodeDigits.join('') ||
+                !this.selectedPlan?.name
+            ) {
+                return
+            }
+            const formData = new FormData()
+            formData.set('email', this.planEmail)
+            formData.set('code', this.planCodeDigits.join(''))
+            formData.set('order_name', this.selectedPlan.name)
+            try {
+                const result = await orderStatus(formData)
+                if (result.code === 200 && result.message === 'success') {
+                    const data = result.data || {}
+                    const status = data.status
+                    if (status === 'success') {
+                        this.stopOrderPolling()
+                        ElMessage.success(this.$t('user.free.orderSuccess'))
+                        this.planDialogVisible = false
+                        // 可以在这里添加跳转到支付页面或其他逻辑
+                    } else if (status === 'fail' || status === 'expired') {
+                        this.stopOrderPolling()
+                        ElMessage.error(this.$t('user.free.orderFail'))
+                        this.planOrderCreated = false
+                    }
+                    // 如果是 pending 或其他状态，继续轮询
+                }
+            } catch (error) {
+                console.error('Order status check failed:', error)
+            }
+        },
+    },
+    computed: {
+        isPlanCodeComplete() {
+            return this.planCodeDigits.join('').length === 6
+        },
+        selectedPlanImage() {
+            return this.resolvePlanImage(this.selectedPlan?.image_path || '')
         },
     },
 }
@@ -494,6 +708,12 @@ export default {
     color: var(--el-text-color-secondary);
 }
 
+.copy-value {
+    color: #0d6efd;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 .plan-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -505,6 +725,17 @@ export default {
     border-radius: 10px;
     border: 1px solid var(--el-border-color-lighter);
     background: var(--el-fill-color-extra-light);
+    cursor: pointer;
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.plan-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--el-color-primary-light-5);
+    box-shadow: 0 10px 24px rgba(13, 110, 253, 0.08);
 }
 
 .plan-label {
@@ -519,6 +750,85 @@ export default {
     color: #0d6efd;
 }
 
+.plan-dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.plan-dialog-price {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #0d6efd;
+    text-align: center;
+}
+
+.plan-dialog-tip {
+    margin: -4px 0 0;
+    color: var(--el-text-color-secondary);
+    font-size: 12px;
+}
+
+.plan-submit-btn {
+    width: 100%;
+}
+
+.plan-code-row {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+}
+
+.plan-code-input {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--el-border-color);
+    border-radius: 10px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    background: var(--el-bg-color);
+    color: var(--el-text-color-primary);
+    outline: none;
+}
+
+.plan-code-input:focus {
+    border-color: var(--el-color-primary);
+    box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.15);
+}
+
+.plan-dialog-qrcode {
+    display: flex;
+    justify-content: center;
+}
+
+.plan-dialog-image {
+    width: 220px;
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid var(--el-border-color-lighter);
+}
+
+.plan-order-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #0d6efd;
+    font-weight: 600;
+}
+
+.plan-order-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(13, 110, 253, 0.2);
+    border-top-color: #0d6efd;
+    border-radius: 50%;
+    animation: plan-spin 0.9s linear infinite;
+}
+
 .action-buttons {
     display: flex;
     gap: 10px;
@@ -530,7 +840,7 @@ export default {
     text-transform: uppercase;
 }
 
-.upgrade-btn {
+.join-group-btn {
     margin-left: auto;
 }
 
@@ -570,8 +880,18 @@ export default {
         margin-left: 0;
     }
 
-    .upgrade-btn {
+    .join-group-btn {
         margin-left: 0;
+    }
+}
+
+@keyframes plan-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
     }
 }
 </style>

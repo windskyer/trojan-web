@@ -42,7 +42,8 @@
 </template>
 
 <script>
-import { trackTelegramClick, verifyToken } from '@/api/track'
+import { verifyToken } from '@/api/email'
+import { trackTelegramClick } from '@/api/track'
 import { CircleCheckFilled } from '@element-plus/icons-vue'
 
 export default {
