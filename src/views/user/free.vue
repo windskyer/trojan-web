@@ -511,6 +511,7 @@ export default {
         },
         startOrderPolling() {
             this.stopOrderPolling() // 确保没有重复的轮询
+            this.orderStatus() // 立即调用一次
             this.orderPollingInterval = setInterval(() => {
                 this.orderStatus()
             }, 60000) // 每分钟调用一次
