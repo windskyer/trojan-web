@@ -21,6 +21,15 @@
                     </span>
                 </p>
                 <p>
+                    {{ $t('user.free.uuid') }}：
+                    <span
+                        class="copy-value"
+                        @click="account.uuid && copyText(account.uuid)"
+                    >
+                        {{ account.uuid || '-' }}
+                    </span>
+                </p>
+                <p>
                     {{ $t('user.free.password') }}：
                     <span
                         class="copy-value"
@@ -155,6 +164,9 @@
             "
             v-model="planDialogVisible"
             width="360px"
+            :show-close="true"
+            :close-on-click-modal="false"
+            :close-on-press-escape="false"
         >
             <div v-if="selectedPlan" class="plan-dialog-content">
                 <p class="plan-dialog-price">
@@ -203,19 +215,48 @@
                     </el-button>
                 </template>
                 <template v-else>
-                    <div v-if="selectedPlanImage" class="plan-dialog-qrcode">
-                        <img
-                            :src="selectedPlanImage"
-                            :alt="selectedPlan.label"
-                            class="plan-dialog-image"
-                        />
+                    <div v-if="orderPollingState === 'pending'">
+                        <div
+                            v-if="selectedPlanImage"
+                            class="plan-dialog-qrcode"
+                        >
+                            <img
+                                :src="selectedPlanImage"
+                                :alt="selectedPlan.label"
+                                class="plan-dialog-image"
+                            />
+                        </div>
+                        <p v-else class="empty-text">
+                            {{ $t('user.free.planQrEmpty') }}
+                        </p>
+                        <div class="plan-order-status">
+                            <div class="order-checking-row">
+                                <span class="plan-order-spinner"></span>
+                                <span>{{ $t('user.free.orderChecking') }}</span>
+                            </div>
+                            <p>{{ $t('user.free.paymentNote') }}</p>
+                            <span
+                                class="copy-value"
+                                @click="copyText(orderName)"
+                                >{{ orderName }}</span
+                            >
+                            <p>{{ $t('user.free.clickToCopyNote') }}</p>
+                        </div>
                     </div>
-                    <p v-else class="empty-text">
-                        {{ $t('user.free.planQrEmpty') }}
-                    </p>
-                    <div class="plan-order-status">
-                        <span class="plan-order-spinner"></span>
-                        <span>{{ $t('user.free.orderChecking') }}</span>
+                    <div
+                        v-else-if="orderPollingState === 'success'"
+                        class="plan-order-status"
+                    >
+                        <p class="order-success-message">
+                            {{ $t('user.free.paymentSuccess') }}
+                            <strong>{{ planEmail }}</strong>
+                        </p>
+                    </div>
+                    <div
+                        v-else-if="orderPollingState === 'fail'"
+                        class="plan-order-status"
+                    >
+                        <p>{{ $t('user.free.orderFail') }}</p>
                     </div>
                 </template>
             </div>
@@ -254,6 +295,8 @@ export default {
             qrcodeVisible: false,
             shareLink: '',
             orderPollingInterval: null,
+            orderName: '',
+            orderPollingState: 'idle',
             account: {
                 username: '',
                 uuid: '',
@@ -403,6 +446,7 @@ export default {
             this.planOrderCreated = false
             this.planCodeDigits = ['', '', '', '', '', '']
             this.planCodeRefs = []
+            this.orderName = ''
             this.planDialogVisible = true
         },
         async handleGetPlanCode() {
@@ -470,6 +514,8 @@ export default {
                     return
                 }
                 this.planOrderCreated = true
+                this.orderName = result.data?.order_name || ''
+                this.orderPollingState = 'pending'
                 this.startOrderPolling()
             } catch (error) {
                 ElMessage.error(this.$t('user.free.orderCreateFail'))
@@ -514,7 +560,7 @@ export default {
             this.orderStatus() // 立即调用一次
             this.orderPollingInterval = setInterval(() => {
                 this.orderStatus()
-            }, 60000) // 每分钟调用一次
+            }, 60000) // 每1分钟调用一次
         },
         stopOrderPolling() {
             if (this.orderPollingInterval) {
@@ -526,14 +572,14 @@ export default {
             if (
                 !this.planEmail ||
                 !this.planCodeDigits.join('') ||
-                !this.selectedPlan?.name
+                !this.orderName
             ) {
                 return
             }
             const formData = new FormData()
             formData.set('email', this.planEmail)
             formData.set('code', this.planCodeDigits.join(''))
-            formData.set('order_name', this.selectedPlan.name)
+            formData.set('order_name', this.orderName)
             try {
                 const result = await orderStatus(formData)
                 if (result.code === 200 && result.message === 'success') {
@@ -541,13 +587,18 @@ export default {
                     const status = data.status
                     if (status === 'success') {
                         this.stopOrderPolling()
-                        ElMessage.success(this.$t('user.free.orderSuccess'))
-                        this.planDialogVisible = false
-                        // 可以在这里添加跳转到支付页面或其他逻辑
+                        this.orderPollingState = 'success'
+                        const successMessage = `${this.$t('user.free.paymentSuccess')}${this.planEmail}`
+                        ElMessage.success(successMessage)
+                        // 30秒后自动关闭弹窗
+                        setTimeout(() => {
+                            this.planDialogVisible = false
+                        }, 30000)
                     } else if (status === 'fail' || status === 'expired') {
                         this.stopOrderPolling()
-                        ElMessage.error(this.$t('user.free.orderFail'))
+                        this.orderPollingState = 'fail'
                         this.planOrderCreated = false
+                        ElMessage.error(this.$t('user.free.orderFail'))
                     }
                     // 如果是 pending 或其他状态，继续轮询
                 }
@@ -814,11 +865,31 @@ export default {
 
 .plan-order-status {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
     gap: 8px;
     color: #0d6efd;
     font-weight: 600;
+}
+
+.order-success-message {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1f7afc;
+    margin: 6px 0;
+    text-align: center;
+}
+
+.order-success-message strong {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #0b558e;
+}
+
+.order-checking-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .plan-order-spinner {

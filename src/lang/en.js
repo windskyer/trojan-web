@@ -94,7 +94,8 @@ export default {
     user: {
         tg_username: "Telegram Username",
         email: "Email",
-        uuid: "UUID",
+        uuid: "uuid",
+        password: 'Password',
         upload: 'upload',
         download: 'download',
         total: 'total',
@@ -147,6 +148,7 @@ export default {
         free: {
             title: 'Free Account Preview',
             tip1: '• 🚀 Faster experience: upgrade to a paid plan for instant 8K-ready speed and stable connections.',
+            uuid: 'UUID',
             tip2: '• 🛡️ Reliable access: dedicated native IP for smoother access to Netflix, Disney+, and ChatGPT.',
             tip3: '• 📊 More traffic, less worry: premium plans offer up to 2TB traffic, averaging as low as ￥3.3/month.',
             tip4: '• 🎧 Dedicated support: 1-on-1 assistance for connection issues whenever you need help.',
@@ -154,7 +156,6 @@ export default {
             emptySubscription: 'No subscription URL',
             accountInfo: 'Free account details:',
             username: 'Username',
-            uuid: 'UUID',
             password: 'Password',
             traffic: 'Traffic',
             expiryDate: 'Expiry Date',
@@ -179,7 +180,11 @@ export default {
             fetchFail: 'Failed to fetch free account info',
             orderCreateFail: 'Failed to create order, please try again',
             orderSuccess: 'Order payment successful',
-            orderFail: 'Order payment failed'
+            accountSentToEmail: 'Account has been sent to your email',
+            paymentSuccess: 'Payment successful, VPN account info has been sent to the email:',
+            orderFail: 'Order payment failed',
+            paymentNote: 'Please be sure to fill in the order number in the payment remarks:',
+            clickToCopyNote: '(Click to copy) If not filled in, automatic delivery will not be possible.'
         },
         pay: {
             title: 'Order Payment',
@@ -234,6 +239,7 @@ export default {
             repurchase: 'Buy Again'
         },
         info: {
+            uuid: 'UUID',
             accountTitle: '👤 Profile - Account Status',
             username: '🆔 Username',
             email: '📧 Email',

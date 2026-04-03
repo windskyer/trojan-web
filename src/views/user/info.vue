@@ -5,6 +5,10 @@
             <div class="divider"></div>
             <p>{{ $t('user.info.username') }}: {{ user.username }}</p>
             <p>{{ $t('user.info.email') }}: {{ user.email }}</p>
+            <p>
+                {{ $t('user.info.uuid') }}:
+                {{ user.uuid }}
+            </p>
             <p>{{ $t('user.info.tgUsername') }}: {{ user.tgUsername }}</p>
             <p>{{ $t('user.info.linkPassword') }}: {{ user.password }}</p>
         </div>
@@ -170,7 +174,7 @@
 </template>
 
 <script>
-import { userInfo, planList } from '@/api/user'
+import { planList, userInfo } from '@/api/user'
 import { readableBytes } from '@/utils/common'
 import { Grid, Link as LinkIcon } from '@element-plus/icons-vue'
 import QRCode from 'easyqrcodejs'
@@ -187,6 +191,7 @@ export default {
         return {
             user: {
                 username: '',
+                uuid: '',
                 email: '',
                 tgUsername: '',
                 password: '',
@@ -376,6 +381,7 @@ export default {
                         this.bytesToGB(quotaBytes),
                 )
                 this.user = {
+                    uuid: userinfo.uuid || userinfo.UUID || '',
                     username: userinfo.username || userinfo.Username || '',
                     email: userinfo.email || userinfo.Email || '',
                     tgUsername:

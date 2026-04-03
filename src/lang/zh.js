@@ -115,7 +115,8 @@ export default {
     user: {
         tg_username: "Telegram 账号",
         email: "邮箱",
-        uuid: "UUID",
+        uuid: "uuid",
+        password: '密码',
         upload: '上传流量',
         download: '下载流量',
         total: '总流量',
@@ -167,6 +168,7 @@ export default {
         free: {
             title: '免费账号体验：',
             tip1: '• 🚀 极速体验：升级付费套餐，畅享 8K 秒开与高速稳定连接。',
+            uuid: 'UUID',
             tip2: '• 🛡️ 稳定解锁：独享原生 IP，轻松访问 Netflix、Disney+、ChatGPT。',
             tip3: '• 📊 大流量更省心：至尊版最高可享 2TB 流量，月均低至 ￥3.3。',
             tip4: '• 🎧 专属支持：1 对 1 客服协助，连接问题及时处理。',
@@ -174,7 +176,6 @@ export default {
             emptySubscription: '暂无订阅地址',
             accountInfo: '免费账号信息:',
             username: '用户名',
-            uuid: 'UUID',
             password: '密码',
             traffic: '流量',
             expiryDate: '到期时间',
@@ -199,7 +200,11 @@ export default {
             fetchFail: '获取免费账号信息失败',
             orderCreateFail: '创建订单失败，请重试',
             orderSuccess: '订单支付成功',
-            orderFail: '订单支付失败'
+            accountSentToEmail: '账号已经发送到您的邮件',
+            paymentSuccess: '支付成功，VPN账号信息已经发送到对应的邮箱：',
+            orderFail: '订单支付失败',
+            paymentNote: '请务必在付款备注中填写订单号：',
+            clickToCopyNote: '（点击可复制）未填写将无法自动下发。'
         },
         pay: {
             title: '订单支付',
@@ -254,6 +259,7 @@ export default {
             repurchase: '重新购买'
         },
         info: {
+            uuid: 'UUID',
             accountTitle: '👤 个人中心 - 账号状态',
             username: '🆔 用户名',
             email: '📧 绑定邮箱',
