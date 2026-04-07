@@ -6,6 +6,7 @@
             <p>{{ $t('user.info.username') }}: {{ user.username }}</p>
             <p>{{ $t('user.info.email') }}: {{ user.email }}</p>
             <p>
+                <el-icon class="label-icon"><Key /></el-icon>
                 {{ $t('user.info.uuid') }}:
                 {{ user.uuid }}
             </p>
@@ -121,8 +122,13 @@
             <h2>{{ $t('user.info.planListTitle') }}</h2>
             <div class="divider"></div>
 
-            <div v-if="plans.length > 0" class="plan-grid">
-                <div v-for="plan in plans" :key="plan.name" class="plan-card">
+            <div v-if="paidPlans.length > 0" class="plan-grid">
+                <div
+                    v-for="plan in paidPlans"
+                    :key="plan.name"
+                    class="plan-card"
+                    @click="openPlanDialog(plan)"
+                >
                     <p class="plan-label">{{ plan.label }}</p>
                     <p class="plan-price">¥{{ formatPlanPrice(plan.price) }}</p>
                     <p>
@@ -149,12 +155,9 @@
             <div class="expiry-actions">
                 <el-button
                     :type="remainDays <= 7 ? 'danger' : 'primary'"
-                    @click="openRenewBot"
+                    @click="openPlanListDialog"
                     >{{ renewButtonText }}</el-button
                 >
-                <el-button type="info" plain @click="openDetailPage">{{
-                    $t('user.info.viewDetail')
-                }}</el-button>
             </div>
         </div>
 
@@ -170,21 +173,234 @@
         >
             <div ref="qrcode" class="qrcodeCenter"></div>
         </el-dialog>
+
+        <el-dialog
+            class="plan-dialog"
+            :title="
+                selectedPlan
+                    ? selectedPlan.label
+                    : $t('user.free.planListTitle')
+            "
+            v-model="planDialogVisible"
+            width="420px"
+            :show-close="true"
+            :close-on-click-modal="false"
+            :close-on-press-escape="false"
+        >
+            <div v-if="!selectedPlan">
+                <div v-if="paidPlans.length > 0" class="plan-grid">
+                    <div
+                        v-for="plan in paidPlans"
+                        :key="`dialog-${plan.name}`"
+                        class="plan-card"
+                        @click="openPlanDialog(plan)"
+                    >
+                        <p class="plan-label">{{ plan.label }}</p>
+                        <p class="plan-price">
+                            ¥{{ formatPlanPrice(plan.price) }}
+                        </p>
+                        <p>
+                            {{ $t('user.free.planDuration') }}:
+                            {{ plan.duration_days }} {{ $t('user.days') }}
+                        </p>
+                        <p>
+                            {{ $t('user.free.planTraffic') }}:
+                            {{ plan.total_data_gb }}GB
+                        </p>
+                    </div>
+                </div>
+                <p v-else class="empty-text">
+                    {{ $t('user.free.emptyPlans') }}
+                </p>
+            </div>
+
+            <div v-else class="plan-dialog-content">
+                <el-button
+                    type="info"
+                    plain
+                    size="small"
+                    class="plan-back-btn"
+                    @click="backToPlanList"
+                >
+                    {{ $t('user.free.backToPlans') }}
+                </el-button>
+
+                <p class="plan-dialog-price">
+                    ¥{{ formatPlanPrice(selectedPlan.price) }}
+                </p>
+
+                <template v-if="!planOrderCreated">
+                    <el-input
+                        v-model="planEmail"
+                        type="email"
+                        :placeholder="$t('user.free.planEmailPlaceholder')"
+                        clearable
+                        @keyup.enter="handleCreatePlanOrder"
+                    />
+                    <p class="plan-dialog-tip">
+                        {{ $t('user.free.planEmailTip') }}
+                    </p>
+                    <el-button
+                        type="info"
+                        plain
+                        class="plan-submit-btn"
+                        @click="handleGetPlanCode"
+                    >
+                        {{ $t('user.free.getCode') }}
+                    </el-button>
+                    <div class="plan-code-row">
+                        <input
+                            v-for="(digit, index) in planCodeDigits"
+                            :key="`plan-code-${index}`"
+                            :ref="setPlanCodeRef"
+                            v-model="planCodeDigits[index]"
+                            class="plan-code-input"
+                            type="text"
+                            inputmode="numeric"
+                            maxlength="1"
+                            @input="handlePlanCodeInput(index, $event)"
+                            @keydown="handlePlanCodeKeydown(index, $event)"
+                        />
+                    </div>
+                    <el-button
+                        type="primary"
+                        class="plan-submit-btn"
+                        :disabled="!isPlanCodeComplete"
+                        @click="handleCreatePlanOrder"
+                    >
+                        {{ $t('user.free.createOrder') }}
+                    </el-button>
+                </template>
+
+                <template v-else>
+                    <div v-if="orderPollingState === 'pending'">
+                        <div
+                            v-if="selectedPlanImage"
+                            class="plan-dialog-qrcode"
+                        >
+                            <img
+                                :src="selectedPlanImage"
+                                :alt="selectedPlan.label"
+                                class="plan-dialog-image"
+                            />
+                        </div>
+                        <p v-else class="empty-text">
+                            {{ $t('user.free.planQrEmpty') }}
+                        </p>
+                        <div class="plan-order-status">
+                            <div class="order-checking-row">
+                                <span class="plan-order-spinner"></span>
+                                <span>{{ $t('user.free.orderChecking') }}</span>
+                            </div>
+                            <p>{{ $t('user.free.paymentNote') }}</p>
+                            <span
+                                class="copy-value"
+                                @click="copyText(orderName)"
+                                >{{ orderName }}</span
+                            >
+                            <p>{{ $t('user.free.clickToCopyNote') }}</p>
+                        </div>
+                    </div>
+                    <div
+                        v-else-if="orderPollingState === 'success'"
+                        class="plan-order-status plan-success"
+                    >
+                        <div class="plan-success-icon">✓</div>
+                        <p class="plan-success-title">
+                            {{ $t('user.free.paySuccessTitle') }}
+                        </p>
+                        <p class="plan-success-desc">
+                            {{ $t('user.free.paySuccessUpdated') }}
+                        </p>
+                        <p class="plan-success-desc">
+                            {{ $t('user.free.paySuccessSent') }}
+                            <strong>{{ planEmail }}</strong>
+                        </p>
+                        <div class="plan-success-meta">
+                            <p>{{ $t('user.free.paymentNote') }}</p>
+                            <span
+                                class="copy-value"
+                                @click="copyText(orderName)"
+                                >{{ orderName }}</span
+                            >
+                            <p>{{ $t('user.free.clickToCopyNote') }}</p>
+                            <p class="plan-success-fresh">
+                                {{ $t('user.info.expiryDate') }}:
+                                <strong>{{ user.expiryDate || '-' }}</strong>
+                            </p>
+                        </div>
+                        <div class="plan-success-steps">
+                            <p class="plan-success-steps-title">
+                                {{ $t('user.free.paySuccessStepTitle') }}
+                            </p>
+                            <ol class="plan-success-steps-list">
+                                <li>{{ $t('user.free.paySuccessStep1') }}</li>
+                                <li>
+                                    {{ $t('user.free.paySuccessStep2Prefix') }}
+                                    <router-link
+                                        class="inline-link"
+                                        to="/login"
+                                    >
+                                        {{
+                                            $t('user.free.paySuccessStep2Link')
+                                        }}
+                                    </router-link>
+                                    {{ $t('user.free.paySuccessStep2Suffix') }}
+                                </li>
+                                <li>
+                                    {{ $t('user.free.paySuccessStep3Prefix') }}
+                                    <a
+                                        class="inline-link"
+                                        :href="supportBotLink"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        {{
+                                            $t('user.free.paySuccessStep3Link')
+                                        }}
+                                    </a>
+                                    {{ $t('user.free.paySuccessStep3Suffix') }}
+                                </li>
+                            </ol>
+                        </div>
+                        <div class="plan-success-actions">
+                            <el-button
+                                type="primary"
+                                @click="planDialogVisible = false"
+                            >
+                                {{ $t('user.free.paySuccessClose') }}
+                            </el-button>
+                        </div>
+                    </div>
+                    <div
+                        v-else-if="orderPollingState === 'fail'"
+                        class="plan-order-status"
+                    >
+                        <p>{{ $t('user.free.orderFail') }}</p>
+                    </div>
+                </template>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
+import { generateOrder, orderStatus, sendCode } from '@/api/email'
 import { planList, userInfo } from '@/api/user'
 import { readableBytes } from '@/utils/common'
-import { Grid, Link as LinkIcon } from '@element-plus/icons-vue'
+import { Grid, Key, Link as LinkIcon } from '@element-plus/icons-vue'
 import QRCode from 'easyqrcodejs'
 
 const BYTES_PER_GB = 1024 * 1024 * 1024
+const BASE_URL = import.meta.env.BASE_URL || '/'
+const SUPPORT_BOT_LINK = 'https://t.me/TrojanAccess_bot?start=help'
+const mailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export default {
     name: 'UserInfo',
     components: {
         Grid,
+        Key,
         LinkIcon,
     },
     data() {
@@ -205,11 +421,27 @@ export default {
             plans: [],
             qrcodeVisible: false,
             shareLink: '',
+            planDialogVisible: false,
+            selectedPlan: null,
+            planEmail: '',
+            planOrderCreated: false,
+            planCodeDigits: ['', '', '', '', '', ''],
+            planCodeRefs: [],
+            orderPollingInterval: null,
+            orderName: '',
+            orderPollingState: 'idle',
         }
     },
     created() {
         this.getUserInfo()
         this.getPlanList()
+    },
+    watch: {
+        planDialogVisible(newVal) {
+            if (!newVal) {
+                this.resetPlanDialogState()
+            }
+        },
     },
     computed: {
         usedPercent() {
@@ -278,6 +510,21 @@ export default {
                 ? this.$t('user.info.renewUrgent')
                 : this.$t('user.info.renew')
         },
+        paidPlans() {
+            return (this.plans || []).filter((plan) => {
+                const name = String(plan?.name || '').toLowerCase()
+                return name && name !== 'free'
+            })
+        },
+        isPlanCodeComplete() {
+            return this.planCodeDigits.join('').length === 6
+        },
+        selectedPlanImage() {
+            return this.resolvePlanImage(this.selectedPlan?.image_path || '')
+        },
+        supportBotLink() {
+            return SUPPORT_BOT_LINK
+        },
     },
     methods: {
         bytesToGB(bytes) {
@@ -314,15 +561,18 @@ export default {
                 return password
             }
         },
-        encodeStartValue(value) {
-            if (!value) {
+        resolvePlanImage(path) {
+            if (!path) {
                 return ''
             }
-            try {
-                return btoa(value)
-            } catch (error) {
-                return ''
+            if (/^https?:\/\//.test(path)) {
+                return path
             }
+            const normalizedBase = BASE_URL.endsWith('/')
+                ? BASE_URL
+                : `${BASE_URL}/`
+            const normalizedPath = String(path).replace(/^\/+/, '')
+            return `${normalizedBase}${normalizedPath}`
         },
         async copyText(text) {
             try {
@@ -332,21 +582,168 @@ export default {
                 this.$message.error(this.$t('user.info.copyFail'))
             }
         },
-        openRenewBot() {
-            const startParam = encodeURIComponent(
-                this.encodeStartValue(`buy_${this.user.email}` || 'buy'),
-            )
-            const url = `https://t.me/TrojanAccess_bot?start=${startParam}`
-            window.open(url, '_blank')
+        resetPlanDialogState() {
+            this.stopOrderPolling()
+            this.planDialogVisible = false
+            this.selectedPlan = null
+            this.planEmail = ''
+            this.planOrderCreated = false
+            this.planCodeDigits = ['', '', '', '', '', '']
+            this.planCodeRefs = []
+            this.orderName = ''
+            this.orderPollingState = 'idle'
         },
-        openDetailPage() {
-            const startValue = encodeURIComponent(
-                this.encodeStartValue(
-                    this.user.email ? `me_${this.user.email}` : 'me',
-                ),
-            )
-            const url = `https://t.me/TrojanAccess_bot?start=${startValue}`
-            window.open(url, '_blank')
+        openPlanListDialog() {
+            this.resetPlanDialogState()
+            this.planDialogVisible = true
+        },
+        backToPlanList() {
+            this.stopOrderPolling()
+            this.selectedPlan = null
+            this.planOrderCreated = false
+            this.planCodeDigits = ['', '', '', '', '', '']
+            this.planCodeRefs = []
+            this.orderName = ''
+            this.orderPollingState = 'idle'
+        },
+        openPlanDialog(plan) {
+            if (!plan || String(plan.name || '').toLowerCase() === 'free') {
+                return
+            }
+            this.stopOrderPolling()
+            this.selectedPlan = plan || null
+            this.planEmail = mailReg.test(this.user.email)
+                ? this.user.email
+                : ''
+            this.planOrderCreated = false
+            this.planCodeDigits = ['', '', '', '', '', '']
+            this.planCodeRefs = []
+            this.orderName = ''
+            this.orderPollingState = 'idle'
+            this.planDialogVisible = true
+        },
+        async handleGetPlanCode() {
+            if (!this.planEmail || !mailReg.test(this.planEmail)) {
+                this.$message.error(this.$t('mailError'))
+                return
+            }
+            const formData = new FormData()
+            formData.set('email', this.planEmail)
+            const result = await sendCode(formData)
+            if (result.code !== 200 || result.message !== 'success') {
+                return
+            }
+            this.$message.success(this.$t('user.free.codeSent'))
+            this.$nextTick(() => {
+                const firstInput = this.planCodeRefs[0]
+                if (firstInput?.focus) {
+                    firstInput.focus()
+                }
+            })
+        },
+        setPlanCodeRef(el) {
+            if (!el) {
+                return
+            }
+            if (!this.planCodeRefs.includes(el)) {
+                this.planCodeRefs.push(el)
+            }
+        },
+        handlePlanCodeInput(index, event) {
+            const value = String(event?.target?.value || '').replace(/\D/g, '')
+            this.planCodeDigits[index] = value.slice(-1)
+            if (value && index < this.planCodeRefs.length - 1) {
+                this.planCodeRefs[index + 1]?.focus?.()
+            }
+        },
+        handlePlanCodeKeydown(index, event) {
+            if (
+                event.key === 'Backspace' &&
+                !this.planCodeDigits[index] &&
+                index > 0
+            ) {
+                this.planCodeRefs[index - 1]?.focus?.()
+            }
+        },
+        async handleCreatePlanOrder() {
+            if (!this.planEmail || !mailReg.test(this.planEmail)) {
+                this.$message.error(this.$t('mailError'))
+                return
+            }
+            if (this.planCodeDigits.join('').length !== 6) {
+                this.$message.error(this.$t('user.free.codeInvalid'))
+                return
+            }
+            if (!this.selectedPlan?.name) {
+                return
+            }
+            const formData = new FormData()
+            formData.set('email', this.planEmail)
+            formData.set('code', this.planCodeDigits.join(''))
+            formData.set('plan_name', this.selectedPlan.name)
+            try {
+                const result = await generateOrder(formData)
+                if (result.code !== 200 || result.message !== 'success') {
+                    this.$message.error(
+                        result.message || this.$t('user.free.orderCreateFail'),
+                    )
+                    return
+                }
+                this.planOrderCreated = true
+                this.orderName = result.data?.order_name || ''
+                this.orderPollingState = 'pending'
+                this.startOrderPolling()
+            } catch (error) {
+                this.$message.error(this.$t('user.free.orderCreateFail'))
+            }
+        },
+        startOrderPolling() {
+            this.stopOrderPolling()
+            this.checkOrderStatus()
+            this.orderPollingInterval = setInterval(() => {
+                this.checkOrderStatus()
+            }, 60000)
+        },
+        stopOrderPolling() {
+            if (this.orderPollingInterval) {
+                clearInterval(this.orderPollingInterval)
+                this.orderPollingInterval = null
+            }
+        },
+        async checkOrderStatus() {
+            if (
+                !this.planEmail ||
+                !this.planCodeDigits.join('') ||
+                !this.orderName
+            ) {
+                return
+            }
+            const formData = new FormData()
+            formData.set('email', this.planEmail)
+            formData.set('code', this.planCodeDigits.join(''))
+            formData.set('order_name', this.orderName)
+            try {
+                const result = await orderStatus(formData)
+                if (result.code === 200 && result.message === 'success') {
+                    const data = result.data || {}
+                    const status = data.status
+                    if (status === 'success') {
+                        this.stopOrderPolling()
+                        this.orderPollingState = 'success'
+                        this.$message.success(
+                            `${this.$t('user.free.paymentSuccess')}${this.planEmail}`,
+                        )
+                        this.getUserInfo()
+                    } else if (status === 'fail' || status === 'expired') {
+                        this.stopOrderPolling()
+                        this.orderPollingState = 'fail'
+                        this.planOrderCreated = false
+                        this.$message.error(this.$t('user.free.orderFail'))
+                    }
+                }
+            } catch (error) {
+                console.error('Order status check failed:', error)
+            }
         },
         async getUserInfo() {
             try {
@@ -481,6 +878,12 @@ export default {
     word-break: break-all;
 }
 
+.label-icon {
+    margin-right: 4px;
+    vertical-align: -2px;
+    color: var(--el-text-color-secondary);
+}
+
 .link-block + .link-block {
     margin-top: 8px;
 }
@@ -566,6 +969,8 @@ export default {
 
 .expiry-actions {
     margin-top: 12px;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .plan-grid {
@@ -579,6 +984,17 @@ export default {
     border-radius: 10px;
     border: 1px solid var(--el-border-color-lighter);
     background: var(--el-fill-color-extra-light);
+    cursor: pointer;
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.plan-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--el-color-primary-light-5);
+    box-shadow: 0 10px 24px rgba(13, 110, 253, 0.08);
 }
 
 .plan-label {
@@ -591,6 +1007,206 @@ export default {
     font-size: 22px;
     font-weight: 700;
     color: #0d6efd;
+}
+
+.empty-text {
+    color: var(--el-text-color-secondary);
+}
+
+.copy-value {
+    color: #0d6efd;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.plan-dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.plan-back-btn {
+    align-self: flex-start;
+}
+
+.plan-dialog-price {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #0d6efd;
+    text-align: center;
+}
+
+.plan-dialog-tip {
+    margin: -4px 0 0;
+    color: var(--el-text-color-secondary);
+    font-size: 12px;
+}
+
+.plan-submit-btn {
+    width: 100%;
+}
+
+.plan-code-row {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+}
+
+.plan-code-input {
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--el-border-color);
+    border-radius: 10px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    background: var(--el-bg-color);
+    color: var(--el-text-color-primary);
+    outline: none;
+}
+
+.plan-code-input:focus {
+    border-color: var(--el-color-primary);
+    box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.15);
+}
+
+.plan-dialog-qrcode {
+    display: flex;
+    justify-content: center;
+}
+
+.plan-dialog-image {
+    width: 220px;
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    border: 1px solid var(--el-border-color-lighter);
+}
+
+.plan-order-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: #0d6efd;
+    font-weight: 600;
+}
+
+.plan-success {
+    color: var(--el-text-color-primary);
+    font-weight: 500;
+}
+
+.plan-success-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b4b61, #1f2a38);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 60px;
+    text-align: center;
+    margin-top: 6px;
+}
+
+.plan-success-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f7afc;
+    text-align: center;
+}
+
+.plan-success-desc {
+    margin: 0;
+    text-align: center;
+    color: var(--el-text-color-regular);
+}
+
+.plan-success-desc strong {
+    font-weight: 800;
+    color: #0b558e;
+}
+
+.plan-success-meta {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--el-border-color-lighter);
+    background: var(--el-fill-color-extra-light);
+    text-align: center;
+}
+
+.plan-success-meta p {
+    margin: 0;
+    color: var(--el-text-color-secondary);
+    font-weight: 500;
+}
+
+.plan-success-fresh {
+    margin-top: 8px !important;
+}
+
+.plan-success-fresh strong {
+    font-weight: 800;
+    color: #0b558e;
+}
+
+.plan-success-steps {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--el-border-color-lighter);
+    background: var(--el-bg-color);
+}
+
+.plan-success-steps-title {
+    margin: 0 0 6px;
+    font-weight: 700;
+}
+
+.plan-success-steps-list {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--el-text-color-regular);
+    line-height: 1.6;
+}
+
+.plan-success-actions {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+}
+
+.plan-success-actions :deep(.el-button) {
+    flex: 1 1 0;
+}
+
+.inline-link {
+    color: #00e0ff;
+    text-decoration: underline;
+}
+
+.inline-link:hover {
+    opacity: 0.85;
+}
+
+.order-checking-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.plan-order-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(13, 110, 253, 0.2);
+    border-top-color: #0d6efd;
+    border-radius: 50%;
+    animation: plan-spin 0.9s linear infinite;
 }
 
 .qrcodeCenter {
@@ -617,5 +1233,15 @@ export default {
     padding: 4px 0;
     border-top: 1px dashed rgba(0, 0, 0, 0.2);
     border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
+}
+
+@keyframes plan-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
 </style>

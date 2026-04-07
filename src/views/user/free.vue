@@ -8,27 +8,12 @@
                 <p>{{ $t('user.free.tip2') }}</p>
                 <p>{{ $t('user.free.tip3') }}</p>
                 <p>{{ $t('user.free.tip4') }}</p>
+                <p>{{ $t('user.free.tip5') }}</p>
+                <p>{{ $t('user.free.tip6') }}</p>
+                <p>{{ $t('user.free.tip7') }}</p>
 
                 <div class="divider"></div>
                 <p class="subtitle">{{ $t('user.free.accountInfo') }}</p>
-                <p>
-                    {{ $t('user.free.username') }}：
-                    <span
-                        class="copy-value"
-                        @click="account.username && copyText(account.username)"
-                    >
-                        {{ account.username || '-' }}
-                    </span>
-                </p>
-                <p>
-                    {{ $t('user.free.uuid') }}：
-                    <span
-                        class="copy-value"
-                        @click="account.uuid && copyText(account.uuid)"
-                    >
-                        {{ account.uuid || '-' }}
-                    </span>
-                </p>
                 <p>
                     {{ $t('user.free.password') }}：
                     <span
@@ -245,12 +230,67 @@
                     </div>
                     <div
                         v-else-if="orderPollingState === 'success'"
-                        class="plan-order-status"
+                        class="plan-order-status plan-success"
                     >
-                        <p class="order-success-message">
-                            {{ $t('user.free.paymentSuccess') }}
+                        <div class="plan-success-icon">✓</div>
+                        <p class="plan-success-title">
+                            {{ $t('user.free.paySuccessTitle') }}
+                        </p>
+                        <p class="plan-success-desc">
+                            {{ $t('user.free.paySuccessSent') }}
                             <strong>{{ planEmail }}</strong>
                         </p>
+                        <div class="plan-success-meta">
+                            <p>{{ $t('user.free.paymentNote') }}</p>
+                            <span
+                                class="copy-value"
+                                @click="copyText(orderName)"
+                                >{{ orderName }}</span
+                            >
+                            <p>{{ $t('user.free.clickToCopyNote') }}</p>
+                        </div>
+                        <div class="plan-success-steps">
+                            <p class="plan-success-steps-title">
+                                {{ $t('user.free.paySuccessStepTitle') }}
+                            </p>
+                            <ol class="plan-success-steps-list">
+                                <li>{{ $t('user.free.paySuccessStep1') }}</li>
+                                <li>
+                                    {{ $t('user.free.paySuccessStep2Prefix') }}
+                                    <router-link
+                                        class="inline-link"
+                                        to="/login"
+                                    >
+                                        {{
+                                            $t('user.free.paySuccessStep2Link')
+                                        }}
+                                    </router-link>
+                                    {{ $t('user.free.paySuccessStep2Suffix') }}
+                                </li>
+                                <li>
+                                    {{ $t('user.free.paySuccessStep3Prefix') }}
+                                    <a
+                                        class="inline-link"
+                                        :href="supportBotLink"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        {{
+                                            $t('user.free.paySuccessStep3Link')
+                                        }}
+                                    </a>
+                                    {{ $t('user.free.paySuccessStep3Suffix') }}
+                                </li>
+                            </ol>
+                        </div>
+                        <div class="plan-success-actions">
+                            <el-button type="primary" @click="goLogin">
+                                {{ $t('user.free.paySuccessGoLogin') }}
+                            </el-button>
+                            <el-button plain @click="planDialogVisible = false">
+                                {{ $t('user.free.paySuccessClose') }}
+                            </el-button>
+                        </div>
                     </div>
                     <div
                         v-else-if="orderPollingState === 'fail'"
@@ -273,6 +313,7 @@ import QRCode from 'easyqrcodejs'
 import { ElMessage } from 'element-plus'
 
 const BASE_URL = import.meta.env.BASE_URL || '/'
+const SUPPORT_BOT_LINK = 'https://t.me/TrojanAccess_bot?start=help'
 const mailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export default {
@@ -590,10 +631,6 @@ export default {
                         this.orderPollingState = 'success'
                         const successMessage = `${this.$t('user.free.paymentSuccess')}${this.planEmail}`
                         ElMessage.success(successMessage)
-                        // 30秒后自动关闭弹窗
-                        setTimeout(() => {
-                            this.planDialogVisible = false
-                        }, 30000)
                     } else if (status === 'fail' || status === 'expired') {
                         this.stopOrderPolling()
                         this.orderPollingState = 'fail'
@@ -613,6 +650,9 @@ export default {
         },
         selectedPlanImage() {
             return this.resolvePlanImage(this.selectedPlan?.image_path || '')
+        },
+        supportBotLink() {
+            return SUPPORT_BOT_LINK
         },
     },
 }
@@ -872,18 +912,96 @@ export default {
     font-weight: 600;
 }
 
-.order-success-message {
-    font-size: 1.05rem;
+.plan-success {
+    color: var(--el-text-color-primary);
+    font-weight: 500;
+}
+
+.plan-success-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b4b61, #1f2a38);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 60px;
+    text-align: center;
+    margin-top: 6px;
+}
+
+.plan-success-title {
+    margin: 0;
+    font-size: 18px;
     font-weight: 700;
     color: #1f7afc;
-    margin: 6px 0;
     text-align: center;
 }
 
-.order-success-message strong {
-    font-size: 1.1rem;
+.plan-success-desc {
+    margin: 0;
+    text-align: center;
+    color: var(--el-text-color-regular);
+}
+
+.plan-success-desc strong {
     font-weight: 800;
     color: #0b558e;
+}
+
+.plan-success-meta {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--el-border-color-lighter);
+    background: var(--el-fill-color-extra-light);
+    text-align: center;
+}
+
+.plan-success-meta p {
+    margin: 0;
+    color: var(--el-text-color-secondary);
+    font-weight: 500;
+}
+
+.plan-success-steps {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--el-border-color-lighter);
+    background: var(--el-bg-color);
+}
+
+.plan-success-steps-title {
+    margin: 0 0 6px;
+    font-weight: 700;
+}
+
+.plan-success-steps-list {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--el-text-color-regular);
+    line-height: 1.6;
+}
+
+.plan-success-actions {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+}
+
+.plan-success-actions :deep(.el-button) {
+    flex: 1 1 0;
+}
+
+.inline-link {
+    color: #00e0ff;
+    text-decoration: underline;
+}
+
+.inline-link:hover {
+    opacity: 0.85;
 }
 
 .order-checking-row {
