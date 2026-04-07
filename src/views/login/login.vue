@@ -80,6 +80,12 @@
             >
                 {{ $t('register') }}
             </el-button>
+
+            <div class="extra-links">
+                <router-link class="extra-link" to="/free">
+                    {{ $t('user.free.entry') }}
+                </router-link>
+            </div>
         </el-form>
 
         <!-- 右下角浮动按钮 -->
@@ -329,6 +335,21 @@ $light_gray: #eee;
         color: $dark_gray;
         cursor: pointer;
         user-select: none;
+    }
+
+    .extra-links {
+        margin-top: -10px;
+        text-align: center;
+    }
+
+    .extra-link {
+        color: #00e0ff;
+        font-size: 14px;
+        text-decoration: none;
+    }
+
+    .extra-link:hover {
+        text-decoration: underline;
     }
 }
 

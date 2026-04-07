@@ -146,6 +146,7 @@ export default {
         cancelExpireSuccess: 'cancel expire success!',
         remaining: 'remaining days',
         free: {
+            entry: 'Free Trial',
             title: 'Free Account Preview',
             tip1: '• 🚀 Faster experience: upgrade to a paid plan for instant 8K-ready speed and stable connections.',
             uuid: 'UUID',

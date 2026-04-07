@@ -166,6 +166,7 @@ export default {
         cancelExpireSuccess: '取消用户限期成功!',
         remaining: '剩余天数',
         free: {
+            entry: '免费体验',
             title: '免费账号体验：',
             tip1: '• 🚀 极速体验：升级付费套餐，畅享 8K 秒开与高速稳定连接。',
             uuid: 'UUID',

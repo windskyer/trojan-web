@@ -86,6 +86,12 @@
                     {{ $t('register') }}
                 </el-button>
             </el-form-item>
+
+            <div class="extra-links">
+                <router-link class="extra-link" to="/free">
+                    {{ $t('user.free.entry') }}
+                </router-link>
+            </div>
         </el-form>
 
         <!-- 注册成功弹窗 -->
@@ -471,6 +477,21 @@ $light_gray: #eee;
         margin-top: 20px;
         font-size: 14px;
         color: #5a6d7a;
+    }
+
+    .extra-links {
+        margin-top: -10px;
+        text-align: center;
+    }
+
+    .extra-link {
+        color: #00e0ff;
+        font-size: 14px;
+        text-decoration: none;
+    }
+
+    .extra-link:hover {
+        text-decoration: underline;
     }
 }
 
