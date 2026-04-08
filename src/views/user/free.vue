@@ -628,7 +628,7 @@ export default {
             this.orderStatus() // 立即调用一次
             this.orderPollingInterval = setInterval(() => {
                 this.orderStatus()
-            }, 60000) // 每1分钟调用一次
+            }, 5000) // 每5秒调用一次
         },
         stopOrderPolling() {
             if (this.orderPollingInterval) {

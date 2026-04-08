@@ -726,7 +726,7 @@ export default {
             this.checkOrderStatus()
             this.orderPollingInterval = setInterval(() => {
                 this.checkOrderStatus()
-            }, 60000)
+            }, 5000)
         },
         stopOrderPolling() {
             if (this.orderPollingInterval) {
