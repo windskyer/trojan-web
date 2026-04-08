@@ -129,7 +129,10 @@
                     class="plan-card"
                     @click="openPlanDialog(plan)"
                 >
-                    <p class="plan-label">{{ plan.label }}</p>
+                    <p class="plan-label">{{ getPlanLabel(plan) }}</p>
+                    <p v-if="getPlanDescription(plan)" class="plan-desc">
+                        {{ getPlanDescription(plan) }}
+                    </p>
                     <p class="plan-price">¥{{ formatPlanPrice(plan.price) }}</p>
                     <p>
                         {{ $t('user.info.planDuration') }}:
@@ -178,7 +181,7 @@
             class="plan-dialog"
             :title="
                 selectedPlan
-                    ? selectedPlan.label
+                    ? getPlanLabel(selectedPlan)
                     : $t('user.free.planListTitle')
             "
             v-model="planDialogVisible"
@@ -195,7 +198,10 @@
                         class="plan-card"
                         @click="openPlanDialog(plan)"
                     >
-                        <p class="plan-label">{{ plan.label }}</p>
+                        <p class="plan-label">{{ getPlanLabel(plan) }}</p>
+                        <p v-if="getPlanDescription(plan)" class="plan-desc">
+                            {{ getPlanDescription(plan) }}
+                        </p>
                         <p class="plan-price">
                             ¥{{ formatPlanPrice(plan.price) }}
                         </p>
@@ -280,7 +286,7 @@
                         >
                             <img
                                 :src="selectedPlanImage"
-                                :alt="selectedPlan.label"
+                                :alt="getPlanLabel(selectedPlan)"
                                 class="plan-dialog-image"
                             />
                         </div>
@@ -572,6 +578,27 @@ export default {
                 : `${BASE_URL}/`
             const normalizedPath = String(path).replace(/^\/+/, '')
             return `${normalizedBase}${normalizedPath}`
+        },
+        getCurrentLocale() {
+            const locale = this.$i18n?.locale
+            return typeof locale === 'string' ? locale : locale?.value || 'en'
+        },
+        isZhLocale() {
+            return String(this.getCurrentLocale() || '')
+                .toLowerCase()
+                .startsWith('zh')
+        },
+        getPlanLabel(plan) {
+            const zhLabel = plan?.label
+            const enLabel = plan?.label_en
+            const selected = this.isZhLocale() ? zhLabel : enLabel
+            return selected || zhLabel || enLabel || ''
+        },
+        getPlanDescription(plan) {
+            const zhDesc = plan?.description
+            const enDesc = plan?.description_en
+            const selected = this.isZhLocale() ? zhDesc : enDesc
+            return selected || zhDesc || enDesc || ''
         },
         async copyText(text) {
             try {
@@ -997,6 +1024,13 @@ export default {
 .plan-label {
     margin: 0 0 6px;
     font-weight: 600;
+}
+
+.plan-desc {
+    margin: 0 0 8px;
+    color: var(--el-text-color-secondary);
+    font-size: 12px;
+    line-height: 1.6;
 }
 
 .plan-price {

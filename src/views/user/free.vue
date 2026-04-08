@@ -85,14 +85,20 @@
 
                 <div class="divider"></div>
                 <p class="subtitle">{{ $t('user.free.planListTitle') }}</p>
-                <div v-if="plans.length > 0" class="plan-grid">
+                <div v-if="paidPlans.length > 0" class="plan-grid">
                     <div
-                        v-for="plan in plans"
+                        v-for="plan in paidPlans"
                         :key="plan.name"
                         class="plan-card"
                         @click="openPlanDialog(plan)"
                     >
-                        <p class="plan-label">{{ plan.label }}</p>
+                        <p class="plan-label">{{ getPlanLabel(plan) }}</p>
+                        <p
+                            v-if="getPlanDescription(plan)"
+                            class="plan-desc"
+                        >
+                            {{ getPlanDescription(plan) }}
+                        </p>
                         <p class="plan-price">
                             ¥{{ formatPlanPrice(plan.price) }}
                         </p>
@@ -144,7 +150,7 @@
             class="plan-dialog"
             :title="
                 selectedPlan
-                    ? selectedPlan.label
+                    ? getPlanLabel(selectedPlan)
                     : $t('user.free.planListTitle')
             "
             v-model="planDialogVisible"
@@ -169,7 +175,7 @@
                         {{ $t('user.free.planEmailTip') }}
                     </p>
                     <el-button
-                        type="info"
+                        type="primary"
                         plain
                         class="plan-submit-btn"
                         @click="handleGetPlanCode"
@@ -207,7 +213,7 @@
                         >
                             <img
                                 :src="selectedPlanImage"
-                                :alt="selectedPlan.label"
+                                :alt="getPlanLabel(selectedPlan)"
                                 class="plan-dialog-image"
                             />
                         </div>
@@ -427,6 +433,27 @@ export default {
             const normalizedPath = String(path).replace(/^\/+/, '')
             return `${normalizedBase}${normalizedPath}`
         },
+        getCurrentLocale() {
+            const locale = this.$i18n?.locale
+            return typeof locale === 'string' ? locale : locale?.value || 'en'
+        },
+        isZhLocale() {
+            return String(this.getCurrentLocale() || '')
+                .toLowerCase()
+                .startsWith('zh')
+        },
+        getPlanLabel(plan) {
+            const zhLabel = plan?.label
+            const enLabel = plan?.label_en
+            const selected = this.isZhLocale() ? zhLabel : enLabel
+            return selected || zhLabel || enLabel || ''
+        },
+        getPlanDescription(plan) {
+            const zhDesc = plan?.description
+            const enDesc = plan?.description_en
+            const selected = this.isZhLocale() ? zhDesc : enDesc
+            return selected || zhDesc || enDesc || ''
+        },
         async getFreeUserInfo() {
             try {
                 const result = await freeUserInfo()
@@ -645,6 +672,12 @@ export default {
         },
     },
     computed: {
+        paidPlans() {
+            return (this.plans || []).filter((plan) => {
+                const name = String(plan?.name || '').toLowerCase()
+                return name && name !== 'free'
+            })
+        },
         isPlanCodeComplete() {
             return this.planCodeDigits.join('').length === 6
         },
@@ -833,6 +866,13 @@ export default {
 .plan-label {
     margin: 0 0 6px;
     font-weight: 600;
+}
+
+.plan-desc {
+    margin: 0 0 8px;
+    color: var(--el-text-color-secondary);
+    font-size: 12px;
+    line-height: 1.6;
 }
 
 .plan-price {
