@@ -204,7 +204,8 @@ export default {
             planTraffic: '流量',
             emptyPlans: '暂无套餐信息',
             planEmailPlaceholder: '请输入邮箱',
-            planEmailTip: '请输入收件邮箱后扫码付款。',
+            planEmailTip:
+                '请先点击“获取验证码”并输入 6 位验证码生成订单，随后会显示付款码供扫码支付。',
             planQrEmpty: '暂无付款码',
             getCode: '获取验证码',
             codeSent: '验证码已发送',

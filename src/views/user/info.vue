@@ -10,7 +10,7 @@
                 {{ $t('user.info.uuid') }}:
                 {{ user.uuid }}
             </p>
-            <p>{{ $t('user.info.tgUsername') }}: {{ user.tgUsername }}</p>
+            <p>{{ $t('user.info.tgUsername') }}: {{ user.tgUsername || '-' }}</p>
             <p>{{ $t('user.info.linkPassword') }}: {{ user.password }}</p>
         </div>
 
@@ -231,17 +231,17 @@
 
                 <template v-if="!planOrderCreated">
                     <el-input
-                        v-model="planEmail"
+                        v-model="user.email"
                         type="email"
                         :placeholder="$t('user.free.planEmailPlaceholder')"
-                        clearable
+                        disabled
                         @keyup.enter="handleCreatePlanOrder"
                     />
                     <p class="plan-dialog-tip">
                         {{ $t('user.free.planEmailTip') }}
                     </p>
                     <el-button
-                        type="info"
+                        type="primary"
                         plain
                         class="plan-submit-btn"
                         @click="handleGetPlanCode"
@@ -314,7 +314,7 @@
                         </p>
                         <p class="plan-success-desc">
                             {{ $t('user.free.paySuccessSent') }}
-                            <strong>{{ planEmail }}</strong>
+                            <strong>{{ user.email }}</strong>
                         </p>
                         <div class="plan-success-meta">
                             <p>{{ $t('user.free.paymentNote') }}</p>
@@ -423,7 +423,6 @@ export default {
             shareLink: '',
             planDialogVisible: false,
             selectedPlan: null,
-            planEmail: '',
             planOrderCreated: false,
             planCodeDigits: ['', '', '', '', '', ''],
             planCodeRefs: [],
@@ -586,7 +585,6 @@ export default {
             this.stopOrderPolling()
             this.planDialogVisible = false
             this.selectedPlan = null
-            this.planEmail = ''
             this.planOrderCreated = false
             this.planCodeDigits = ['', '', '', '', '', '']
             this.planCodeRefs = []
@@ -612,9 +610,6 @@ export default {
             }
             this.stopOrderPolling()
             this.selectedPlan = plan || null
-            this.planEmail = mailReg.test(this.user.email)
-                ? this.user.email
-                : ''
             this.planOrderCreated = false
             this.planCodeDigits = ['', '', '', '', '', '']
             this.planCodeRefs = []
@@ -623,12 +618,13 @@ export default {
             this.planDialogVisible = true
         },
         async handleGetPlanCode() {
-            if (!this.planEmail || !mailReg.test(this.planEmail)) {
+            const email = String(this.user.email || '')
+            if (!email || !mailReg.test(email)) {
                 this.$message.error(this.$t('mailError'))
                 return
             }
             const formData = new FormData()
-            formData.set('email', this.planEmail)
+            formData.set('email', email)
             const result = await sendCode(formData)
             if (result.code !== 200 || result.message !== 'success') {
                 return
@@ -666,7 +662,8 @@ export default {
             }
         },
         async handleCreatePlanOrder() {
-            if (!this.planEmail || !mailReg.test(this.planEmail)) {
+            const email = String(this.user.email || '')
+            if (!email || !mailReg.test(email)) {
                 this.$message.error(this.$t('mailError'))
                 return
             }
@@ -678,7 +675,7 @@ export default {
                 return
             }
             const formData = new FormData()
-            formData.set('email', this.planEmail)
+            formData.set('email', email)
             formData.set('code', this.planCodeDigits.join(''))
             formData.set('plan_name', this.selectedPlan.name)
             try {
@@ -712,14 +709,14 @@ export default {
         },
         async checkOrderStatus() {
             if (
-                !this.planEmail ||
+                !this.user.email ||
                 !this.planCodeDigits.join('') ||
                 !this.orderName
             ) {
                 return
             }
             const formData = new FormData()
-            formData.set('email', this.planEmail)
+            formData.set('email', String(this.user.email || ''))
             formData.set('code', this.planCodeDigits.join(''))
             formData.set('order_name', this.orderName)
             try {
@@ -731,7 +728,7 @@ export default {
                         this.stopOrderPolling()
                         this.orderPollingState = 'success'
                         this.$message.success(
-                            `${this.$t('user.free.paymentSuccess')}${this.planEmail}`,
+                            `${this.$t('user.free.paymentSuccess')}${String(this.user.email || '')}`,
                         )
                         this.getUserInfo()
                     } else if (status === 'fail' || status === 'expired') {

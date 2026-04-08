@@ -81,16 +81,6 @@
                     }}</el-link>
                 </template>
             </el-table-column>
-            <el-table-column :label="$t('user.tg_username')">
-                <template #default="scope">
-                    {{
-                        scope.row.TG_Username ||
-                        scope.row.tg_username ||
-                        scope.row.tgUsername ||
-                        '-'
-                    }}
-                </template>
-            </el-table-column>
             <el-table-column :label="$t('user.email')">
                 <template #default="scope">
                     {{ scope.row.Email || '-' }}

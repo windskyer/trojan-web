@@ -184,7 +184,8 @@ export default {
             planTraffic: 'Traffic',
             emptyPlans: 'No plans available',
             planEmailPlaceholder: 'Enter your email',
-            planEmailTip: 'Enter your email, then scan the QR code to pay.',
+            planEmailTip:
+                'Click “Get Code” and enter the 6-digit code to create the order. The payment QR code will appear for scanning.',
             planQrEmpty: 'No payment QR code available',
             getCode: 'Get Code',
             codeSent: 'Verification code sent',
