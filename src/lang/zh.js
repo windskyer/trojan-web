@@ -222,7 +222,7 @@ export default {
             accountSentToEmail: '账号已经发送到您的邮件',
             paymentSuccess: '支付成功，VPN账号信息已经发送到对应的邮箱：',
             orderFail: '订单支付失败',
-            paymentNote: '请务必在付款备注中填写订单号：',
+            paymentNote: '请务必在付款备注中填写订单号（不区分大小写）：',
             clickToCopyNote: '（点击可复制）未填写将无法自动下发。'
         },
         pay: {
