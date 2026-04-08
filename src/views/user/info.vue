@@ -1260,6 +1260,12 @@ export default {
     justify-content: center;
 }
 
+:deep(.plan-dialog.el-dialog),
+:deep(.plan-dialog .el-dialog) {
+    max-width: calc(100vw - 32px);
+    box-sizing: border-box;
+}
+
 .node-block {
     padding: 4px 0;
     border-top: 1px dashed rgba(0, 0, 0, 0.2);

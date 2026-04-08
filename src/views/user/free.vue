@@ -692,6 +692,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+:deep(.plan-dialog.el-dialog),
+:deep(.plan-dialog .el-dialog) {
+    max-width: calc(100vw - 32px);
+    box-sizing: border-box;
+}
+
 .free-page {
     min-height: 100%;
     width: 100%;
