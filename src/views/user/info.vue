@@ -57,7 +57,7 @@
                             type="info"
                             plain
                             size="small"
-                            @click="openLink(subscribeUrl)"
+                            @click="openClash(subscribeUrl)"
                         >
                             <el-tooltip
                                 :content="$t('user.info.openLink')"
@@ -516,7 +516,7 @@ export default {
             }
             try {
                 const userInfo = btoa(
-                    JSON.stringify({ user: username, pass: password }),
+                    `{"user": "${username}", "pass": "${password}"}`,
                 )
                 return `${window.location.origin}/trojan/user/subscribe?token=${userInfo}`
             } catch (error) {
@@ -879,6 +879,10 @@ export default {
         openLink(url) {
             if (!url) return
             window.open(url, '_blank')
+        },
+        openClash(url) {
+            if (!url) return
+            window.location.href = `clash://install-config?url=${url}`
         },
     },
 }

@@ -34,6 +34,46 @@
                 </p>
 
                 <div class="divider"></div>
+                <div v-if="subscribeUrl" class="link-block subscribe-block">
+                    <p>{{ $t('user.info.subscriptionAddress') }}</p>
+                    <div class="link-row">
+                        <p class="link-text" @click="copyText(subscribeUrl)">
+                            {{ subscribeUrl }}
+                        </p>
+                        <div class="link-actions">
+                            <el-button
+                                class="link-action"
+                                type="primary"
+                                plain
+                                size="small"
+                                @click="showQRCode(subscribeUrl)"
+                            >
+                                <el-tooltip
+                                    :content="$t('user.info.qrcode')"
+                                    placement="top"
+                                >
+                                    <el-icon><Grid /></el-icon>
+                                </el-tooltip>
+                            </el-button>
+                            <el-button
+                                class="link-action"
+                                type="info"
+                                plain
+                                size="small"
+                                @click="openClash(subscribeUrl)"
+                            >
+                                <el-tooltip
+                                    :content="$t('user.info.openLink')"
+                                    placement="top"
+                                >
+                                    <el-icon><LinkIcon /></el-icon>
+                                </el-tooltip>
+                            </el-button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
                 <p class="node-title">{{ $t('user.free.nodeLinks') }}</p>
                 <div v-if="links.length > 0" class="links">
                     <div
@@ -619,6 +659,10 @@ export default {
         openLink(url) {
             if (!url) return
             window.open(url, '_blank')
+        },
+        openClash(url) {
+            if (!url) return
+            window.location.href = `clash://install-config?url=${url}`
         },
         goLogin() {
             this.$router.push('/login').catch(() => {})
