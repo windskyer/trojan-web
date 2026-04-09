@@ -35,7 +35,9 @@
 
                 <div class="divider"></div>
                 <div v-if="subscribeUrl" class="link-block subscribe-block">
-                    <p>{{ $t('user.info.subscriptionAddress') }}</p>
+                    <p class="subtitle">
+                        {{ $t('user.info.subscriptionAddress') }}
+                    </p>
                     <div class="link-row">
                         <p class="link-text" @click="copyText(subscribeUrl)">
                             {{ subscribeUrl }}
@@ -133,10 +135,7 @@
                         @click="openPlanDialog(plan)"
                     >
                         <p class="plan-label">{{ getPlanLabel(plan) }}</p>
-                        <p
-                            v-if="getPlanDescription(plan)"
-                            class="plan-desc"
-                        >
+                        <p v-if="getPlanDescription(plan)" class="plan-desc">
                             {{ getPlanDescription(plan) }}
                         </p>
                         <p class="plan-price">
@@ -865,6 +864,12 @@ export default {
 .node-title {
     margin-top: 4px;
     font-weight: 600;
+}
+
+.link-label {
+    margin: 0;
+    color: #0d6efd;
+    text-decoration: underline;
 }
 
 .link-text {

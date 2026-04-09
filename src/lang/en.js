@@ -286,7 +286,7 @@ export default {
             noLinks: 'No subscription links available',
             qrcode: 'QR Code',
             openLink: 'Open link',
-            subscriptionAddress: 'Subscription address',
+            subscriptionAddress: 'Subscription address:',
             qrcodeTitle: 'Subscription QR Code',
             renew: 'Renew',
             renewUrgent: 'Expiring soon, Renew now',

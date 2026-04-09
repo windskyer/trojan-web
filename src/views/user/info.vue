@@ -10,7 +10,9 @@
                 {{ $t('user.info.uuid') }}:
                 {{ user.uuid }}
             </p>
-            <p>{{ $t('user.info.tgUsername') }}: {{ user.tgUsername || '-' }}</p>
+            <p>
+                {{ $t('user.info.tgUsername') }}: {{ user.tgUsername || '-' }}
+            </p>
             <p>{{ $t('user.info.linkPassword') }}: {{ user.password }}</p>
         </div>
 
@@ -32,7 +34,9 @@
             <div class="divider"></div>
 
             <div v-if="subscribeUrl" class="link-block subscribe-block">
-                <p>{{ $t('user.info.subscriptionAddress') }}</p>
+                <p class="link-label">
+                    {{ $t('user.info.subscriptionAddress') }}
+                </p>
                 <div class="link-row">
                     <p class="link-text" @click="copyText(subscribeUrl)">
                         {{ subscribeUrl }}
@@ -435,7 +439,8 @@ export default {
             orderPollingInterval: null,
             orderName: '',
             orderPollingState: 'idle',
-            viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1024,
+            viewportWidth:
+                typeof window !== 'undefined' ? window.innerWidth : 1024,
         }
     },
     created() {
@@ -941,6 +946,12 @@ export default {
 .node-title {
     margin-top: 4px;
     font-weight: 600;
+}
+
+.link-label {
+    margin: 0;
+    color: #0d6efd;
+    text-decoration: underline;
 }
 
 .link-text {
