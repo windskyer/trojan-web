@@ -185,7 +185,7 @@
                     : $t('user.free.planListTitle')
             "
             v-model="planDialogVisible"
-            width="420px"
+            :width="planDialogWidth"
             :show-close="true"
             :close-on-click-modal="false"
             :close-on-press-escape="false"
@@ -435,11 +435,21 @@ export default {
             orderPollingInterval: null,
             orderName: '',
             orderPollingState: 'idle',
+            viewportWidth: typeof window !== 'undefined' ? window.innerWidth : 1024,
         }
     },
     created() {
         this.getUserInfo()
         this.getPlanList()
+    },
+    mounted() {
+        this.updateViewportWidth()
+        window.addEventListener('resize', this.updateViewportWidth, {
+            passive: true,
+        })
+    },
+    beforeUnmount() {
+        window.removeEventListener('resize', this.updateViewportWidth)
     },
     watch: {
         planDialogVisible(newVal) {
@@ -449,6 +459,9 @@ export default {
         },
     },
     computed: {
+        planDialogWidth() {
+            return this.viewportWidth <= 480 ? '92%' : '420px'
+        },
         usedPercent() {
             if (!this.user.totalBytes) return 0
             return (this.user.usedBytes / this.user.totalBytes) * 100
@@ -532,6 +545,9 @@ export default {
         },
     },
     methods: {
+        updateViewportWidth() {
+            this.viewportWidth = window.innerWidth || 1024
+        },
         bytesToGB(bytes) {
             const value = Number(bytes)
             if (!Number.isFinite(value) || value <= 0) {
@@ -1100,6 +1116,21 @@ export default {
 .plan-code-input:focus {
     border-color: var(--el-color-primary);
     box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.15);
+}
+
+@media (max-width: 360px) {
+    .plan-code-row {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .plan-code-input {
+        width: 40px;
+        height: 40px;
+        border-radius: 9px;
+        font-size: 16px;
+    }
 }
 
 .plan-dialog-qrcode {

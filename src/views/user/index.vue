@@ -57,6 +57,13 @@
                     >
                 </el-button-group>
             </el-form-item>
+            <el-form-item v-if="isAdmin && isMobile" class="user-search-item">
+                <el-input
+                    v-model="search"
+                    :placeholder="$t('user.search')"
+                    clearable
+                />
+            </el-form-item>
         </el-form>
         <el-table
             :data="
@@ -70,28 +77,55 @@
             "
             :height="clientHeight"
             @selection-change="handleSelectionChange"
-            class="tableShow"
+            :class="['tableShow', { 'table-mobile': isMobile }]"
+            :size="isMobile ? 'small' : 'default'"
         >
-            <el-table-column type="selection" width="55" v-if="isAdmin">
+            <el-table-column
+                type="selection"
+                :width="isMobile ? 42 : 55"
+                v-if="isAdmin"
+            >
             </el-table-column>
             <el-table-column :label="$t('username')" prop="Username">
                 <template #default="scope">
-                    <el-link type="primary" @click="goUserInfo(scope.row)">{{
-                        scope.row.Username
-                    }}</el-link>
+                    <div class="user-cell">
+                        <el-link
+                            type="primary"
+                            @click="goUserInfo(scope.row)"
+                            >{{ scope.row.Username }}</el-link
+                        >
+                        <div v-if="isMobile" class="user-cell-sub">
+                            <div class="user-cell-meta">
+                                <span>
+                                    {{ $t('user.total') }}:
+                                    {{ totalFormatter(scope.row) }}
+                                </span>
+                                <span>
+                                    {{ $t('user.expiryDate') }}:
+                                    {{
+                                        scope.row.ExpiryDate === ''
+                                            ? $t('user.unlimit')
+                                            : scope.row.ExpiryDate
+                                    }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </template>
             </el-table-column>
-            <el-table-column :label="$t('user.email')">
+            <el-table-column v-if="!isMobile" :label="$t('user.email')">
                 <template #default="scope">
                     {{ scope.row.Email || '-' }}
                 </template>
             </el-table-column>
             <el-table-column
+                v-if="!isMobile"
                 :label="$t('password')"
                 :formatter="passwordFormatter"
             >
             </el-table-column>
             <el-table-column
+                v-if="!isMobile"
                 :label="$t('user.upload')"
                 :formatter="uploadFormatter"
                 :sort-method="uploadSort"
@@ -99,6 +133,7 @@
             >
             </el-table-column>
             <el-table-column
+                v-if="!isMobile"
                 :label="$t('user.download')"
                 :formatter="downloadFormatter"
                 :sort-method="downloadSort"
@@ -106,6 +141,7 @@
             >
             </el-table-column>
             <el-table-column
+                v-if="!isMobile"
                 :label="$t('user.total')"
                 :formatter="totalFormatter"
                 :sort-method="totalSort"
@@ -113,16 +149,21 @@
             >
             </el-table-column>
             <el-table-column
+                v-if="!isMobile"
                 :label="$t('user.quota')"
                 :formatter="quotaFormatter"
             >
             </el-table-column>
-            <el-table-column :label="$t('user.expiryDate')">
+            <el-table-column v-if="!isMobile" :label="$t('user.expiryDate')">
                 <template #default="scope">
                     <div v-if="scope.row.ExpiryDate === ''">
                         {{ $t('user.unlimit') }}
                     </div>
-                    <el-popover trigger="hover" placement="top" v-else>
+                    <el-popover
+                        :trigger="isMobile ? 'click' : 'hover'"
+                        placement="top"
+                        v-else
+                    >
                         <p>
                             {{ $t('user.remaining') }}:
                             {{ calculateDay(scope.row.ExpiryDate) }}
@@ -141,130 +182,222 @@
                     </el-popover>
                 </template>
             </el-table-column>
-            <el-table-column width="170" align="center">
+            <el-table-column :width="isMobile ? 64 : 170" align="center">
                 <template #header>
                     <el-input
                         v-model="search"
                         :placeholder="$t('user.search')"
-                        v-if="isAdmin"
+                        v-if="isAdmin && !isMobile"
                     />
                     <div v-if="!isAdmin">{{ $t('user.operate') }}</div>
                 </template>
                 <template #default="scope">
-                    <el-dropdown v-if="isAdmin">
-                        <el-button
-                            type="primary"
-                            link
-                            style="margin-top: 2.6px"
-                        >
-                            {{ $t('edit') }}
-                        </el-button>
+                    <el-dropdown
+                        v-if="isMobile"
+                        trigger="click"
+                        class="user-mobile-actions"
+                    >
+                        <el-button type="primary" link :icon="MoreFilled" />
                         <template #dropdown>
                             <el-dropdown-menu>
-                                <el-dropdown-item
-                                    @click="
-                                        userItem = scope.row;
-                                        patchButton = false;
-                                        quotaVisible = true;
-                                    "
-                                    >{{
-                                        $t('user.limitData')
-                                    }}</el-dropdown-item
-                                >
-                                <el-dropdown-item
-                                    @click="
-                                        userItem = scope.row;
-                                        commonType = 1;
-                                        patchButton = false;
-                                        confirmVisible = true;
-                                    "
-                                    >{{ $t('user.reset') }}</el-dropdown-item
-                                >
-                                <el-dropdown-item
-                                    @click="
-                                        userItem = scope.row;
-                                        handelEditUser();
-                                    "
-                                    >{{
-                                        $t('user.modifyUser')
-                                    }}</el-dropdown-item
-                                >
-                                <el-dropdown-item
-                                    @click="
-                                        userItem = scope.row;
-                                        expiryShow = $t('user.setExpire');
-                                        expiryVisible = true;
-                                    "
-                                    v-if="scope.row.ExpiryDate === ''"
-                                    >{{
-                                        $t('user.setExpire')
-                                    }}</el-dropdown-item
-                                >
-                                <div v-else>
+                                <template v-if="isAdmin">
                                     <el-dropdown-item
                                         @click="
                                             userItem = scope.row;
-                                            expiryShow = $t('user.editExpire');
+                                            patchButton = false;
+                                            quotaVisible = true;
+                                        "
+                                        >{{ $t('user.limitData') }}</el-dropdown-item
+                                    >
+                                    <el-dropdown-item
+                                        @click="
+                                            userItem = scope.row;
+                                            commonType = 1;
+                                            patchButton = false;
+                                            confirmVisible = true;
+                                        "
+                                        >{{ $t('user.reset') }}</el-dropdown-item
+                                    >
+                                    <el-dropdown-item
+                                        @click="
+                                            userItem = scope.row;
+                                            handelEditUser();
+                                        "
+                                        >{{ $t('user.modifyUser') }}</el-dropdown-item
+                                    >
+                                    <el-dropdown-item
+                                        v-if="scope.row.ExpiryDate === ''"
+                                        @click="
+                                            userItem = scope.row;
+                                            expiryShow = $t('user.setExpire');
                                             expiryVisible = true;
                                         "
+                                        >{{ $t('user.setExpire') }}</el-dropdown-item
                                     >
-                                        {{
-                                            $t('user.editExpire')
-                                        }}</el-dropdown-item
-                                    >
-                                    <el-dropdown-item
-                                        @click="
-                                            userItem = scope.row;
-                                            cancelUserExpire();
-                                        "
-                                        >{{
-                                            $t('user.cancelExpire')
-                                        }}</el-dropdown-item
-                                    >
-                                </div>
-                            </el-dropdown-menu>
-                        </template>
-                    </el-dropdown>
-                    <el-dropdown style="margin-left: 5px">
-                        <el-button
-                            type="primary"
-                            link
-                            style="margin-top: 2.6px"
-                        >
-                            {{ $t('share') }}
-                        </el-button>
-                        <template #dropdown>
-                            <el-dropdown-menu>
+                                    <template v-else>
+                                        <el-dropdown-item
+                                            @click="
+                                                userItem = scope.row;
+                                                expiryShow = $t('user.editExpire');
+                                                expiryVisible = true;
+                                            "
+                                            >{{ $t('user.editExpire') }}</el-dropdown-item
+                                        >
+                                        <el-dropdown-item
+                                            @click="
+                                                userItem = scope.row;
+                                                cancelUserExpire();
+                                            "
+                                            >{{ $t('user.cancelExpire') }}</el-dropdown-item
+                                        >
+                                    </template>
+                                </template>
                                 <el-dropdown-item
+                                    :divided="isAdmin"
                                     @click="
                                         userItem = scope.row;
                                         handleShare();
                                     "
-                                    >{{ $t('user.shareLink') }}
-                                </el-dropdown-item>
+                                    >{{ $t('user.shareLink') }}</el-dropdown-item
+                                >
                                 <el-dropdown-item
                                     @click="
                                         userItem = scope.row;
                                         handleClash();
                                     "
-                                    >{{ $t('user.importClash') }}
-                                </el-dropdown-item>
+                                    >{{ $t('user.importClash') }}</el-dropdown-item
+                                >
+                                <el-dropdown-item
+                                    v-if="isAdmin"
+                                    divided
+                                    @click="
+                                        userItem = scope.row;
+                                        commonType = 0;
+                                        patchButton = false;
+                                        confirmVisible = true;
+                                    "
+                                    >{{ $t('delete') }}</el-dropdown-item
+                                >
                             </el-dropdown-menu>
                         </template>
                     </el-dropdown>
-                    <el-button
-                        style="margin-left: 5px"
-                        v-if="isAdmin"
-                        type="primary"
-                        link
-                        @click="
-                            userItem = scope.row;
-                            commonType = 0;
-                            patchButton = false;
-                            confirmVisible = true;
-                        "
-                        >{{ $t('delete') }}</el-button
-                    >
+
+                    <template v-else>
+                        <el-dropdown v-if="isAdmin">
+                            <el-button
+                                type="primary"
+                                link
+                                style="margin-top: 2.6px"
+                            >
+                                {{ $t('edit') }}
+                            </el-button>
+                            <template #dropdown>
+                                <el-dropdown-menu>
+                                    <el-dropdown-item
+                                        @click="
+                                            userItem = scope.row;
+                                            patchButton = false;
+                                            quotaVisible = true;
+                                        "
+                                        >{{
+                                            $t('user.limitData')
+                                        }}</el-dropdown-item
+                                    >
+                                    <el-dropdown-item
+                                        @click="
+                                            userItem = scope.row;
+                                            commonType = 1;
+                                            patchButton = false;
+                                            confirmVisible = true;
+                                        "
+                                        >{{ $t('user.reset') }}</el-dropdown-item
+                                    >
+                                    <el-dropdown-item
+                                        @click="
+                                            userItem = scope.row;
+                                            handelEditUser();
+                                        "
+                                        >{{
+                                            $t('user.modifyUser')
+                                        }}</el-dropdown-item
+                                    >
+                                    <el-dropdown-item
+                                        @click="
+                                            userItem = scope.row;
+                                            expiryShow = $t('user.setExpire');
+                                            expiryVisible = true;
+                                        "
+                                        v-if="scope.row.ExpiryDate === ''"
+                                        >{{
+                                            $t('user.setExpire')
+                                        }}</el-dropdown-item
+                                    >
+                                    <div v-else>
+                                        <el-dropdown-item
+                                            @click="
+                                                userItem = scope.row;
+                                                expiryShow = $t('user.editExpire');
+                                                expiryVisible = true;
+                                            "
+                                        >
+                                            {{
+                                                $t('user.editExpire')
+                                            }}</el-dropdown-item
+                                        >
+                                        <el-dropdown-item
+                                            @click="
+                                                userItem = scope.row;
+                                                cancelUserExpire();
+                                            "
+                                            >{{
+                                                $t('user.cancelExpire')
+                                            }}</el-dropdown-item
+                                        >
+                                    </div>
+                                </el-dropdown-menu>
+                            </template>
+                        </el-dropdown>
+                        <el-dropdown style="margin-left: 5px">
+                            <el-button
+                                type="primary"
+                                link
+                                style="margin-top: 2.6px"
+                            >
+                                {{ $t('share') }}
+                            </el-button>
+                            <template #dropdown>
+                                <el-dropdown-menu>
+                                    <el-dropdown-item
+                                        @click="
+                                            userItem = scope.row;
+                                            handleShare();
+                                        "
+                                        >{{ $t('user.shareLink') }}
+                                    </el-dropdown-item>
+                                    <el-dropdown-item
+                                        @click="
+                                            userItem = scope.row;
+                                            handleClash();
+                                        "
+                                        >{{ $t('user.importClash') }}
+                                    </el-dropdown-item>
+                                </el-dropdown-menu>
+                            </template>
+                        </el-dropdown>
+                        <el-button
+                            style="margin-left: 5px"
+                            v-if="isAdmin"
+                            type="primary"
+                            link
+                            @click="
+                                userItem = scope.row;
+                                commonType = 0;
+                                patchButton = false;
+                                confirmVisible = true;
+                            "
+                            >{{ $t('delete') }}</el-button
+                        >
+                    </template>
                 </template>
             </el-table-column>
         </el-table>
@@ -505,6 +638,7 @@ import { useUserStore } from '@/store/user'
 import { isValidIP, readableBytes } from '@/utils/common'
 import {
     Delete,
+    MoreFilled,
     Plus,
     Refresh,
     RefreshLeft,
@@ -528,6 +662,7 @@ export default {
             RefreshLeft,
             Scissor,
             Delete,
+            MoreFilled,
         }
     },
     data() {
@@ -1078,6 +1213,56 @@ export default {
             display: inline;
         }
     }
+}
+
+.user-search-item {
+    width: 100%;
+}
+
+.user-search-item .el-input {
+    width: 100%;
+}
+
+.user-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.user-cell-sub {
+    color: var(--el-text-color-secondary);
+    font-size: 12px;
+    line-height: 1.3;
+    word-break: break-all;
+}
+
+.user-cell-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 10px;
+    font-size: 12px;
+    line-height: 1.3;
+}
+
+.user-mobile-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-mobile-actions :deep(.el-button) {
+    padding: 0 2px;
+}
+
+.table-mobile .el-table__cell {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.table-mobile .cell {
+    padding-left: 6px;
+    padding-right: 6px;
 }
 
 /* 添加响应式分页样式 */

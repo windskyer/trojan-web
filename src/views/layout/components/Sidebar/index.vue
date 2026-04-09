@@ -4,6 +4,10 @@
       <el-menu :default-active="activeMenu" :collapse="isCollapse" background-color="#304156" text-color="#bfcbd9"
         :unique-opened="false" active-text-color="#409EFF" :collapse-transition="false" mode="vertical">
         <sidebar-item v-for="route in routes" :key="route.path" :item="route" :base-path="route.path" />
+        <el-menu-item class="free-entry-item" index="/free" @click="goFreePage">
+          <svg-icon icon-class="documentation" :class-name="isCollapse ? 'free-icon collapsed' : 'free-icon'" />
+          <span v-show="!isCollapse">{{ $t('sidebar.free') }}</span>
+        </el-menu-item>
         <el-menu-item class="telegram-channel-item" index="telegram-channel" @click="openTelegramChannel">
           <svg-icon icon-class="telegram" :class-name="isCollapse ? 'telegram-icon collapsed' : 'telegram-icon'" />
           <span v-show="!isCollapse">{{ $t('sidebar.telegramChannel') }}</span>
@@ -90,6 +94,9 @@ export default {
     },
     openTelegramChannel() {
       window.open('https://t.me/trojan100', '_blank')
+    },
+    goFreePage() {
+      this.$router.push('/free')
     },
     openTelegramBot() {
       const startParam = encodeURIComponent(this.encodeStartValue('help'))
@@ -181,6 +188,15 @@ export default {
   margin-right: 16px;
 }
 
+.free-icon {
+  margin-right: 16px;
+}
+
+.free-icon.collapsed {
+  margin-left: 20px;
+  margin-right: 0;
+}
+
 .telegram-icon.collapsed,
 .customer-icon.collapsed {
   margin-left: 20px;
@@ -193,6 +209,11 @@ export default {
 }
 
 :deep(.el-menu--collapse .telegram-channel-item) {
+  justify-content: flex-start;
+  padding: 0 !important;
+}
+
+:deep(.el-menu--collapse .free-entry-item) {
   justify-content: flex-start;
   padding: 0 !important;
 }

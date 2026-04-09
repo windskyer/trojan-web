@@ -84,6 +84,7 @@ export default {
         exportCsv: '导出csv文件'
     },
     sidebar: {
+        free: '免费',
         telegramChannel: '频道',
         customerService: '客服'
     },

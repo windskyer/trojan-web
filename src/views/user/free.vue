@@ -936,6 +936,21 @@ export default {
     box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.15);
 }
 
+@media (max-width: 360px) {
+    .plan-code-row {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .plan-code-input {
+        width: 40px;
+        height: 40px;
+        border-radius: 9px;
+        font-size: 16px;
+    }
+}
+
 .plan-dialog-qrcode {
     display: flex;
     justify-content: center;

@@ -63,6 +63,7 @@ export default {
         exportCsv: 'export csv file'
     },
     sidebar: {
+        free: 'Free',
         telegramChannel: 'Channel',
         customerService: 'Support'
     },
