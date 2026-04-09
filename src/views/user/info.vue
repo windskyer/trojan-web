@@ -34,9 +34,6 @@
             <div class="divider"></div>
 
             <div v-if="subscribeUrl" class="link-block subscribe-block">
-                <p class="link-label">
-                    {{ $t('user.info.subscriptionAddress') }}
-                </p>
                 <div class="link-row">
                     <p class="link-text" @click="copyText(subscribeUrl)">
                         {{ subscribeUrl }}
