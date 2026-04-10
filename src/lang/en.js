@@ -187,6 +187,15 @@ export default {
             planEmailPlaceholder: 'Enter your email',
             planEmailTip:
                 'Click “Get Code” and enter the 6-digit code to create the order. The payment QR code will appear for scanning.',
+            trialTitle: 'No-signup trial: 1h / 100MB temporary node',
+            trialDescription:
+                'Copy the trial node below and import it into your client to verify access quickly. Register only after it works to keep a permanent 1GB trial quota.',
+            trialLimitHint:
+                'Limited to 1 hour or 100MB. Try first, register later to lock in the 1GB quota.',
+            trialRegisterHint:
+                'Trial node copied. After testing, register to permanently keep a 1GB trial quota.',
+            trialStart: 'Start Trial',
+            trialNoLink: 'No trial node available right now. Please refresh later.',
             planQrEmpty: 'No payment QR code available',
             getCode: 'Get Code',
             codeSent: 'Verification code sent',

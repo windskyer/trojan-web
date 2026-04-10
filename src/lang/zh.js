@@ -207,6 +207,13 @@ export default {
             planEmailPlaceholder: '请输入邮箱',
             planEmailTip:
                 '请先点击“获取验证码”并输入 6 位验证码生成订单，随后会显示付款码供扫码支付。',
+            trialTitle: '免注册试用：1小时/100MB临时节点',
+            trialDescription:
+                '直接复制下方试用节点，导入客户端即可快速体验。不满意再注册，成功后注册可永久保留 1GB 试用额度。',
+            trialLimitHint: '限时 1 小时或 100MB，先体验再决定是否注册。',
+            trialRegisterHint: '已复制试用节点，体验后注册可永久保留 1GB 试用额度。',
+            trialStart: '立即试用',
+            trialNoLink: '当前暂无试用节点，请稍后刷新。',
             planQrEmpty: '暂无付款码',
             getCode: '获取验证码',
             codeSent: '验证码已发送',

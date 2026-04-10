@@ -13,6 +13,71 @@
                 <p>{{ $t('user.free.tip7') }}</p>
 
                 <div class="divider"></div>
+                <div class="trial-card">
+                    <p class="subtitle">{{ $t('user.free.trialTitle') }}</p>
+                    <p class="trial-description">
+                        {{ $t('user.free.trialDescription') }}
+                    </p>
+                    <div v-if="trialLink" class="link-row trial-row">
+                        <p
+                            class="link-text trial-link-text"
+                            @click="copyText(trialLink)"
+                        >
+                            {{ trialLink }}
+                        </p>
+                        <div class="link-actions">
+                            <el-button
+                                class="link-action"
+                                type="primary"
+                                plain
+                                size="small"
+                                @click="handleTrialClick"
+                            >
+                                {{ $t('user.free.trialStart') }}
+                            </el-button>
+                            <el-button
+                                class="link-action"
+                                type="info"
+                                plain
+                                size="small"
+                                @click="showQRCode(trialLink)"
+                            >
+                                <el-tooltip
+                                    :content="$t('user.info.qrcode')"
+                                    placement="top"
+                                >
+                                    <el-icon><Grid /></el-icon>
+                                </el-tooltip>
+                            </el-button>
+                            <el-button
+                                class="link-action"
+                                type="success"
+                                plain
+                                size="small"
+                                @click="openLink(trialLink)"
+                            >
+                                <el-tooltip
+                                    :content="$t('user.info.openLink')"
+                                    placement="top"
+                                >
+                                    <el-icon><LinkIcon /></el-icon>
+                                </el-tooltip>
+                            </el-button>
+                        </div>
+                    </div>
+                    <p v-else class="empty-text">
+                        {{ $t('user.free.trialNoLink') }}
+                    </p>
+                    <p class="trial-note">
+                        {{
+                            trialUsed
+                                ? $t('user.free.trialRegisterHint')
+                                : $t('user.free.trialLimitHint')
+                        }}
+                    </p>
+                </div>
+
+                <div class="divider"></div>
                 <p class="subtitle">{{ $t('user.free.accountInfo') }}</p>
                 <p>
                     {{ $t('user.free.password') }}：
@@ -379,6 +444,7 @@ export default {
             planCodeDigits: ['', '', '', '', '', ''],
             planCodeRefs: [],
             qrcodeVisible: false,
+            trialUsed: false,
             shareLink: '',
             orderPollingInterval: null,
             orderName: '',
@@ -422,6 +488,13 @@ export default {
             } catch (error) {
                 ElMessage.error(this.$t('user.info.copyFail'))
             }
+        },
+        handleTrialClick() {
+            if (!this.trialLink) {
+                return
+            }
+            this.copyText(this.trialLink)
+            this.trialUsed = true
         },
         buildSubscribeUrl(username, encodedPassword) {
             if (!username || !encodedPassword) {
@@ -727,6 +800,9 @@ export default {
         selectedPlanImage() {
             return this.resolvePlanImage(this.selectedPlan?.image_path || '')
         },
+        trialLink() {
+            return this.links[0] || this.subscribeUrl || ''
+        },
         supportBotLink() {
             return SUPPORT_BOT_LINK
         },
@@ -824,6 +900,37 @@ export default {
     transition:
         opacity 0.15s ease,
         transform 0.15s ease;
+}
+
+.trial-card {
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid var(--el-border-color-lighter);
+    background: rgba(13, 110, 253, 0.05);
+}
+
+.trial-description {
+    margin: 8px 0;
+    color: var(--el-text-color-secondary);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.trial-note {
+    margin: 10px 0 0;
+    color: var(--el-text-color-secondary);
+    font-size: 12px;
+}
+
+.trial-row .link-actions {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    margin-left: 0;
+}
+
+.trial-link-text {
+    white-space: normal;
 }
 
 .link-action {
