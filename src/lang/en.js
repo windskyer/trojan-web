@@ -178,7 +178,8 @@ export default {
             password: 'Password',
             traffic: 'Traffic',
             expiryDate: 'Expiry Date',
-            nodeLinks: 'Node links:',
+            nodeLinks: 'Free Node links:',
+            subscriptionAddress: 'Free subscription address:',
             emptyLinks: 'No node links',
             planListTitle: 'Plan List',
             planDuration: 'Duration',
@@ -187,11 +188,11 @@ export default {
             planEmailPlaceholder: 'Enter your email',
             planEmailTip:
                 'Click “Get Code” and enter the 6-digit code to create the order. The payment QR code will appear for scanning.',
-            trialTitle: 'No-signup trial: 1h / 100MB temporary node',
+            trialTitle: 'No-signup trial: 1d / 1GB temporary node',
             trialDescription:
                 'Copy the trial node below and import it into your client to verify access quickly. Register only after it works to keep a permanent 1GB trial quota.',
             trialLimitHint:
-                'Limited to 1 hour or 100MB. Try first, register later to lock in the 1GB quota.',
+                'Limited to 1 day or 1GB. Try first, register later to lock in the 1GB quota.',
             trialRegisterHint:
                 'Trial node copied. After testing, register to permanently keep a 1GB trial quota.',
             trialStart: 'Start Trial',

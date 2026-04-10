@@ -101,7 +101,7 @@
                 <div class="divider"></div>
                 <div v-if="subscribeUrl" class="link-block subscribe-block">
                     <p class="subtitle">
-                        {{ $t('user.info.subscriptionAddress') }}
+                        {{ $t('user.free.subscriptionAddress') }}
                     </p>
                     <div class="link-row">
                         <p class="link-text" @click="copyText(subscribeUrl)">
