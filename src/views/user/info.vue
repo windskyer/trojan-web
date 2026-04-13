@@ -33,7 +33,100 @@
             <h2>{{ $t('user.info.subscriptionTitle') }}</h2>
             <div class="divider"></div>
 
-            <div v-if="subscribeUrl" class="link-block subscribe-block">
+            <div class="link-cards">
+                <div v-if="subscribeUrl" class="link-card">
+                    <p class="link-card-label">{{ $t('user.free.subscriptionAddress') }}</p>
+                    <div class="link-row">
+                        <p class="link-text" @click="copyText(subscribeUrl)">
+                            {{ subscribeUrl }}
+                        </p>
+                        <div class="link-actions">
+                            <el-button
+                                class="link-action"
+                                type="primary"
+                                plain
+                                size="small"
+                                @click="showQRCode(subscribeUrl)"
+                            >
+                                <el-tooltip
+                                    :content="$t('user.info.qrcode')"
+                                    placement="top"
+                                >
+                                    <el-icon><Grid /></el-icon>
+                                </el-tooltip>
+                            </el-button>
+                            <el-button
+                                class="link-action"
+                                type="info"
+                                plain
+                                size="small"
+                                @click="openClash(subscribeUrl)"
+                            >
+                                <el-tooltip
+                                    :content="$t('user.info.openLink')"
+                                    placement="top"
+                                >
+                                    <el-icon><LinkIcon /></el-icon>
+                                </el-tooltip>
+                            </el-button>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="link-card"
+                    v-for="(item, index) in normalizedLinks"
+                    :key="`${item.url}-${index}`"
+                >
+                    <p class="link-card-label">{{ item.name }}</p>
+                    <div class="link-row">
+                        <p class="link-text" @click="copyText(item.url)">
+                            {{ item.url }}
+                        </p>
+                        <div class="link-actions">
+                            <el-button
+                                class="link-action"
+                                type="primary"
+                                plain
+                                size="small"
+                                @click="showQRCode(item.url)"
+                            >
+                                <el-tooltip
+                                    :content="$t('user.info.qrcode')"
+                                    placement="top"
+                                >
+                                    <el-icon><Grid /></el-icon>
+                                </el-tooltip>
+                            </el-button>
+                            <el-button
+                                class="link-action"
+                                type="info"
+                                plain
+                                size="small"
+                                @click="openLink(item.url)"
+                            >
+                                <el-tooltip
+                                    :content="$t('user.info.openLink')"
+                                    placement="top"
+                                >
+                                    <el-icon><LinkIcon /></el-icon>
+                                </el-tooltip>
+                            </el-button>
+                        </div>
+                    </div>
+                </div>
+                <p v-if="!subscribeUrl && normalizedLinks.length === 0" class="empty-text">
+                    {{ $t('user.info.noLinks') }}
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>{{ $t('user.free.tutorialTitle') }}</h2>
+            <div class="divider"></div>
+            <div v-if="subscribeUrl" class="link-block subscribe-block tutorial-subscribe">
+                <p class="subscribe-label">
+                    {{ $t('user.free.subscriptionAddress') }}
+                </p>
                 <div class="link-row">
                     <p class="link-text" @click="copyText(subscribeUrl)">
                         {{ subscribeUrl }}
@@ -70,53 +163,102 @@
                     </div>
                 </div>
             </div>
-
-            <p class="node-title">{{ $t('user.info.nodeLinks') }}</p>
-            <div
-                class="link-block node-block"
-                v-for="(item, index) in normalizedLinks"
-                :key="`${item.url}-${index}`"
-            >
-                <p>{{ item.name }}</p>
-                <div class="link-row">
-                    <p class="link-text" @click="copyText(item.url)">
-                        {{ item.url }}
-                    </p>
-                    <div class="link-actions">
-                        <el-button
-                            class="link-action"
-                            type="primary"
-                            plain
-                            size="small"
-                            @click="showQRCode(item.url)"
-                        >
-                            <el-tooltip
-                                :content="$t('user.info.qrcode')"
-                                placement="top"
-                            >
-                                <el-icon><Grid /></el-icon>
-                            </el-tooltip>
-                        </el-button>
-                        <el-button
-                            class="link-action"
-                            type="info"
-                            plain
-                            size="small"
-                            @click="openLink(item.url)"
-                        >
-                            <el-tooltip
-                                :content="$t('user.info.openLink')"
-                                placement="top"
-                            >
-                                <el-icon><LinkIcon /></el-icon>
-                            </el-tooltip>
-                        </el-button>
+            <el-tabs class="tutorial-tabs">
+                <el-tab-pane :label="$t('user.free.tutorialTabIos')">
+                    <div class="tutorial-download">
+                        <p class="tutorial-download-label">{{ $t('user.free.clientDownloadTitle') }}</p>
+                        <a href="https://apps.apple.com/app/id932747118" target="_blank" rel="noopener noreferrer">{{ $t('user.free.clientDownloadShadowrocket') }}</a>
+                        <a href="https://apps.apple.com/app/id1596063299" target="_blank" rel="noopener noreferrer">{{ $t('user.free.clientDownloadStash') }}</a>
                     </div>
-                </div>
-            </div>
-            <p v-if="normalizedLinks.length === 0">
-                {{ $t('user.info.noLinks') }}
-            </p>
+                    <div class="tutorial-client">
+                        <p class="tutorial-client-title">{{ $t('user.free.tutorialShadowrocketTitle') }}</p>
+                        <ol class="tutorial-steps">
+                            <li>{{ $t('user.free.tutorialShadowrocketStep2') }}</li>
+                            <li>{{ $t('user.free.tutorialShadowrocketStep3') }}</li>
+                            <li>{{ $t('user.free.tutorialShadowrocketStep4') }}</li>
+                            <li>{{ $t('user.free.tutorialShadowrocketStep5') }}</li>
+                            <li>{{ $t('user.free.tutorialShadowrocketStep6') }}</li>
+                        </ol>
+                        <div v-if="tutorialImages.shadowrocket.length" class="tutorial-images">
+                            <el-image v-for="(src, i) in tutorialImages.shadowrocket" :key="i" :src="src" :preview-src-list="tutorialImages.shadowrocket" :initial-index="i" class="tutorial-img" fit="contain" />
+                        </div>
+                    </div>
+                    <div class="tutorial-client">
+                        <p class="tutorial-client-title">{{ $t('user.free.tutorialStashTitle') }}</p>
+                        <ol class="tutorial-steps">
+                            <li>{{ $t('user.free.tutorialStashStep2') }}</li>
+                            <li>{{ $t('user.free.tutorialStashStep3') }}</li>
+                            <li>{{ $t('user.free.tutorialStashStep4') }}</li>
+                        </ol>
+                        <div v-if="tutorialImages.stash.length" class="tutorial-images">
+                            <el-image v-for="(src, i) in tutorialImages.stash" :key="i" :src="src" :preview-src-list="tutorialImages.stash" :initial-index="i" class="tutorial-img" fit="contain" />
+                        </div>
+                    </div>
+                </el-tab-pane>
+                <el-tab-pane :label="$t('user.free.tutorialTabWindows')">
+                    <div class="tutorial-download">
+                        <p class="tutorial-download-label">{{ $t('user.free.clientDownloadTitle') }}</p>
+                        <a href="https://github.com/2rayN/v2rayN/releases" target="_blank" rel="noopener noreferrer">{{ $t('user.free.clientDownloadV2rayn') }}</a>
+                        <a href="https://github.com/clash-verge-rev/clash-verge-rev/releases" target="_blank" rel="noopener noreferrer">{{ $t('user.free.clientDownloadClashVergeRev') }}</a>
+                    </div>
+                    <div class="tutorial-client">
+                        <p class="tutorial-client-title">{{ $t('user.free.tutorialV2raynTitle') }}</p>
+                        <ol class="tutorial-steps">
+                            <li>{{ $t('user.free.tutorialV2raynStep2') }}</li>
+                            <li>{{ $t('user.free.tutorialV2raynStep3') }}</li>
+                            <li>{{ $t('user.free.tutorialV2raynStep4') }}</li>
+                            <li>{{ $t('user.free.tutorialV2raynStep5') }}</li>
+                            <li>{{ $t('user.free.tutorialV2raynStep6') }}</li>
+                        </ol>
+                        <div v-if="tutorialImages.v2rayn.length" class="tutorial-images">
+                            <el-image v-for="(src, i) in tutorialImages.v2rayn" :key="i" :src="src" :preview-src-list="tutorialImages.v2rayn" :initial-index="i" class="tutorial-img" fit="contain" />
+                        </div>
+                    </div>
+                    <div class="tutorial-client">
+                        <p class="tutorial-client-title">{{ $t('user.free.tutorialClashVergeTitle') }}</p>
+                        <ol class="tutorial-steps">
+                            <li>{{ $t('user.free.tutorialClashVergeStep2') }}</li>
+                            <li>{{ $t('user.free.tutorialClashVergeStep3') }}</li>
+                            <li>{{ $t('user.free.tutorialClashVergeStep4') }}</li>
+                            <li>{{ $t('user.free.tutorialClashVergeStep5') }}</li>
+                            <li>{{ $t('user.free.tutorialClashVergeStep6') }}</li>
+                        </ol>
+                        <div v-if="tutorialImages.clashVerge.length" class="tutorial-images">
+                            <el-image v-for="(src, i) in tutorialImages.clashVerge" :key="i" :src="src" :preview-src-list="tutorialImages.clashVerge" :initial-index="i" class="tutorial-img" fit="contain" />
+                        </div>
+                    </div>
+                </el-tab-pane>
+                <el-tab-pane :label="$t('user.free.tutorialTabAndroid')">
+                    <div class="tutorial-download">
+                        <p class="tutorial-download-label">{{ $t('user.free.clientDownloadTitle') }}</p>
+                        <a href="https://github.com/2rayN/v2rayNG/releases" target="_blank" rel="noopener noreferrer">{{ $t('user.free.clientDownloadV2rayNG') }}</a>
+                        <a href="https://github.com/MetaCubeX/ClashMetaForAndroid/releases" target="_blank" rel="noopener noreferrer">{{ $t('user.free.clientDownloadClashMeta') }}</a>
+                    </div>
+                    <div class="tutorial-client">
+                        <p class="tutorial-client-title">{{ $t('user.free.tutorialV2rayNGTitle') }}</p>
+                        <ol class="tutorial-steps">
+                            <li>{{ $t('user.free.tutorialV2rayNGStep2') }}</li>
+                            <li>{{ $t('user.free.tutorialV2rayNGStep3') }}</li>
+                            <li>{{ $t('user.free.tutorialV2rayNGStep4') }}</li>
+                        </ol>
+                        <div v-if="tutorialImages.v2rayng.length" class="tutorial-images">
+                            <el-image v-for="(src, i) in tutorialImages.v2rayng" :key="i" :src="src" :preview-src-list="tutorialImages.v2rayng" :initial-index="i" class="tutorial-img" fit="contain" />
+                        </div>
+                    </div>
+                    <div class="tutorial-client">
+                        <p class="tutorial-client-title">{{ $t('user.free.tutorialClashMetaTitle') }}</p>
+                        <ol class="tutorial-steps">
+                            <li>{{ $t('user.free.tutorialClashMetaStep2') }}</li>
+                            <li>{{ $t('user.free.tutorialClashMetaStep3') }}</li>
+                            <li>{{ $t('user.free.tutorialClashMetaStep4') }}</li>
+                            <li>{{ $t('user.free.tutorialClashMetaStep5') }}</li>
+                        </ol>
+                        <div v-if="tutorialImages.clashMeta.length" class="tutorial-images">
+                            <el-image v-for="(src, i) in tutorialImages.clashMeta" :key="i" :src="src" :preview-src-list="tutorialImages.clashMeta" :initial-index="i" class="tutorial-img" fit="contain" />
+                        </div>
+                    </div>
+                </el-tab-pane>
+            </el-tabs>
         </div>
 
         <div class="card">
@@ -426,6 +568,31 @@ export default {
                 links: [],
             },
             plans: [],
+            tutorialImages: {
+                shadowrocket: [
+                    'https://raw.githubusercontent.com/shadowrocketHelp/help/master/ssrHelp/img/ios/ios4.png',
+                    'https://raw.githubusercontent.com/shadowrocketHelp/help/master/ssrHelp/img/ios/ios5.png',
+                ],
+                stash: [
+                    'https://raw.githubusercontent.com/Repcz/Repcz.github.io/main/docs/stash/Photo/s2.webp',
+                    'https://raw.githubusercontent.com/Repcz/Repcz.github.io/main/docs/stash/Photo/s4.webp',
+                ],
+                v2rayn: [
+                    'https://www.bwgss.org/wp-content/uploads/2025/07/v2rayn-paste-subscription.avif',
+                    'https://www.bwgss.org/wp-content/uploads/2025/07/v2rayn-set-active-server.avif',
+                ],
+                clashVerge: [
+                    'https://github.com/clashbk/clash/wiki/assets/1706242274-ClashVerge-Profiles-Import.jpg',
+                    'https://github.com/clashbk/clash/wiki/assets/1706248489-ClashVerge-Enable-System-Proxy.jpg',
+                ],
+                v2rayng: [
+                    'https://www.babeedu.net/wp-content/uploads/2026/03/zirulink-android-v2rayng-subscription-setup-tutorial-1024x741.png',
+                ],
+                clashMeta: [
+                    'https://www.bwgss.org/wp-content/uploads/2025/10/cfa-paste-url-and-name.avif',
+                    'https://www.bwgss.org/wp-content/uploads/2025/10/cfa-config-list-select.avif',
+                ],
+            },
             qrcodeVisible: false,
             shareLink: '',
             planDialogVisible: false,
@@ -930,19 +1097,24 @@ export default {
     color: var(--el-text-color-secondary);
 }
 
-.link-block + .link-block {
-    margin-top: 8px;
+.link-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.subscribe-block {
-    margin-bottom: 8px;
-    padding-bottom: 6px;
-    border-bottom: 1px dashed var(--el-border-color-lighter);
+.link-card {
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--el-border-color-lighter);
+    background: var(--el-fill-color-extra-light);
 }
 
-.node-title {
-    margin-top: 4px;
+.link-card-label {
+    margin: 0 0 6px;
+    font-size: 13px;
     font-weight: 600;
+    color: var(--el-text-color-secondary);
 }
 
 .link-label {
@@ -1309,10 +1481,105 @@ export default {
     box-sizing: border-box;
 }
 
-.node-block {
-    padding: 4px 0;
-    border-top: 1px dashed rgba(0, 0, 0, 0.2);
-    border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
+
+.tutorial-subscribe {
+    margin-bottom: 12px;
+}
+
+.tutorial-download {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--el-border-color-lighter);
+    background: var(--el-fill-color-extra-light);
+}
+
+.tutorial-download-label {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--el-text-color-secondary);
+    width: 100%;
+}
+
+.tutorial-download a {
+    font-size: 13px;
+    color: #0d6efd;
+    text-decoration: underline;
+}
+
+.tutorial-download a:hover {
+    opacity: 0.8;
+}
+
+.tutorial-tabs {
+    margin-top: 2px;
+}
+
+.tutorial-tabs :deep(.el-tabs__content) {
+    padding: 12px 0 0;
+}
+
+.tutorial-client {
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--el-border-color-lighter);
+    background: var(--el-fill-color-extra-light);
+    margin-bottom: 10px;
+}
+
+.tutorial-client:last-child {
+    margin-bottom: 0;
+}
+
+.tutorial-client-title {
+    margin: 0 0 8px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.tutorial-steps {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--el-text-color-regular);
+    line-height: 1.9;
+}
+
+.tutorial-steps li {
+    padding: 1px 0;
+}
+
+.tutorial-images {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.tutorial-img {
+    width: 100%;
+    height: 240px;
+    border-radius: 8px;
+    border: 1px solid var(--el-border-color-lighter);
+    background-color: var(--el-fill-color-lighter);
+    cursor: zoom-in;
+}
+
+:deep(.tutorial-img .el-image__inner) {
+    border-radius: 8px;
+}
+
+@media (max-width: 600px) {
+    .tutorial-images {
+        grid-template-columns: 1fr;
+    }
+
+    .tutorial-img {
+        height: 200px;
+    }
 }
 
 @keyframes plan-spin {
