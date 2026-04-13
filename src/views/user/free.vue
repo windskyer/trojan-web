@@ -79,7 +79,10 @@
 
                 <div class="divider"></div>
                 <p class="subtitle">{{ $t('user.free.tutorialTitle') }}</p>
-                <div v-if="subscribeUrl" class="link-block subscribe-block tutorial-subscribe">
+                <div
+                    v-if="subscribeUrl"
+                    class="link-block subscribe-block tutorial-subscribe"
+                >
                     <p class="subscribe-label">
                         {{ $t('user.free.subscriptionAddress') }}
                     </p>
@@ -122,95 +125,303 @@
                 <el-tabs class="tutorial-tabs">
                     <el-tab-pane :label="$t('user.free.tutorialTabIos')">
                         <div class="tutorial-download">
-                            <p class="tutorial-download-label">{{ $t('user.free.clientDownloadTitle') }}</p>
-                            <a href="https://apps.apple.com/app/id932747118" target="_blank" rel="noopener noreferrer">{{ $t('user.free.clientDownloadShadowrocket') }}</a>
-                            <a href="https://apps.apple.com/app/id1596063299" target="_blank" rel="noopener noreferrer">{{ $t('user.free.clientDownloadStash') }}</a>
+                            <p class="tutorial-download-label">
+                                {{ $t('user.free.clientDownloadTitle') }}
+                            </p>
+                            <a
+                                href="https://apps.apple.com/app/id932747118"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                >{{
+                                    $t('user.free.clientDownloadShadowrocket')
+                                }}</a
+                            >
+                            <a
+                                href="https://apps.apple.com/app/id1596063299"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                >{{ $t('user.free.clientDownloadStash') }}</a
+                            >
                         </div>
                         <div class="tutorial-client">
-                            <p class="tutorial-client-title">{{ $t('user.free.tutorialShadowrocketTitle') }}</p>
+                            <p class="tutorial-client-title">
+                                {{ $t('user.free.tutorialShadowrocketTitle') }}
+                            </p>
                             <ol class="tutorial-steps">
-                                <li>{{ $t('user.free.tutorialShadowrocketStep2') }}</li>
-                                <li>{{ $t('user.free.tutorialShadowrocketStep3') }}</li>
-                                <li>{{ $t('user.free.tutorialShadowrocketStep4') }}</li>
-                                <li>{{ $t('user.free.tutorialShadowrocketStep5') }}</li>
-                                <li>{{ $t('user.free.tutorialShadowrocketStep6') }}</li>
+                                <li>
+                                    {{
+                                        $t(
+                                            'user.free.tutorialShadowrocketStep2',
+                                        )
+                                    }}
+                                </li>
+                                <li>
+                                    {{
+                                        $t(
+                                            'user.free.tutorialShadowrocketStep3',
+                                        )
+                                    }}
+                                </li>
+                                <li>
+                                    {{
+                                        $t(
+                                            'user.free.tutorialShadowrocketStep4',
+                                        )
+                                    }}
+                                </li>
+                                <li>
+                                    {{
+                                        $t(
+                                            'user.free.tutorialShadowrocketStep5',
+                                        )
+                                    }}
+                                </li>
+                                <li>
+                                    {{
+                                        $t(
+                                            'user.free.tutorialShadowrocketStep6',
+                                        )
+                                    }}
+                                </li>
                             </ol>
-                            <div v-if="tutorialImages.shadowrocket.length" class="tutorial-images">
-                                <el-image v-for="(src, i) in tutorialImages.shadowrocket" :key="i" :src="src" :preview-src-list="tutorialImages.shadowrocket" :initial-index="i" class="tutorial-img" fit="contain" />
+                            <div
+                                v-if="tutorialImages.shadowrocket.length"
+                                class="tutorial-images"
+                            >
+                                <el-image
+                                    v-for="(
+                                        src, i
+                                    ) in tutorialImages.shadowrocket"
+                                    :key="i"
+                                    :src="src"
+                                    :preview-src-list="
+                                        tutorialImages.shadowrocket
+                                    "
+                                    :initial-index="i"
+                                    class="tutorial-img"
+                                    fit="contain"
+                                />
                             </div>
                         </div>
                         <div class="tutorial-client">
-                            <p class="tutorial-client-title">{{ $t('user.free.tutorialStashTitle') }}</p>
+                            <p class="tutorial-client-title">
+                                {{ $t('user.free.tutorialStashTitle') }}
+                            </p>
                             <ol class="tutorial-steps">
-                                <li>{{ $t('user.free.tutorialStashStep2') }}</li>
-                                <li>{{ $t('user.free.tutorialStashStep3') }}</li>
-                                <li>{{ $t('user.free.tutorialStashStep4') }}</li>
+                                <li>
+                                    {{ $t('user.free.tutorialStashStep2') }}
+                                </li>
+                                <li>
+                                    {{ $t('user.free.tutorialStashStep3') }}
+                                </li>
+                                <li>
+                                    {{ $t('user.free.tutorialStashStep4') }}
+                                </li>
                             </ol>
-                            <div v-if="tutorialImages.stash.length" class="tutorial-images">
-                                <el-image v-for="(src, i) in tutorialImages.stash" :key="i" :src="src" :preview-src-list="tutorialImages.stash" :initial-index="i" class="tutorial-img" fit="contain" />
+                            <div
+                                v-if="tutorialImages.stash.length"
+                                class="tutorial-images"
+                            >
+                                <el-image
+                                    v-for="(src, i) in tutorialImages.stash"
+                                    :key="i"
+                                    :src="src"
+                                    :preview-src-list="tutorialImages.stash"
+                                    :initial-index="i"
+                                    class="tutorial-img"
+                                    fit="contain"
+                                />
                             </div>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane :label="$t('user.free.tutorialTabWindows')">
                         <div class="tutorial-download">
-                            <p class="tutorial-download-label">{{ $t('user.free.clientDownloadTitle') }}</p>
-                            <a href="https://github.com/2rayN/v2rayN/releases" target="_blank" rel="noopener noreferrer">{{ $t('user.free.clientDownloadV2rayn') }}</a>
-                            <a href="https://github.com/clash-verge-rev/clash-verge-rev/releases" target="_blank" rel="noopener noreferrer">{{ $t('user.free.clientDownloadClashVergeRev') }}</a>
+                            <p class="tutorial-download-label">
+                                {{ $t('user.free.clientDownloadTitle') }}
+                            </p>
+                            <a
+                                href="https://github.com/2rayN/v2rayN/releases"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                >{{ $t('user.free.clientDownloadV2rayn') }}</a
+                            >
+                            <a
+                                href="https://github.com/clash-verge-rev/clash-verge-rev/releases"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                >{{
+                                    $t('user.free.clientDownloadClashVergeRev')
+                                }}</a
+                            >
                         </div>
                         <div class="tutorial-client">
-                            <p class="tutorial-client-title">{{ $t('user.free.tutorialV2raynTitle') }}</p>
+                            <p class="tutorial-client-title">
+                                {{ $t('user.free.tutorialV2raynTitle') }}
+                            </p>
                             <ol class="tutorial-steps">
-                                <li>{{ $t('user.free.tutorialV2raynStep2') }}</li>
-                                <li>{{ $t('user.free.tutorialV2raynStep3') }}</li>
-                                <li>{{ $t('user.free.tutorialV2raynStep4') }}</li>
-                                <li>{{ $t('user.free.tutorialV2raynStep5') }}</li>
-                                <li>{{ $t('user.free.tutorialV2raynStep6') }}</li>
+                                <li>
+                                    {{ $t('user.free.tutorialV2raynStep2') }}
+                                </li>
+                                <li>
+                                    {{ $t('user.free.tutorialV2raynStep3') }}
+                                </li>
+                                <li>
+                                    {{ $t('user.free.tutorialV2raynStep4') }}
+                                </li>
+                                <li>
+                                    {{ $t('user.free.tutorialV2raynStep5') }}
+                                </li>
+                                <li>
+                                    {{ $t('user.free.tutorialV2raynStep6') }}
+                                </li>
                             </ol>
-                            <div v-if="tutorialImages.v2rayn.length" class="tutorial-images">
-                                <el-image v-for="(src, i) in tutorialImages.v2rayn" :key="i" :src="src" :preview-src-list="tutorialImages.v2rayn" :initial-index="i" class="tutorial-img" fit="contain" />
+                            <div
+                                v-if="tutorialImages.v2rayn.length"
+                                class="tutorial-images"
+                            >
+                                <el-image
+                                    v-for="(src, i) in tutorialImages.v2rayn"
+                                    :key="i"
+                                    :src="src"
+                                    :preview-src-list="tutorialImages.v2rayn"
+                                    :initial-index="i"
+                                    class="tutorial-img"
+                                    fit="contain"
+                                />
                             </div>
                         </div>
                         <div class="tutorial-client">
-                            <p class="tutorial-client-title">{{ $t('user.free.tutorialClashVergeTitle') }}</p>
+                            <p class="tutorial-client-title">
+                                {{ $t('user.free.tutorialClashVergeTitle') }}
+                            </p>
                             <ol class="tutorial-steps">
-                                <li>{{ $t('user.free.tutorialClashVergeStep2') }}</li>
-                                <li>{{ $t('user.free.tutorialClashVergeStep3') }}</li>
-                                <li>{{ $t('user.free.tutorialClashVergeStep4') }}</li>
-                                <li>{{ $t('user.free.tutorialClashVergeStep5') }}</li>
-                                <li>{{ $t('user.free.tutorialClashVergeStep6') }}</li>
+                                <li>
+                                    {{
+                                        $t('user.free.tutorialClashVergeStep2')
+                                    }}
+                                </li>
+                                <li>
+                                    {{
+                                        $t('user.free.tutorialClashVergeStep3')
+                                    }}
+                                </li>
+                                <li>
+                                    {{
+                                        $t('user.free.tutorialClashVergeStep4')
+                                    }}
+                                </li>
+                                <li>
+                                    {{
+                                        $t('user.free.tutorialClashVergeStep5')
+                                    }}
+                                </li>
+                                <li>
+                                    {{
+                                        $t('user.free.tutorialClashVergeStep6')
+                                    }}
+                                </li>
                             </ol>
-                            <div v-if="tutorialImages.clashVerge.length" class="tutorial-images">
-                                <el-image v-for="(src, i) in tutorialImages.clashVerge" :key="i" :src="src" :preview-src-list="tutorialImages.clashVerge" :initial-index="i" class="tutorial-img" fit="contain" />
+                            <div
+                                v-if="tutorialImages.clashVerge.length"
+                                class="tutorial-images"
+                            >
+                                <el-image
+                                    v-for="(
+                                        src, i
+                                    ) in tutorialImages.clashVerge"
+                                    :key="i"
+                                    :src="src"
+                                    :preview-src-list="
+                                        tutorialImages.clashVerge
+                                    "
+                                    :initial-index="i"
+                                    class="tutorial-img"
+                                    fit="contain"
+                                />
                             </div>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane :label="$t('user.free.tutorialTabAndroid')">
                         <div class="tutorial-download">
-                            <p class="tutorial-download-label">{{ $t('user.free.clientDownloadTitle') }}</p>
-                            <a href="https://github.com/2rayN/v2rayNG/releases" target="_blank" rel="noopener noreferrer">{{ $t('user.free.clientDownloadV2rayNG') }}</a>
-                            <a href="https://github.com/MetaCubeX/ClashMetaForAndroid/releases" target="_blank" rel="noopener noreferrer">{{ $t('user.free.clientDownloadClashMeta') }}</a>
+                            <p class="tutorial-download-label">
+                                {{ $t('user.free.clientDownloadTitle') }}
+                            </p>
+                            <a
+                                href="https://github.com/2rayN/v2rayNG/releases"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                >{{ $t('user.free.clientDownloadV2rayNG') }}</a
+                            >
+                            <a
+                                href="https://github.com/MetaCubeX/ClashMetaForAndroid/releases"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                >{{
+                                    $t('user.free.clientDownloadClashMeta')
+                                }}</a
+                            >
                         </div>
                         <div class="tutorial-client">
-                            <p class="tutorial-client-title">{{ $t('user.free.tutorialV2rayNGTitle') }}</p>
+                            <p class="tutorial-client-title">
+                                {{ $t('user.free.tutorialV2rayNGTitle') }}
+                            </p>
                             <ol class="tutorial-steps">
-                                <li>{{ $t('user.free.tutorialV2rayNGStep2') }}</li>
-                                <li>{{ $t('user.free.tutorialV2rayNGStep3') }}</li>
-                                <li>{{ $t('user.free.tutorialV2rayNGStep4') }}</li>
+                                <li>
+                                    {{ $t('user.free.tutorialV2rayNGStep2') }}
+                                </li>
+                                <li>
+                                    {{ $t('user.free.tutorialV2rayNGStep3') }}
+                                </li>
+                                <li>
+                                    {{ $t('user.free.tutorialV2rayNGStep4') }}
+                                </li>
                             </ol>
-                            <div v-if="tutorialImages.v2rayng.length" class="tutorial-images">
-                                <el-image v-for="(src, i) in tutorialImages.v2rayng" :key="i" :src="src" :preview-src-list="tutorialImages.v2rayng" :initial-index="i" class="tutorial-img" fit="contain" />
+                            <div
+                                v-if="tutorialImages.v2rayng.length"
+                                class="tutorial-images"
+                            >
+                                <el-image
+                                    v-for="(src, i) in tutorialImages.v2rayng"
+                                    :key="i"
+                                    :src="src"
+                                    :preview-src-list="tutorialImages.v2rayng"
+                                    :initial-index="i"
+                                    class="tutorial-img"
+                                    fit="contain"
+                                />
                             </div>
                         </div>
                         <div class="tutorial-client">
-                            <p class="tutorial-client-title">{{ $t('user.free.tutorialClashMetaTitle') }}</p>
+                            <p class="tutorial-client-title">
+                                {{ $t('user.free.tutorialClashMetaTitle') }}
+                            </p>
                             <ol class="tutorial-steps">
-                                <li>{{ $t('user.free.tutorialClashMetaStep2') }}</li>
-                                <li>{{ $t('user.free.tutorialClashMetaStep3') }}</li>
-                                <li>{{ $t('user.free.tutorialClashMetaStep4') }}</li>
-                                <li>{{ $t('user.free.tutorialClashMetaStep5') }}</li>
+                                <li>
+                                    {{ $t('user.free.tutorialClashMetaStep2') }}
+                                </li>
+                                <li>
+                                    {{ $t('user.free.tutorialClashMetaStep3') }}
+                                </li>
+                                <li>
+                                    {{ $t('user.free.tutorialClashMetaStep4') }}
+                                </li>
+                                <li>
+                                    {{ $t('user.free.tutorialClashMetaStep5') }}
+                                </li>
                             </ol>
-                            <div v-if="tutorialImages.clashMeta.length" class="tutorial-images">
-                                <el-image v-for="(src, i) in tutorialImages.clashMeta" :key="i" :src="src" :preview-src-list="tutorialImages.clashMeta" :initial-index="i" class="tutorial-img" fit="contain" />
+                            <div
+                                v-if="tutorialImages.clashMeta.length"
+                                class="tutorial-images"
+                            >
+                                <el-image
+                                    v-for="(src, i) in tutorialImages.clashMeta"
+                                    :key="i"
+                                    :src="src"
+                                    :preview-src-list="tutorialImages.clashMeta"
+                                    :initial-index="i"
+                                    class="tutorial-img"
+                                    fit="contain"
+                                />
                             </div>
                         </div>
                     </el-tab-pane>
@@ -223,7 +434,9 @@
                         {{ $t('user.free.password') }}：
                         <span
                             class="copy-value"
-                            @click="account.password && copyText(account.password)"
+                            @click="
+                                account.password && copyText(account.password)
+                            "
                         >
                             {{ account.password || '-' }}
                         </span>
@@ -438,7 +651,7 @@
                         </div>
                     </div>
                     <div
-                        v-else-if="orderPollingState === 'success'"
+                        v-else-if="orderPollingState === 'success' || orderPollingState === 'paid'"
                         class="plan-order-status plan-success"
                     >
                         <div class="plan-success-icon">✓</div>
@@ -502,10 +715,11 @@
                         </div>
                     </div>
                     <div
-                        v-else-if="orderPollingState === 'fail'"
+                        v-else-if="isFailedOrderState"
                         class="plan-order-status"
                     >
                         <p>{{ $t('user.free.orderFail') }}</p>
+                        <p class="order-status-label">{{ $t('user.free.orderStatus') }}：{{ orderPollingState }}</p>
                     </div>
                 </template>
             </div>
@@ -894,18 +1108,22 @@ export default {
                 if (result.code === 200 && result.message === 'success') {
                     const data = result.data || {}
                     const status = data.status
-                    if (status === 'success') {
+                    if (status === 'success' || status === 'paid') {
                         this.stopOrderPolling()
-                        this.orderPollingState = 'success'
+                        this.orderPollingState = status
                         const successMessage = `${this.$t('user.free.paymentSuccess')}${this.planEmail}`
                         ElMessage.success(successMessage)
-                    } else if (status === 'fail' || status === 'expired') {
+                    } else if (status === 'pending') {
+                        // 继续轮询，等待支付
+                    } else {
+                        // fail / expired / refunded 及其他终态，停止轮询并显示当前状态
                         this.stopOrderPolling()
-                        this.orderPollingState = 'fail'
+                        this.orderPollingState = status
                         this.planOrderCreated = false
-                        ElMessage.error(this.$t('user.free.orderFail'))
+                        const statusMsgKey = `user.free.orderStatus${status.charAt(0).toUpperCase() + status.slice(1)}`
+                        ElMessage.error(this.$te(statusMsgKey) ? this.$t(statusMsgKey) : this.$t('user.free.orderFail'))
+                        this.planDialogVisible = false
                     }
-                    // 如果是 pending 或其他状态，继续轮询
                 }
             } catch (error) {
                 console.error('Order status check failed:', error)
@@ -913,6 +1131,10 @@ export default {
         },
     },
     computed: {
+        isFailedOrderState() {
+            const state = this.orderPollingState
+            return state && state !== 'idle' && state !== 'pending' && state !== 'success' && state !== 'paid'
+        },
         paidPlans() {
             return (this.plans || []).filter((plan) => {
                 const name = String(plan?.name || '').toLowerCase()

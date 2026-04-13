@@ -213,6 +213,9 @@ export default {
             accountSentToEmail: 'Account has been sent to your email',
             paymentSuccess: 'Payment successful, VPN account info has been sent to the email:',
             orderFail: 'Order payment failed',
+            orderStatusFail: 'Order payment failed',
+            orderStatusExpired: 'Order has expired',
+            orderStatusRefunded: 'Order has been refunded',
             paymentNote:
                 'Please be sure to fill in the order number in the payment remarks (case-insensitive):',
             clickToCopyNote: '(Click to copy) If not filled in, automatic delivery will not be possible.',

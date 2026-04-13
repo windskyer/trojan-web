@@ -451,7 +451,7 @@
                         </div>
                     </div>
                     <div
-                        v-else-if="orderPollingState === 'success'"
+                        v-else-if="orderPollingState === 'success' || orderPollingState === 'paid'"
                         class="plan-order-status plan-success"
                     >
                         <div class="plan-success-icon">✓</div>
@@ -522,10 +522,11 @@
                         </div>
                     </div>
                     <div
-                        v-else-if="orderPollingState === 'fail'"
+                        v-else-if="isFailedOrderState"
                         class="plan-order-status"
                     >
                         <p>{{ $t('user.free.orderFail') }}</p>
+                        <p class="order-status-label">{{ $t('user.free.orderStatus') }}：{{ orderPollingState }}</p>
                     </div>
                 </template>
             </div>
@@ -628,6 +629,10 @@ export default {
         },
     },
     computed: {
+        isFailedOrderState() {
+            const state = this.orderPollingState
+            return state && state !== 'idle' && state !== 'pending' && state !== 'success' && state !== 'paid'
+        },
         planDialogWidth() {
             return this.viewportWidth <= 480 ? '92%' : '420px'
         },
@@ -936,18 +941,23 @@ export default {
                 if (result.code === 200 && result.message === 'success') {
                     const data = result.data || {}
                     const status = data.status
-                    if (status === 'success') {
+                    if (status === 'success' || status === 'paid') {
                         this.stopOrderPolling()
-                        this.orderPollingState = 'success'
+                        this.orderPollingState = status
                         this.$message.success(
                             `${this.$t('user.free.paymentSuccess')}${String(this.user.email || '')}`,
                         )
                         this.getUserInfo()
-                    } else if (status === 'fail' || status === 'expired') {
+                    } else if (status === 'pending') {
+                        // 继续轮询，等待支付
+                    } else {
+                        // fail / expired / refunded 及其他终态，停止轮询并显示当前状态
                         this.stopOrderPolling()
-                        this.orderPollingState = 'fail'
+                        this.orderPollingState = status
                         this.planOrderCreated = false
-                        this.$message.error(this.$t('user.free.orderFail'))
+                        const statusMsgKey = `user.free.orderStatus${status.charAt(0).toUpperCase() + status.slice(1)}`
+                        this.$message.error(this.$te(statusMsgKey) ? this.$t(statusMsgKey) : this.$t('user.free.orderFail'))
+                        this.planDialogVisible = false
                     }
                 }
             } catch (error) {
