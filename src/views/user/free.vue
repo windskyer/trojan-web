@@ -1246,9 +1246,14 @@ export default {
     color: var(--el-text-color-secondary);
     cursor: pointer;
     border-bottom: 2px solid transparent;
+    border-right: 1px solid var(--el-border-color-lighter);
     margin-bottom: -1px;
     transition: color 0.2s, border-color 0.2s;
     user-select: none;
+}
+
+.tutorial-platform-btn:last-child {
+    border-right: none;
 }
 
 .tutorial-platform-btn:hover {
