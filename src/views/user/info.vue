@@ -123,6 +123,7 @@
         <div class="card">
             <h2>{{ $t('user.free.tutorialTitle') }}</h2>
             <div class="divider"></div>
+            <div class="tutorial-card">
             <div v-if="subscribeUrl" class="link-block subscribe-block tutorial-subscribe">
                 <p class="subscribe-label">
                     {{ $t('user.free.subscriptionAddress') }}
@@ -163,8 +164,25 @@
                     </div>
                 </div>
             </div>
-            <el-tabs class="tutorial-tabs">
-                <el-tab-pane :label="$t('user.free.tutorialTabIos')">
+            <div class="tutorial-platform-row">
+                <div
+                    class="tutorial-platform-btn"
+                    :class="{ active: activeTutorial === 'ios' }"
+                    @click="activeTutorial = activeTutorial === 'ios' ? null : 'ios'"
+                >{{ $t('user.free.tutorialTabIos') }}</div>
+                <div
+                    class="tutorial-platform-btn"
+                    :class="{ active: activeTutorial === 'windows' }"
+                    @click="activeTutorial = activeTutorial === 'windows' ? null : 'windows'"
+                >{{ $t('user.free.tutorialTabWindows') }}</div>
+                <div
+                    class="tutorial-platform-btn"
+                    :class="{ active: activeTutorial === 'android' }"
+                    @click="activeTutorial = activeTutorial === 'android' ? null : 'android'"
+                >{{ $t('user.free.tutorialTabAndroid') }}</div>
+            </div>
+            <div v-if="activeTutorial" class="tutorial-panel">
+                <template v-if="activeTutorial === 'ios'">
                     <div class="tutorial-download">
                         <p class="tutorial-download-label">{{ $t('user.free.clientDownloadTitle') }}</p>
                         <a href="https://apps.apple.com/app/id932747118" target="_blank" rel="noopener noreferrer">{{ $t('user.free.clientDownloadShadowrocket') }}</a>
@@ -194,8 +212,8 @@
                             <el-image v-for="(src, i) in tutorialImages.stash" :key="i" :src="src" :preview-src-list="tutorialImages.stash" :initial-index="i" class="tutorial-img" fit="contain" />
                         </div>
                     </div>
-                </el-tab-pane>
-                <el-tab-pane :label="$t('user.free.tutorialTabWindows')">
+                </template>
+                <template v-else-if="activeTutorial === 'windows'">
                     <div class="tutorial-download">
                         <p class="tutorial-download-label">{{ $t('user.free.clientDownloadTitle') }}</p>
                         <a href="https://github.com/2rayN/v2rayN/releases" target="_blank" rel="noopener noreferrer">{{ $t('user.free.clientDownloadV2rayn') }}</a>
@@ -227,8 +245,8 @@
                             <el-image v-for="(src, i) in tutorialImages.clashVerge" :key="i" :src="src" :preview-src-list="tutorialImages.clashVerge" :initial-index="i" class="tutorial-img" fit="contain" />
                         </div>
                     </div>
-                </el-tab-pane>
-                <el-tab-pane :label="$t('user.free.tutorialTabAndroid')">
+                </template>
+                <template v-else-if="activeTutorial === 'android'">
                     <div class="tutorial-download">
                         <p class="tutorial-download-label">{{ $t('user.free.clientDownloadTitle') }}</p>
                         <a href="https://github.com/2rayN/v2rayNG/releases" target="_blank" rel="noopener noreferrer">{{ $t('user.free.clientDownloadV2rayNG') }}</a>
@@ -257,8 +275,9 @@
                             <el-image v-for="(src, i) in tutorialImages.clashMeta" :key="i" :src="src" :preview-src-list="tutorialImages.clashMeta" :initial-index="i" class="tutorial-img" fit="contain" />
                         </div>
                     </div>
-                </el-tab-pane>
-            </el-tabs>
+                </template>
+            </div>
+            </div>
         </div>
 
         <div class="card">
@@ -555,6 +574,7 @@ export default {
     },
     data() {
         return {
+            activeTutorial: null,
             user: {
                 username: '',
                 uuid: '',
@@ -1525,12 +1545,49 @@ export default {
     opacity: 0.8;
 }
 
-.tutorial-tabs {
-    margin-top: 2px;
+.tutorial-card {
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid var(--el-border-color-lighter);
+    background: var(--el-fill-color-extra-light);
 }
 
-.tutorial-tabs :deep(.el-tabs__content) {
-    padding: 12px 0 0;
+.tutorial-card .subscribe-block {
+    margin-bottom: 14px;
+}
+
+.tutorial-platform-row {
+    display: flex;
+    gap: 0;
+    margin-top: 2px;
+    border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+.tutorial-platform-btn {
+    flex: 1;
+    padding: 8px 0;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    color: var(--el-text-color-secondary);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.2s, border-color 0.2s;
+    user-select: none;
+}
+
+.tutorial-platform-btn:hover {
+    color: var(--el-color-primary);
+}
+
+.tutorial-platform-btn.active {
+    color: var(--el-color-primary);
+    border-bottom-color: var(--el-color-primary);
+}
+
+.tutorial-panel {
+    margin-top: 12px;
 }
 
 .tutorial-client {
