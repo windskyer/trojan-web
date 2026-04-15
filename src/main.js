@@ -86,8 +86,8 @@ router.beforeEach(async (to, from, next) => {
       return next()
     }
 
-    if (to.path === '/login') {
-      return next({ path: '/' })
+    if (to.path === '/login' || to.path === '/') {
+      return next({ path: '/dashboard' })
     }
 
     return next()
