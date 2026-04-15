@@ -1,131 +1,94 @@
 <template>
     <div class="register-container">
-        <el-form
-            class="register-form"
-            :model="form"
-            :rules="registerRules"
-            ref="form"
-            label-position="left"
-        >
+        <el-form class="register-form" @submit.prevent>
             <div class="title-container">
                 <h3 class="title">{{ $t('register') }}</h3>
             </div>
 
-            <!-- 用户名 -->
-            <el-form-item prop="username">
-                <span class="svg-container">
-                    <svg-icon icon-class="user" />
-                </span>
+            <!-- 邮箱输入 -->
+            <div class="input-row">
                 <el-input
-                    v-model="form.username"
-                    :placeholder="$t('inputName')"
-                />
-            </el-form-item>
-
-            <!-- 密码 -->
-            <el-form-item prop="password1">
-                <span class="svg-container">
-                    <svg-icon icon-class="password" />
-                </span>
-                <el-input
-                    ref="password1"
-                    v-model="form.password1"
-                    :type="passwordType1"
-                    :placeholder="$t('inputPass')"
-                />
-
-                <span class="show-pwd" @click="togglePwd(1)">
-                    <svg-icon
-                        :icon-class="
-                            passwordType1 === 'password' ? 'eye' : 'eye-open'
-                        "
-                    />
-                </span>
-            </el-form-item>
-
-            <!-- 再次密码 -->
-            <el-form-item prop="password2">
-                <span class="svg-container">
-                    <svg-icon icon-class="password" />
-                </span>
-                <el-input
-                    ref="password2"
-                    v-model="form.password2"
-                    :type="passwordType2"
-                    :placeholder="$t('inputPassAgain')"
-                />
-
-                <span class="show-pwd" @click="togglePwd(2)">
-                    <svg-icon
-                        :icon-class="
-                            passwordType2 === 'password' ? 'eye' : 'eye-open'
-                        "
-                    />
-                </span>
-            </el-form-item>
-
-            <!-- 邮箱 -->
-            <el-form-item prop="useremail">
-                <span class="svg-container">
-                    <svg-icon icon-class="email" />
-                </span>
-                <el-input
-                    v-model="form.useremail"
+                    v-model="email"
                     :placeholder="$t('inputEmail')"
+                    :disabled="codeSent"
                 />
-            </el-form-item>
-
-            <!-- 注册按钮 -->
-            <el-form-item>
                 <el-button
                     type="primary"
-                    style="width: 100%"
-                    :loading="loading"
-                    @click.prevent="register"
+                    class="send-btn"
+                    :loading="sending"
+                    :disabled="codeSent && resendCountdown > 0"
+                    @click="handleSendCode"
                 >
-                    {{ $t('register') }}
+                    <span v-if="codeSent && resendCountdown > 0">{{ resendCountdown }}s</span>
+                    <span v-else>{{ $t('user.free.getCode') }}</span>
                 </el-button>
-            </el-form-item>
+            </div>
+
+            <!-- 6位验证码输入（发送后显示） -->
+            <transition name="fade">
+                <div v-if="codeSent" class="code-section">
+                    <p class="code-hint">{{ $t('user.free.codeSent') }}</p>
+                    <div class="code-boxes">
+                        <input
+                            v-for="(_, i) in codeDigits"
+                            :key="i"
+                            :ref="el => setCodeRef(el, i)"
+                            v-model="codeDigits[i]"
+                            class="code-box"
+                            maxlength="1"
+                            inputmode="numeric"
+                            @input="handleCodeInput(i, $event)"
+                            @keydown="handleCodeKeydown(i, $event)"
+                            @paste="handleCodePaste($event)"
+                        />
+                    </div>
+
+                    <el-button
+                        type="primary"
+                        style="width: 100%; margin-top: 24px"
+                        :loading="registering"
+                        @click="handleRegister"
+                    >
+                        {{ $t('register') }}
+                    </el-button>
+                </div>
+            </transition>
 
             <div class="extra-links">
-                <router-link class="extra-link" to="/free">
-                    {{ $t('user.free.entry') }}
+                <router-link class="extra-link" to="/login">
+                    {{ $t('verify.goLogin') }}
                 </router-link>
             </div>
         </el-form>
 
         <!-- 注册成功弹窗 -->
         <el-dialog
-            v-model="showTelegramDialog"
+            v-model="showDialog"
             center
             class="tg-dialog"
             :show-close="false"
         >
             <div class="tg-popup">
-                <!-- 成功图标 -->
                 <div class="success-icon">✓</div>
-
-                <h3 class="tg-title">
-                    {{ $t('tgPopupTitle') }}
-                </h3>
-
+                <h3 class="tg-title">{{ $t('tgPopupTitle') }}</h3>
                 <div class="tg-button-row">
                     <el-button
                         type="primary"
-                        class="tg-common-btn"
-                        @click="handleLoginClick()"
+                        style="width: 100%"
+                        :disabled="redirecting"
+                        @click="goLogin"
                     >
                         {{ $t('verify.goLogin') }}
                     </el-button>
                     <p class="redirect-text">
-                        {{ $t('tgRedirectNote', { countdown: countdown }) }}
+                        {{ $t('tgRedirectNote', { countdown: dialogCountdown }) }}
                     </p>
                 </div>
             </div>
         </el-dialog>
 
         <!-- 右下角浮动按钮 -->
-        <div class="telegram-float" @click="handleTelegramClick('register')">
+        <div class="telegram-float" @click="openTelegram">
             <svg viewBox="0 0 24 24" class="icon">
                 <path
                     fill="#ffffff"
@@ -137,15 +100,10 @@
 </template>
 
 <script>
+import { sendCode } from '@/api/email'
 import { register } from '@/api/permission'
-import { trackTelegramClick } from '@/api/track'
 import { useSettingsStore } from '@/store/settings'
 
-/* ===========================
-   表单校验函数（抽离）
-=========================== */
-const usernameReg = /^(?![^A-Za-z]+$)(?![^0-9]+$)[0-9A-Za-z_]{4,15}$/
-const passwordReg = /^[a-zA-Z]\w{8,18}$/
 const mailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export default {
@@ -158,179 +116,154 @@ export default {
 
     data() {
         return {
-            form: {
-                username: '',
-                password1: '',
-                password2: '',
-                useremail: '',
-            },
-
-            registerRules: {
-                username: [
-                    {
-                        required: true,
-                        validator: this.validateUser,
-                        trigger: 'blur',
-                    },
-                ],
-                password1: [
-                    {
-                        required: true,
-                        validator: this.validatePass,
-                        trigger: 'blur',
-                    },
-                ],
-                password2: [
-                    {
-                        required: true,
-                        validator: this.validatePassAgain,
-                        trigger: 'blur',
-                    },
-                ],
-                useremail: [
-                    {
-                        required: true,
-                        validator: this.validateMail,
-                        trigger: 'blur',
-                    },
-                ],
-            },
-
-            loading: false,
-            passwordType1: 'password',
-            passwordType2: 'password',
-            showTelegramDialog: false,
-            countdown: 10,
+            email: '',
+            codeSent: false,
+            codeDigits: ['', '', '', '', '', ''],
+            codeRefs: [],
+            sending: false,
+            registering: false,
+            resendCountdown: 0,
+            resendTimer: null,
+            showDialog: false,
+            dialogCountdown: 10,
+            dialogTimer: null,
+            redirecting: false,
         }
-    },
-
-    computed: {
-        docTitle() {
-            return this.settingsStore.docTitle
-        },
     },
 
     created() {
         document.title = this.settingsStore.docTitle
     },
 
+    beforeUnmount() {
+        clearInterval(this.resendTimer)
+        clearInterval(this.dialogTimer)
+    },
+
     methods: {
-        /* ===========================
-           校验方法
-        =========================== */
-
-        validateUser(rule, value, callback) {
-            if (!value || !usernameReg.test(value)) {
-                callback(new Error(this.$t('userError')))
-            } else {
-                callback()
+        /* ---------- 发送验证码 ---------- */
+        async handleSendCode() {
+            if (!mailReg.test(this.email)) {
+                this.$message.error(this.$t('mailError'))
+                return
             }
-        },
-
-        validatePass(rule, value, callback) {
-            if (!value || !passwordReg.test(value)) {
-                callback(new Error(this.$t('passError')))
-            } else {
-                callback()
-            }
-        },
-
-        validatePassAgain(rule, value, callback) {
-            if (!value || !passwordReg.test(value)) {
-                callback(new Error(this.$t('passError')))
-            } else if (value !== this.form.password1) {
-                callback(new Error(this.$t('passDifferentError')))
-            } else {
-                callback()
-            }
-        },
-
-        validateMail(rule, value, callback) {
-            if (!value || !mailReg.test(value)) {
-                callback(new Error(this.$t('mailError')))
-            } else {
-                callback()
-            }
-        },
-
-        /* ===========================
-           密码显示切换
-        =========================== */
-
-        togglePwd(index) {
-            const key = index === 1 ? 'passwordType1' : 'passwordType2'
-            const ref = index === 1 ? 'password1' : 'password2'
-
-            this[key] = this[key] === 'password' ? 'text' : 'password'
-
-            this.$nextTick(() => {
-                this.$refs[ref]?.focus()
-            })
-        },
-
-        /* ===========================
-           注册逻辑（async 重构）
-        =========================== */
-
-        async register() {
+            this.sending = true
             try {
-                const valid = await this.$refs.form.validate()
-                if (!valid) return
-
-                this.loading = true
-
                 const formData = new FormData()
-                formData.set('username', this.form.username)
-                formData.set('password', btoa(this.form.password1))
-                formData.set('useremail', this.form.useremail)
-
-                const result = await register(formData)
-
-                if (result.message === 'success') {
-                    this.$message.success(this.$t('checkEmailActivation'))
-
-                    // 显示弹窗
-
-                    this.showTelegramDialog = true
-
-                    // 开始倒计时
-                    this.countdownTimer = setInterval(() => {
-                        this.countdown--
-                        if (this.countdown <= 0) {
-                            clearInterval(this.countdownTimer)
-                            this.handleLoginClick()
-                        }
-                    }, 1000)
-                } else {
-                    this.$message.error(
-                        result.message || this.$t('registerFailed'),
-                    )
+                formData.set('email', this.email)
+                const result = await sendCode(formData)
+                if (result.code !== 200 || result.message !== 'success') {
+                    this.$message.error(result.message || this.$t('registerFailed'))
+                    return
                 }
-            } catch (err) {
-                console.error(err)
+                this.codeSent = true
+                this.$message.success(this.$t('user.free.codeSent'))
+                this.startResendCountdown()
+                this.$nextTick(() => this.codeRefs[0]?.focus())
+            } catch {
                 this.$message.error(this.$t('registerFailed'))
             } finally {
-                this.loading = false
+                this.sending = false
             }
         },
 
-        /* ===========================
-           Telegram 统计 + 跳转
-        =========================== */
-
-        async handleTelegramClick(source) {
-            const formData = new FormData()
-            formData.set('channel', 'trojan100')
-            formData.set('source', source)
-            formData.set('lang', this.$i18n.locale)
-            formData.set('user_agent', navigator.userAgent)
-            trackTelegramClick(formData)
-            // 注意不要带 @
-            window.open('https://t.me/trojan100', '_blank')
+        startResendCountdown() {
+            this.resendCountdown = 60
+            clearInterval(this.resendTimer)
+            this.resendTimer = setInterval(() => {
+                if (this.resendCountdown <= 1) {
+                    clearInterval(this.resendTimer)
+                    this.resendCountdown = 0
+                } else {
+                    this.resendCountdown--
+                }
+            }, 1000)
         },
 
-        handleLoginClick() {
+        /* ---------- 验证码输入框 ---------- */
+        setCodeRef(el, i) {
+            if (el) this.codeRefs[i] = el
+        },
+
+        handleCodeInput(index, event) {
+            const val = String(event.target.value || '').replace(/\D/g, '')
+            this.codeDigits[index] = val.slice(-1)
+            if (val && index < 5) {
+                this.codeRefs[index + 1]?.focus()
+            }
+        },
+
+        handleCodeKeydown(index, event) {
+            if (event.key === 'Backspace' && !this.codeDigits[index] && index > 0) {
+                this.codeRefs[index - 1]?.focus()
+            }
+        },
+
+        handleCodePaste(event) {
+            const text = (event.clipboardData || event.originalEvent?.clipboardData)
+                ?.getData('text')
+                .replace(/\D/g, '')
+                .slice(0, 6)
+            if (!text) return
+            event.preventDefault()
+            text.split('').forEach((ch, i) => {
+                this.codeDigits[i] = ch
+            })
+            const nextIndex = Math.min(text.length, 5)
+            this.$nextTick(() => this.codeRefs[nextIndex]?.focus())
+        },
+
+        /* ---------- 注册 ---------- */
+        async handleRegister() {
+            if (!mailReg.test(this.email)) {
+                this.$message.error(this.$t('mailError'))
+                return
+            }
+            const code = this.codeDigits.join('')
+            if (code.length !== 6) {
+                this.$message.error(this.$t('user.free.codeInvalid'))
+                return
+            }
+            this.registering = true
+            try {
+                const formData = new FormData()
+                formData.set('useremail', this.email)
+                formData.set('code', code)
+                const result = await register(formData)
+                if (result.message === 'success') {
+                    this.showDialog = true
+                    this.startDialogCountdown()
+                } else {
+                    this.$message.error(result.message || this.$t('registerFailed'))
+                }
+            } catch {
+                this.$message.error(this.$t('registerFailed'))
+            } finally {
+                this.registering = false
+            }
+        },
+
+        startDialogCountdown() {
+            this.dialogCountdown = 10
+            clearInterval(this.dialogTimer)
+            this.dialogTimer = setInterval(() => {
+                if (this.dialogCountdown <= 1) {
+                    clearInterval(this.dialogTimer)
+                    this.goLogin()
+                } else {
+                    this.dialogCountdown--
+                }
+            }, 1000)
+        },
+
+        goLogin() {
+            if (this.redirecting) return
+            this.redirecting = true
             this.$router.push('/login').catch(() => {})
+        },
+
+        openTelegram() {
+            window.open('https://t.me/trojan100', '_blank')
         },
     },
 }
@@ -339,49 +272,33 @@ export default {
 <style lang="scss">
 $bg: #283443;
 $light_gray: #fff;
-$cursor: #fff;
 
-/* reset element-ui css */
 .register-container {
     .el-input {
         height: 47px;
-        width: 92%;
-        position: static;
 
         .el-input__wrapper {
             padding: 0;
             box-shadow: none;
+            background: $bg;
+            border-radius: 0;
         }
 
         input {
             background: $bg;
-            border: 0px;
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-
-            border-radius: 0px;
+            border: 0;
             padding: 12px 5px 12px 15px;
             color: $light_gray;
             height: 47px;
-            caret-color: $cursor;
+            caret-color: $light_gray;
 
             &:-webkit-autofill {
                 box-shadow: 0 0 0px 1000px $bg inset !important;
-                -webkit-text-fill-color: $cursor !important;
+                -webkit-text-fill-color: $light_gray !important;
             }
         }
     }
-
-    .el-form-item {
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        background: rgba(0, 0, 0, 0.1);
-        border-radius: 5px;
-        color: #454545;
-    }
 }
-
-/* ===== 强制覆盖 ElementUI Dialog ===== */
 
 .el-dialog {
     background: #243244 !important;
@@ -427,90 +344,106 @@ $light_gray: #eee;
         overflow: hidden;
     }
 
-    .svg-container {
-        padding: 6px 5px 6px 15px;
-        color: $dark_gray;
-        vertical-align: middle;
-        width: 30px;
-        display: inline-block;
-    }
-
     .title-container {
-        position: relative;
-
         .title {
             font-size: 26px;
             color: $light_gray;
-            margin: 0px auto 40px auto;
+            margin: 0 auto 40px;
             text-align: center;
             font-weight: bold;
         }
     }
 
-    .show-pwd {
-        position: absolute;
-        right: 10px;
-        top: 7px;
-        font-size: 16px;
-        color: $dark_gray;
-        cursor: pointer;
-        user-select: none;
+    /* 邮箱 + 发送按钮同行 */
+    .input-row {
+        display: flex;
+        gap: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+        overflow: hidden;
+        margin-bottom: 20px;
+
+        .el-input {
+            flex: 1;
+        }
+
+        .send-btn {
+            flex-shrink: 0;
+            height: 47px;
+            border-radius: 0 5px 5px 0;
+            white-space: nowrap;
+        }
     }
 
-    .redirect-text {
-        margin-top: 20px;
-        font-size: 14px;
-        color: #5a6d7a;
+    /* 验证码区域 */
+    .code-section {
+        .code-hint {
+            font-size: 13px;
+            color: $dark_gray;
+            margin-bottom: 14px;
+            text-align: center;
+        }
+
+        .code-boxes {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .code-box {
+            width: 44px;
+            height: 52px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            color: $light_gray;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            outline: none;
+            caret-color: transparent;
+            transition: border-color 0.2s;
+
+            &:focus {
+                border-color: #409eff;
+            }
+        }
     }
 
     .extra-links {
-        margin-top: -10px;
+        margin-top: 20px;
         text-align: center;
+
+        .extra-link {
+            color: #00e0ff;
+            font-size: 14px;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
     }
-
-    .extra-link {
-        color: #00e0ff;
-        font-size: 14px;
-        text-decoration: none;
-    }
-
-    .extra-link:hover {
-        text-decoration: underline;
-    }
 }
 
-.telegram-float {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    background: #229ed9; // 官方 TG 蓝
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    box-shadow: 0 8px 25px rgba(34, 158, 217, 0.45);
-    transition: all 0.3s ease;
-    z-index: 9999;
+/* 淡入动效 */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+    transform: translateY(-8px);
 }
 
-.telegram-float:hover {
-    transform: scale(1.08);
-}
-
-.telegram-float .icon {
-    width: 26px;
-    height: 26px;
-}
-
+/* 成功弹窗 */
 .tg-popup {
     text-align: center;
     padding: 10px 10px 20px;
 }
 
-/* 成功圆形图标 */
 .success-icon {
     width: 70px;
     height: 70px;
@@ -525,62 +458,52 @@ $light_gray: #eee;
     animation: popIn 0.4s ease-out;
 }
 
-/* 标题 */
 .tg-title {
     font-size: 20px;
     font-weight: 600;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     color: #fff;
-}
-
-/* 描述 */
-.tg-desc {
-    font-size: 14px;
-    opacity: 0.8;
-    margin-bottom: 25px;
-    line-height: 1.6;
-    color: #94a3b8;
 }
 
 .tg-button-row {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0;
 }
 
-.tg-common-btn {
-    width: 100%;
-    height: 45px;
-    font-size: 15px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, #2b6fa3, #1e4f73);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-    color: #ffffff !important;
-    transition: all 0.3s ease;
+.redirect-text {
+    margin-top: 16px;
+    font-size: 14px;
+    color: #5a6d7a;
 }
 
-.tg-common-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
-}
-
-/* 动效 */
 @keyframes popIn {
-    0% {
-        transform: scale(0.5);
-        opacity: 0;
-    }
-
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
 }
 
-.tg-highlight {
-    color: #00e0ff;
-    font-weight: 500;
+/* 右下角 Telegram 浮动按钮 */
+.telegram-float {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: #229ed9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(34, 158, 217, 0.45);
+    transition: all 0.3s ease;
+    z-index: 9999;
+
+    &:hover { transform: scale(1.08); }
+
+    .icon {
+        width: 26px;
+        height: 26px;
+    }
 }
 </style>

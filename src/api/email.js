@@ -4,14 +4,6 @@ import request from '@/utils/request'
  * @param {string} token 用户 token
  * @returns {Promise} 验证结果的 Promise 对象
  */
-export function verifyToken(token) {
-  return request.get(`/trojan/user/verify-token?token=${token}`)
-}
-
-export function verifyCode(code) {
-  return request.get(`/trojan/user/verify-code?code=${code}`)
-}
-
 export function sendCode(data) {
   return request.post(`/trojan/user/send-code`, data)
 }

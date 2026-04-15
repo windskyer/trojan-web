@@ -3,16 +3,6 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 
 export const constantRoutes = [
     {
-        path: '/verify-success',
-        component: () => import('@/views/login/verifySuccess'),
-        hidden: true
-    },
-    {
-        path: '/verify-fail',
-        component: () => import('@/views/login/verifyFail'),
-        hidden: true
-    },
-    {
         path: '/login',
         component: () => import('@/views/login/login'),
         hidden: true
@@ -25,16 +15,6 @@ export const constantRoutes = [
     {
         path: '/free',
         component: () => import('@/views/user/free'),
-        hidden: true
-    },
-    {
-        path: '/pay/exception',
-        component: () => import('@/views/user/payException'),
-        hidden: true
-    },
-    {
-        path: '/pay/:order?',
-        component: () => import('@/views/user/pay'),
         hidden: true
     },
     {

@@ -24,7 +24,7 @@ export default {
     registerFailed: "register failed!",
     registerError: "register error!",
     checkEmailActivation: 'Register success! Please check your email and click the activation link to activate your account',
-    tgPopupTitle: 'Registration Successful 🎉, Click the email verification link',
+    tgPopupTitle: 'Account details have been sent to your email',
     tgPopupNote: 'Join to get latest node notifications',
     tgPopupDesc: 'Join our Telegram channel for updates and benefits',
     tgJoin: 'Join',

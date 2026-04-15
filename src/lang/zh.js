@@ -45,7 +45,7 @@ export default {
     registerFailed: '注册失败!',
     registerError:  '注册出错!',
     checkEmailActivation: '注册成功！请检查邮箱并点击激活链接来激活账号',
-    tgPopupTitle: '注册成功 🎉, 点击邮件验证账户',
+    tgPopupTitle: '用户信息已经发送到您邮件',
     tgPopupNote: '加入可获取最新节点通知',
     tgPopupDesc: '加入官方 Telegram 频道获取最新公告与福利',
     tgJoin: '加入',
