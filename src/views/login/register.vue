@@ -109,29 +109,13 @@
                     {{ $t('tgPopupTitle') }}
                 </h3>
 
-                <p class="tg-desc">
-                    {{ $t('tgPopupDesc') }}
-                    <br />
-                    <span class="tg-highlight">{{ $t('tgPopupNote') }}</span>
-                </p>
-                <!-- Telegram 按钮行 -->
                 <div class="tg-button-row">
-                    <!-- Telegram 主按钮 -->
-                    <el-button
-                        type="primary"
-                        class="tg-common-btn"
-                        @click="handleTelegramClick('popup')"
-                    >
-                        {{ $t('tgJoin') }}
-                    </el-button>
-
-                    <!-- 次按钮 -->
                     <el-button
                         type="primary"
                         class="tg-common-btn"
                         @click="handleLoginClick()"
                     >
-                        {{ $t('tgSkip') }}
+                        {{ $t('verify.goLogin') }}
                     </el-button>
                     <p class="redirect-text">
                         {{ $t('tgRedirectNote', { countdown: countdown }) }}
@@ -558,33 +542,28 @@ $light_gray: #eee;
     color: #94a3b8;
 }
 
-/* Telegram 主按钮 */
 .tg-button-row {
     display: flex;
-    justify-content: center; // 水平居中
-    gap: 12px; // 两个按钮之间的间距
-    margin-bottom: 12px; // 按钮行与下方文本的间距
-    flex-wrap: wrap; // 允许按钮在小屏幕上换行
-    padding: 0 10px; // 为按钮行增加左右内边距，使其不贴边
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
 }
 
-/* 通用按钮样式 */
 .tg-common-btn {
-    width: 48%; // 设置为48%宽度，留出2%的间隙，这样两个按钮加上gap就能很好地在max-width: 420px的弹窗内显示
-    max-width: 130px; // 限制每个按钮的最大宽度
+    width: 100%;
     height: 45px;
     font-size: 15px;
     border-radius: 10px;
     background: linear-gradient(135deg, #2b6fa3, #1e4f73);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-    color: #ffffff !important; // 确保文字颜色为白色
-    transition: all 0.3s ease; // 添加过渡效果
+    color: #ffffff !important;
+    transition: all 0.3s ease;
 }
 
 .tg-common-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5); // 悬停时略微增强阴影
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
 }
 
 /* 动效 */
