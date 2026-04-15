@@ -1,6 +1,6 @@
 <template>
-    <div class="fail-container">
-        <div class="fail-card">
+    <div class="verify-container">
+        <div class="verify-card">
             <div class="icon-container">
                 <el-icon :size="64" color="#f56c6c">
                     <CircleCloseFilled />
@@ -10,12 +10,12 @@
             <p class="description">
                 {{ $t('verify.failDescription') }}
             </p>
-
             <div class="action-buttons">
                 <el-button
                     type="primary"
                     style="width: 100%"
-                    @click="goRegister"
+                    :disabled="redirecting"
+                    @click="safeRedirect(goRegister)"
                 >
                     {{ $t('verify.goRegister') }}
                 </el-button>
@@ -25,7 +25,6 @@
             </div>
         </div>
 
-        <!-- 右下角浮动按钮 -->
         <div class="telegram-float" @click="handleTelegramClick('verify_fail')">
             <svg viewBox="0 0 24 24" class="icon">
                 <path
@@ -38,44 +37,67 @@
 </template>
 
 <script>
-// 如果你使用的是 Element Plus，需要引入图标
 import { trackTelegramClick } from '@/api/track'
 import { CircleCloseFilled } from '@element-plus/icons-vue'
 
 export default {
     name: 'VerifyFail',
-    components: {
-        CircleCloseFilled,
-    },
+
+    components: { CircleCloseFilled },
+
     data() {
         return {
-            countdown: 5, // 新增：倒计时秒数
+            countdown: 5,
+            timer: null,
+            redirecting: false,
         }
     },
 
     created() {
-        // 开始倒计时
-        this.countdownTimer = setInterval(() => {
-            this.countdown--
-            if (this.countdown <= 0) {
-                clearInterval(this.countdownTimer)
-                this.goRegister()
-            }
-        }, 1000)
+        this.startCountdown()
     },
+
+    beforeUnmount() {
+        this.clearTimer()
+    },
+
     methods: {
+        startCountdown() {
+            this.clearTimer()
+            this.timer = setInterval(() => {
+                if (this.countdown <= 1) {
+                    this.clearTimer()
+                    this.safeRedirect(this.goRegister)
+                } else {
+                    this.countdown--
+                }
+            }, 1000)
+        },
+
+        clearTimer() {
+            if (this.timer) {
+                clearInterval(this.timer)
+                this.timer = null
+            }
+        },
+
+        safeRedirect(callback) {
+            if (this.redirecting) return
+            this.redirecting = true
+            callback()
+        },
+
         goRegister() {
             this.$router.replace('/register').catch(() => {})
         },
 
-        async handleTelegramClick(source) {
+        handleTelegramClick(source) {
             const formData = new FormData()
             formData.set('channel', 'trojan100')
             formData.set('source', source)
             formData.set('lang', this.$i18n.locale)
             formData.set('user_agent', navigator.userAgent)
             trackTelegramClick(formData)
-            // 🔹 立即跳转
             window.open('https://t.me/trojan100', '_blank')
         },
     },
@@ -83,10 +105,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$bg: #2d3a4b; // 保持与你的 Login.vue 背景色一致
+$bg: #2d3a4b;
 $light_gray: #eee;
 
-.fail-container {
+.verify-container {
     min-height: 100%;
     width: 100%;
     background-color: $bg;
@@ -94,7 +116,7 @@ $light_gray: #eee;
     justify-content: center;
     align-items: center;
 
-    .fail-card {
+    .verify-card {
         width: 520px;
         max-width: 100%;
         padding: 40px 35px;
@@ -123,7 +145,7 @@ $light_gray: #eee;
     }
 
     .redirect-text {
-        margin-top: 20px;
+        margin-top: 16px;
         font-size: 14px;
         color: #5a6d7a;
     }
@@ -136,7 +158,7 @@ $light_gray: #eee;
     width: 58px;
     height: 58px;
     border-radius: 50%;
-    background: #229ed9; // 官方 TG 蓝
+    background: #229ed9;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -144,14 +166,14 @@ $light_gray: #eee;
     box-shadow: 0 8px 25px rgba(34, 158, 217, 0.45);
     transition: all 0.3s ease;
     z-index: 9999;
-}
 
-.telegram-float:hover {
-    transform: scale(1.08);
-}
+    &:hover {
+        transform: scale(1.08);
+    }
 
-.telegram-float .icon {
-    width: 26px;
-    height: 26px;
+    .icon {
+        width: 26px;
+        height: 26px;
+    }
 }
 </style>

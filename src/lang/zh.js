@@ -398,7 +398,7 @@ export default {
         successMsg: '🎉 邮箱验证成功！请登录您的账号。',
         successTitle: '验证成功！', // 新增
         successDescription: '您的邮箱已成功验证。您现在可以登录了。', // 新增
-        redirectNote: '您将在 {countdown} 秒后跳转到Telegram客户...', // 新增，可复用或自定义
+        redirectNote: '将在 {countdown} 秒后自动跳转到登录页',
         invalidToken: '无效的验证链接',
   }
 }

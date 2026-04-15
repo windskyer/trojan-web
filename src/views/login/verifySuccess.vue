@@ -1,6 +1,6 @@
 <template>
-    <div class="success-container">
-        <div class="success-card">
+    <div class="verify-container">
+        <div class="verify-card">
             <div class="icon-container">
                 <el-icon :size="64" color="#67C23A">
                     <CircleCheckFilled />
@@ -10,15 +10,14 @@
             <p class="description">
                 {{ $t('verify.successDescription') }}
             </p>
-
             <div class="action-buttons">
                 <el-button
                     type="primary"
                     style="width: 100%"
                     :disabled="redirecting"
-                    @click="goTelegram"
+                    @click="safeRedirect(goLogin)"
                 >
-                    {{ $t('verify.goTelegram') }}
+                    {{ $t('verify.goLogin') }}
                 </el-button>
                 <p class="redirect-text">
                     {{ $t('verify.redirectNote', { countdown: countdown }) }}
@@ -26,11 +25,7 @@
             </div>
         </div>
 
-        <!-- 右下角浮动按钮 (与 verifyFail.vue 保持一致) -->
-        <div
-            class="telegram-float"
-            @click="handleTelegramClick('verify_success')"
-        >
+        <div class="telegram-float" @click="handleTelegramClick('verify_success')">
             <svg viewBox="0 0 24 24" class="icon">
                 <path
                     fill="#ffffff"
@@ -49,9 +44,7 @@ import { CircleCheckFilled } from '@element-plus/icons-vue'
 export default {
     name: 'VerifySuccess',
 
-    components: {
-        CircleCheckFilled,
-    },
+    components: { CircleCheckFilled },
 
     data() {
         return {
@@ -68,49 +61,34 @@ export default {
     },
 
     created() {
+        this.startCountdown()
         this.verify()
     },
 
-    beforeMount() {
+    beforeUnmount() {
         this.clearTimer()
     },
 
     methods: {
-        /* ---------------------------
-         * 验证 token
-         * --------------------------- */
         async verify() {
             if (!this.token) {
                 this.$message.error(this.$t('verify.invalidToken'))
                 return
             }
-
             try {
                 const result = await verifyToken(this.token)
-
                 if (result.message === 'success') {
-                    this.$message.success({
-                        message: this.$t('verify.successMsg'),
-                        duration: 3000,
-                    })
-
-                    this.startCountdown()
+                    this.$message.success({ message: this.$t('verify.successMsg'), duration: 3000 })
                 } else {
-                    this.$message.error(
-                        result.message || this.$t('verify.invalidToken'),
-                    )
+                    this.$message.error(result.message || this.$t('verify.invalidToken'))
                 }
             } catch (e) {
                 this.$message.error(this.$t('verify.invalidToken'))
             }
         },
 
-        /* ---------------------------
-         * 倒计时
-         * --------------------------- */
         startCountdown() {
             this.clearTimer()
-
             this.timer = setInterval(() => {
                 if (this.countdown <= 1) {
                     this.clearTimer()
@@ -128,30 +106,16 @@ export default {
             }
         },
 
-        /* ---------------------------
-         * 统一跳转控制（防重复）
-         * --------------------------- */
         safeRedirect(callback) {
             if (this.redirecting) return
             this.redirecting = true
             callback()
         },
 
-        goTelegram() {
-            this.safeRedirect(() => {
-                window.location.href = `https://t.me/TrojanAccess_bot?start=${this.token}`
-            })
-        },
-
         goLogin() {
-            this.safeRedirect(() => {
-                this.$router.replace('/login').catch(() => {})
-            })
+            this.$router.replace('/login').catch(() => {})
         },
 
-        /* ---------------------------
-         * TG 浮动按钮点击
-         * --------------------------- */
         handleTelegramClick(source) {
             const formData = new FormData()
             formData.set('channel', 'trojan100')
@@ -166,10 +130,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$bg: #2d3a4b; // 保持与你的 Login.vue 和 verifyFail.vue 背景色一致
+$bg: #2d3a4b;
 $light_gray: #eee;
 
-.success-container {
+.verify-container {
     min-height: 100%;
     width: 100%;
     background-color: $bg;
@@ -177,7 +141,7 @@ $light_gray: #eee;
     justify-content: center;
     align-items: center;
 
-    .success-card {
+    .verify-card {
         width: 520px;
         max-width: 100%;
         padding: 40px 35px;
@@ -206,12 +170,12 @@ $light_gray: #eee;
     }
 
     .redirect-text {
-        color: #409eff;
-        font-weight: 500;
+        margin-top: 16px;
+        font-size: 14px;
+        color: #5a6d7a;
     }
 }
 
-// Telegram 浮动按钮的样式与 verifyFail.vue 完全相同
 .telegram-float {
     position: fixed;
     bottom: 30px;
@@ -219,7 +183,7 @@ $light_gray: #eee;
     width: 58px;
     height: 58px;
     border-radius: 50%;
-    background: #229ed9; // 官方 TG 蓝
+    background: #229ed9;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -227,14 +191,14 @@ $light_gray: #eee;
     box-shadow: 0 8px 25px rgba(34, 158, 217, 0.45);
     transition: all 0.3s ease;
     z-index: 9999;
-}
 
-.telegram-float:hover {
-    transform: scale(1.08);
-}
+    &:hover {
+        transform: scale(1.08);
+    }
 
-.telegram-float .icon {
-    width: 26px;
-    height: 26px;
+    .icon {
+        width: 26px;
+        height: 26px;
+    }
 }
 </style>

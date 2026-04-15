@@ -381,7 +381,7 @@ export default {
         successMsg: '🎉 Email verified successfully! Please log in.',
         successTitle: 'Verification Successful!', // 新增
         successDescription: 'Your email has been successfully verified. You can now log in.', // 新增
-        redirectNote: 'You will be redirected to the Telegram customer in {countdown} seconds...', // 新增，可复用或自定义
+        redirectNote: 'Redirecting to login in {countdown} seconds',
         invalidToken: 'Invalid verification link' // 新增
   }
 }
