@@ -398,46 +398,53 @@
                 </p>
 
                 <template v-if="!planOrderCreated">
-                    <el-input
-                        v-model="user.email"
-                        type="email"
-                        :placeholder="$t('user.free.planEmailPlaceholder')"
-                        disabled
-                        @keyup.enter="handleCreatePlanOrder"
-                    />
+                    <div class="plan-input-row">
+                        <el-input
+                            v-model="user.email"
+                            type="email"
+                            :placeholder="$t('user.free.planEmailPlaceholder')"
+                            disabled
+                        />
+                        <el-button
+                            type="primary"
+                            class="plan-send-btn"
+                            :disabled="planCodeSent && planResendCountdown > 0"
+                            @click="handleGetPlanCode"
+                        >
+                            <span v-if="planCodeSent && planResendCountdown > 0">{{ planResendCountdown }}s</span>
+                            <span v-else>{{ $t('user.free.getCode') }}</span>
+                        </el-button>
+                    </div>
                     <p class="plan-dialog-tip">
                         {{ $t('user.free.planEmailTip') }}
                     </p>
-                    <el-button
-                        type="primary"
-                        plain
-                        class="plan-submit-btn"
-                        @click="handleGetPlanCode"
-                    >
-                        {{ $t('user.free.getCode') }}
-                    </el-button>
-                    <div class="plan-code-row">
-                        <input
-                            v-for="(digit, index) in planCodeDigits"
-                            :key="`plan-code-${index}`"
-                            :ref="setPlanCodeRef"
-                            v-model="planCodeDigits[index]"
-                            class="plan-code-input"
-                            type="text"
-                            inputmode="numeric"
-                            maxlength="1"
-                            @input="handlePlanCodeInput(index, $event)"
-                            @keydown="handlePlanCodeKeydown(index, $event)"
-                        />
-                    </div>
-                    <el-button
-                        type="primary"
-                        class="plan-submit-btn"
-                        :disabled="!isPlanCodeComplete"
-                        @click="handleCreatePlanOrder"
-                    >
-                        {{ $t('user.free.createOrder') }}
-                    </el-button>
+                    <transition name="plan-fade">
+                        <div v-if="planCodeSent" class="plan-code-section">
+                            <div class="plan-code-row">
+                                <input
+                                    v-for="(_, index) in planCodeDigits"
+                                    :key="`plan-code-${index}`"
+                                    :ref="setPlanCodeRef"
+                                    v-model="planCodeDigits[index]"
+                                    class="plan-code-input"
+                                    type="text"
+                                    inputmode="numeric"
+                                    maxlength="1"
+                                    @input="handlePlanCodeInput(index, $event)"
+                                    @keydown="handlePlanCodeKeydown(index, $event)"
+                                    @paste="handlePlanCodePaste($event)"
+                                />
+                            </div>
+                            <el-button
+                                type="primary"
+                                class="plan-submit-btn"
+                                :disabled="!isPlanCodeComplete"
+                                @click="handleCreatePlanOrder"
+                            >
+                                {{ $t('user.free.createOrder') }}
+                            </el-button>
+                        </div>
+                    </transition>
                 </template>
 
                 <template v-else>
@@ -621,6 +628,9 @@ export default {
             planOrderCreated: false,
             planCodeDigits: ['', '', '', '', '', ''],
             planCodeRefs: [],
+            planCodeSent: false,
+            planResendCountdown: 0,
+            planResendTimer: null,
             orderPollingInterval: null,
             orderName: '',
             orderPollingState: 'idle',
@@ -640,6 +650,7 @@ export default {
     },
     beforeUnmount() {
         window.removeEventListener('resize', this.updateViewportWidth)
+        clearInterval(this.planResendTimer)
     },
     watch: {
         planDialogVisible(newVal) {
@@ -825,6 +836,9 @@ export default {
             this.planOrderCreated = false
             this.planCodeDigits = ['', '', '', '', '', '']
             this.planCodeRefs = []
+            this.planCodeSent = false
+            this.planResendCountdown = 0
+            clearInterval(this.planResendTimer)
             this.orderName = ''
             this.orderPollingState = 'idle'
         },
@@ -867,12 +881,29 @@ export default {
                 return
             }
             this.$message.success(this.$t('user.free.codeSent'))
+            this.planCodeSent = true
+            this.planCodeDigits = ['', '', '', '', '', '']
+            this.planCodeRefs = []
+            this.startPlanResendCountdown()
             this.$nextTick(() => {
                 const firstInput = this.planCodeRefs[0]
                 if (firstInput?.focus) {
                     firstInput.focus()
                 }
             })
+        },
+
+        startPlanResendCountdown() {
+            this.planResendCountdown = 60
+            clearInterval(this.planResendTimer)
+            this.planResendTimer = setInterval(() => {
+                if (this.planResendCountdown <= 1) {
+                    clearInterval(this.planResendTimer)
+                    this.planResendCountdown = 0
+                } else {
+                    this.planResendCountdown--
+                }
+            }, 1000)
         },
         setPlanCodeRef(el) {
             if (!el) {
@@ -897,6 +928,19 @@ export default {
             ) {
                 this.planCodeRefs[index - 1]?.focus?.()
             }
+        },
+        handlePlanCodePaste(event) {
+            const text = (event.clipboardData || event.originalEvent?.clipboardData)
+                ?.getData('text')
+                .replace(/\D/g, '')
+                .slice(0, 6)
+            if (!text) return
+            event.preventDefault()
+            text.split('').forEach((ch, i) => {
+                this.planCodeDigits[i] = ch
+            })
+            const nextIndex = Math.min(text.length, 5)
+            this.$nextTick(() => this.planCodeRefs[nextIndex]?.focus?.())
         },
         async handleCreatePlanOrder() {
             const email = String(this.user.email || '')
@@ -1304,8 +1348,43 @@ export default {
     font-size: 12px;
 }
 
+.plan-input-row {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--el-border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.plan-input-row :deep(.el-input__wrapper) {
+    border-radius: 0;
+    box-shadow: none !important;
+}
+
+.plan-send-btn {
+    flex-shrink: 0;
+    border-radius: 0 8px 8px 0;
+    white-space: nowrap;
+}
+
+.plan-code-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
 .plan-submit-btn {
     width: 100%;
+}
+
+.plan-fade-enter-active,
+.plan-fade-leave-active {
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.plan-fade-enter-from,
+.plan-fade-leave-to {
+    opacity: 0;
+    transform: translateY(-6px);
 }
 
 .plan-code-row {
