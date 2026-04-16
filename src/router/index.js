@@ -18,6 +18,16 @@ export const constantRoutes = [
         hidden: true
     },
     {
+        path: '/pay',
+        redirect: '/free',
+        hidden: true
+    },
+    {
+        path: '/pay/:emailB64',
+        component: () => import('@/views/user/pay'),
+        hidden: true
+    },
+    {
         path: '/404',
         component: () => import('@/views/errorPage/404'),
         hidden: true
