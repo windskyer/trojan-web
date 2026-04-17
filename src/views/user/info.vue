@@ -322,7 +322,7 @@
                                 {{ $t('user.free.clientDownloadTitle') }}
                             </p>
                             <a
-                                href="https://github.com/2rayN/v2rayN/releases"
+                                href="https://github.com/2dust/v2rayN/releases"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 >{{ $t('user.free.clientDownloadV2rayn') }}</a
@@ -429,7 +429,7 @@
                                 {{ $t('user.free.clientDownloadTitle') }}
                             </p>
                             <a
-                                href="https://github.com/2rayN/v2rayNG/releases"
+                                href="https://github.com/2dust/v2rayNG/releases"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 >{{ $t('user.free.clientDownloadV2rayNG') }}</a
