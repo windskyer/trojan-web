@@ -14,20 +14,6 @@ export function userInfo(params) {
    })
 }
 
-export function freeUserInfo() {
-   return request({
-      url: '/trojan/user/free',
-      method: 'get',
-   })
-}
-
-export function planList() {
-   return request({
-      url: '/trojan/user/planlist',
-      method: 'get',
-   })
-}
-
 export function userCheck() {
    return request({
       url: '/trojan/user/check',
@@ -63,12 +49,9 @@ export function cancelExpire(id) {
     return request.delete(`/trojan/user/expire?id=${id}`)
 }
 
-
-export function planInfo(id) {
-   return request.get(`/trojan/user/plan?id=${id}`)
-}
-
-
-export function orderInfo(name) {
-   return request.get(`/trojan/user/order?name=${name}`)
+export function freeUserInfo() {
+   return request({
+      url: '/trojan/user/free',
+      method: 'get',
+   })
 }

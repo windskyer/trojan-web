@@ -1,27 +1,27 @@
-import App from '@/App.vue'
-import '@/icons'
+import App from '@/App.vue';
+import '@/icons';
 import i18n from '@/lang'; // vue-i18n v11
-import router from '@/router'
-import pinia from '@/store'
-import { useUserStore } from '@/store/user'
-import { createApp } from 'vue'
+import router from '@/router';
+import pinia from '@/store';
+import { useUserStore } from '@/store/user';
+import { createApp } from 'vue';
 
 // ElementPlus 样式和组件
-import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
+import ElementPlus from 'element-plus';
+import 'element-plus/dist/index.css';
 
 // 全局样式
-import '@/styles/index.scss'
+import '@/styles/index.scss';
 
 // SVG Icons
-import SvgIcon from '@/components/SvgIcon'
+import SvgIcon from '@/components/SvgIcon';
 import '@/icons'; // svg-sprite 资源
-import 'virtual:svg-icons-register'
+import 'virtual:svg-icons-register';
 
 // ==================
 // 权限配置
 // ==================
-const whiteList = ['/login', '/register', '/verify-success', '/verify-fail', '/404', '/free', '/pay']
+const whiteList = ['/login', '/register', '/404', '/free', '/pay', '/reset-password']
 const userHomePath = '/user/info'
 
 // ==================

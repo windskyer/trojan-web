@@ -13,6 +13,11 @@ export const constantRoutes = [
         hidden: true
     },
     {
+        path: '/reset-password',
+        component: () => import('@/views/login/reset-password'),
+        hidden: true
+    },
+    {
         path: '/free',
         component: () => import('@/views/user/free'),
         hidden: true

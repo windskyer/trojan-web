@@ -29,7 +29,9 @@
                         <p v-if="getPlanDescription(plan)" class="plan-desc">
                             {{ getPlanDescription(plan) }}
                         </p>
-                        <p class="plan-price">¥{{ formatPlanPrice(plan.price) }}</p>
+                        <p class="plan-price">
+                            ¥{{ formatPlanPrice(plan.price) }}
+                        </p>
                         <p>
                             {{ $t('user.free.planDuration') }}:
                             {{ plan.duration_days }} {{ $t('user.days') }}
@@ -78,8 +80,7 @@
                             :disabled="planCodeSent && planResendCountdown > 0"
                             @click="handleGetPlanCode"
                         >
-                            <span
-                                v-if="planCodeSent && planResendCountdown > 0"
+                            <span v-if="planCodeSent && planResendCountdown > 0"
                                 >{{ planResendCountdown }}s</span
                             >
                             <span v-else>{{ $t('user.free.getCode') }}</span>
@@ -101,7 +102,9 @@
                                     inputmode="numeric"
                                     maxlength="1"
                                     @input="handlePlanCodeInput(index, $event)"
-                                    @keydown="handlePlanCodeKeydown(index, $event)"
+                                    @keydown="
+                                        handlePlanCodeKeydown(index, $event)
+                                    "
                                     @paste="handlePlanCodePaste($event)"
                                 />
                             </div>
@@ -135,9 +138,11 @@
                                 <span>{{ $t('user.free.orderChecking') }}</span>
                             </div>
                             <p>{{ $t('user.free.paymentNote') }}</p>
-                            <span class="copy-value" @click="copyText(orderName)">{{
-                                orderName
-                            }}</span>
+                            <span
+                                class="copy-value"
+                                @click="copyText(orderName)"
+                                >{{ orderName }}</span
+                            >
                             <p>{{ $t('user.free.clickToCopyNote') }}</p>
                         </div>
                     </div>
@@ -158,9 +163,11 @@
                         </p>
                         <div class="plan-success-meta">
                             <p>{{ $t('user.free.paymentNote') }}</p>
-                            <span class="copy-value" @click="copyText(orderName)">{{
-                                orderName
-                            }}</span>
+                            <span
+                                class="copy-value"
+                                @click="copyText(orderName)"
+                                >{{ orderName }}</span
+                            >
                             <p>{{ $t('user.free.clickToCopyNote') }}</p>
                         </div>
                         <div class="plan-success-steps">
@@ -171,7 +178,10 @@
                                 <li>{{ $t('user.free.paySuccessStep1') }}</li>
                                 <li>
                                     {{ $t('user.free.paySuccessStep2Prefix') }}
-                                    <router-link class="inline-link" to="/login">
+                                    <router-link
+                                        class="inline-link"
+                                        to="/login"
+                                    >
                                         {{
                                             $t('user.free.paySuccessStep2Link')
                                         }}
@@ -209,7 +219,9 @@
                     >
                         <p>{{ $t('user.free.orderFail') }}</p>
                         <p class="order-status-label">
-                            {{ $t('user.free.orderStatus') }}：{{ orderPollingState }}
+                            {{ $t('user.free.orderStatus') }}：{{
+                                orderPollingState
+                            }}
                         </p>
                     </div>
                 </template>
@@ -220,7 +232,7 @@
 
 <script>
 import { generateOrder, orderStatus, sendCode } from '@/api/email'
-import { planList } from '@/api/user'
+import { planList } from '@/api/plan'
 import { ElMessage } from 'element-plus'
 
 const BASE_URL = import.meta.env.BASE_URL || '/'
@@ -480,7 +492,9 @@ export default {
             }
         },
         handlePlanCodePaste(event) {
-            const text = (event.clipboardData || event.originalEvent?.clipboardData)
+            const text = (
+                event.clipboardData || event.originalEvent?.clipboardData
+            )
                 ?.getData('text')
                 .replace(/\D/g, '')
                 .slice(0, 6)
@@ -538,7 +552,11 @@ export default {
             }
         },
         async checkOrderStatus() {
-            if (!this.email || !this.planCodeDigits.join('') || !this.orderName) {
+            if (
+                !this.email ||
+                !this.planCodeDigits.join('') ||
+                !this.orderName
+            ) {
                 return
             }
             const formData = new FormData()
@@ -744,7 +762,9 @@ export default {
 
 .plan-fade-enter-active,
 .plan-fade-leave-active {
-    transition: opacity 0.25s ease, transform 0.25s ease;
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
 }
 .plan-fade-enter-from,
 .plan-fade-leave-to {

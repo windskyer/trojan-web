@@ -15,3 +15,11 @@ export function generateOrder(data) {
 export function orderStatus(data) {
   return request.post(`/trojan/user/order-status`, data)
 }
+
+export function sendResetPasswordLink(data) {
+  return request.post(`/trojan/user/send-reset-password-link`, data)
+}
+
+export function resetPasswordByToken(data) {
+  return request.post(`/trojan/user/reset-password-by-token`, data)
+}

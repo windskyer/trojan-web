@@ -82,11 +82,48 @@
             </el-button>
 
             <div class="extra-links">
+                <a
+                    class="extra-link"
+                    href="#"
+                    @click.prevent="forgotDialogVisible = true"
+                >
+                    {{ $t('forgotPassword') }}
+                </a>
                 <router-link class="extra-link" to="/free">
                     {{ $t('user.free.entry') }}
                 </router-link>
             </div>
         </el-form>
+
+        <!-- 忘记密码对话框 -->
+        <el-dialog
+            v-model="forgotDialogVisible"
+            width="420px"
+            :close-on-click-modal="true"
+            class="forgot-dialog"
+        >
+            <div class="forgot-dialog-body">
+                <h3 class="forgot-title">{{ $t('forgotPassword') }}</h3>
+                <p class="forgot-hint">{{ $t('forgotPasswordHint') }}</p>
+                <div class="forgot-input-row">
+                    <el-input
+                        v-model="forgotEmail"
+                        :placeholder="$t('inputEmail')"
+                        type="email"
+                        @keyup.enter="handleForgotPassword"
+                    />
+                    <el-button
+                        class="forgot-send-btn"
+                        type="primary"
+                        :loading="forgotLoading"
+                        :disabled="!isValidEmail"
+                        @click="handleForgotPassword"
+                    >
+                        {{ $t('send') }}
+                    </el-button>
+                </div>
+            </div>
+        </el-dialog>
 
         <!-- 右下角浮动按钮 -->
         <div class="telegram-float" @click="handleTelegramClick('login')">
@@ -101,6 +138,7 @@
 </template>
 
 <script>
+import { sendResetPasswordLink } from '@/api/email'
 import { check, login } from '@/api/permission'
 import { trackTelegramClick } from '@/api/track'
 import { useSettingsStore } from '@/store/settings'
@@ -129,6 +167,9 @@ export default {
             loading: false,
             passwordType: 'password',
             title: '',
+            forgotDialogVisible: false,
+            forgotEmail: '',
+            forgotLoading: false,
         }
     },
     created() {
@@ -147,6 +188,9 @@ export default {
     computed: {
         docTitle() {
             return this.settingsStore.docTitle
+        },
+        isValidEmail() {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.forgotEmail)
         },
     },
     mounted() {
@@ -179,10 +223,10 @@ export default {
 
             const isUppercaseLetter = key >= 'A' && key <= 'Z'
             const isShiftUppercase =
-                shiftKey &&
-                ((key >= 'a' && key <= 'z') || isUppercaseLetter)
+                shiftKey && ((key >= 'a' && key <= 'z') || isUppercaseLetter)
 
-            this.capsTooltip = isCapsLockOn || isUppercaseLetter || isShiftUppercase
+            this.capsTooltip =
+                isCapsLockOn || isUppercaseLetter || isShiftUppercase
         },
         async handleLogin() {
             if (
@@ -217,6 +261,30 @@ export default {
                 }
             }
         },
+        async handleForgotPassword() {
+            if (!this.isValidEmail) return
+            this.forgotLoading = true
+            try {
+                const formData = new FormData()
+                formData.set('email', this.forgotEmail)
+                const result = await sendResetPasswordLink(formData)
+                if (result.message === 'success') {
+                    this.$message.success(this.$t('forgotPasswordSent'))
+                    this.forgotDialogVisible = false
+                    this.forgotEmail = ''
+                } else if (result.code === 204) {
+                    this.$message.warning(this.$t('emailNotRegistered'))
+                } else {
+                    this.$message.error(
+                        result.message || this.$t('requestFailed'),
+                    )
+                }
+            } catch {
+                // error handled by request interceptor
+            } finally {
+                this.forgotLoading = false
+            }
+        },
         /* ===========================
       Telegram 统计 + 跳转
       =========================== */
@@ -238,6 +306,57 @@ export default {
 $bg: #283443;
 $light_gray: #fff;
 $cursor: #fff;
+
+/* 忘记密码弹窗：class 直接挂在 .el-dialog 元素上 */
+.el-dialog.forgot-dialog {
+    background: linear-gradient(160deg, #1c2e45 0%, #111d2e 100%) !important;
+    border-radius: 18px !important;
+    padding: 36px 30px !important;
+    border: 1px solid rgba(100, 180, 255, 0.12) !important;
+    box-shadow:
+        0 30px 70px rgba(0, 0, 0, 0.75),
+        0 0 0 1px rgba(255, 255, 255, 0.03) inset !important;
+    width: 90% !important;
+    max-width: 420px !important;
+}
+
+.el-dialog.forgot-dialog .el-dialog__header {
+    display: none !important;
+}
+
+.el-dialog.forgot-dialog .el-dialog__body {
+    background: transparent !important;
+    padding: 0 !important;
+}
+
+.el-dialog.forgot-dialog .el-input {
+    height: 47px;
+
+    .el-input__wrapper {
+        padding: 0;
+        box-shadow: none !important;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 0;
+    }
+
+    input {
+        background: transparent;
+        border: 0;
+        padding: 12px 5px 12px 15px;
+        color: #e8f0fe;
+        height: 47px;
+        caret-color: #63b3ed;
+
+        &::placeholder {
+            color: #4a6a8a;
+        }
+
+        &:-webkit-autofill {
+            box-shadow: 0 0 0px 1000px #1c2e45 inset !important;
+            -webkit-text-fill-color: #e8f0fe !important;
+        }
+    }
+}
 
 /* reset element-ui css */
 .login-container {
@@ -340,6 +459,9 @@ $light_gray: #eee;
     .extra-links {
         margin-top: -10px;
         text-align: center;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
     }
 
     .extra-link {
@@ -350,6 +472,56 @@ $light_gray: #eee;
 
     .extra-link:hover {
         text-decoration: underline;
+    }
+}
+
+.forgot-dialog-body {
+    .forgot-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: #e8f0fe;
+        margin: 0 0 10px;
+        text-align: center;
+        letter-spacing: 0.5px;
+    }
+
+    .forgot-hint {
+        font-size: 13px;
+        color: #5a7a9a;
+        margin: 0 0 22px;
+        line-height: 1.7;
+        text-align: center;
+    }
+
+    .forgot-input-row {
+        display: flex;
+        gap: 0;
+        border: 1px solid rgba(100, 180, 255, 0.18);
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 10px;
+        overflow: hidden;
+        transition:
+            border-color 0.25s,
+            box-shadow 0.25s;
+
+        &:focus-within {
+            border-color: rgba(100, 180, 255, 0.45);
+            box-shadow: 0 0 0 3px rgba(100, 180, 255, 0.08);
+        }
+
+        .el-input {
+            flex: 1;
+        }
+
+        .forgot-send-btn {
+            flex-shrink: 0;
+            height: 47px;
+            border-radius: 0 9px 9px 0;
+            white-space: nowrap;
+            padding: 0 18px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
     }
 }
 

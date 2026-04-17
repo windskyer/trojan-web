@@ -79,249 +79,463 @@
 
                 <div class="divider"></div>
                 <div class="tutorial-card">
-                <p class="subtitle">{{ $t('user.free.tutorialTitle') }}</p>
-                <div
-                    v-if="subscribeUrl"
-                    class="link-block subscribe-block tutorial-subscribe"
-                >
-                    <p class="subscribe-label">
-                        {{ $t('user.free.subscriptionAddress') }}
-                    </p>
-                    <div class="link-row">
-                        <p class="link-text" @click="copyText(subscribeUrl)">
-                            {{ subscribeUrl }}
+                    <p class="subtitle">{{ $t('user.free.tutorialTitle') }}</p>
+                    <div
+                        v-if="subscribeUrl"
+                        class="link-block subscribe-block tutorial-subscribe"
+                    >
+                        <p class="subscribe-label">
+                            {{ $t('user.free.subscriptionAddress') }}
                         </p>
-                        <div class="link-actions">
-                            <el-button
-                                class="link-action"
-                                type="primary"
-                                plain
-                                size="small"
-                                @click="showQRCode(subscribeUrl)"
+                        <div class="link-row">
+                            <p
+                                class="link-text"
+                                @click="copyText(subscribeUrl)"
                             >
-                                <el-tooltip
-                                    :content="$t('user.info.qrcode')"
-                                    placement="top"
+                                {{ subscribeUrl }}
+                            </p>
+                            <div class="link-actions">
+                                <el-button
+                                    class="link-action"
+                                    type="primary"
+                                    plain
+                                    size="small"
+                                    @click="showQRCode(subscribeUrl)"
                                 >
-                                    <el-icon><Grid /></el-icon>
-                                </el-tooltip>
-                            </el-button>
-                            <el-button
-                                class="link-action"
-                                type="info"
-                                plain
-                                size="small"
-                                @click="openClash(subscribeUrl)"
-                            >
-                                <el-tooltip
-                                    :content="$t('user.info.openLink')"
-                                    placement="top"
+                                    <el-tooltip
+                                        :content="$t('user.info.qrcode')"
+                                        placement="top"
+                                    >
+                                        <el-icon><Grid /></el-icon>
+                                    </el-tooltip>
+                                </el-button>
+                                <el-button
+                                    class="link-action"
+                                    type="info"
+                                    plain
+                                    size="small"
+                                    @click="openClash(subscribeUrl)"
                                 >
-                                    <el-icon><LinkIcon /></el-icon>
-                                </el-tooltip>
-                            </el-button>
+                                    <el-tooltip
+                                        :content="$t('user.info.openLink')"
+                                        placement="top"
+                                    >
+                                        <el-icon><LinkIcon /></el-icon>
+                                    </el-tooltip>
+                                </el-button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="tutorial-platform-row">
-                    <div
-                        class="tutorial-platform-btn"
-                        :class="{ active: activeTutorial === 'ios' }"
-                        @click="activeTutorial = activeTutorial === 'ios' ? null : 'ios'"
-                    >{{ $t('user.free.tutorialTabIos') }}</div>
-                    <div
-                        class="tutorial-platform-btn"
-                        :class="{ active: activeTutorial === 'windows' }"
-                        @click="activeTutorial = activeTutorial === 'windows' ? null : 'windows'"
-                    >{{ $t('user.free.tutorialTabWindows') }}</div>
-                    <div
-                        class="tutorial-platform-btn"
-                        :class="{ active: activeTutorial === 'android' }"
-                        @click="activeTutorial = activeTutorial === 'android' ? null : 'android'"
-                    >{{ $t('user.free.tutorialTabAndroid') }}</div>
-                </div>
-                <div v-if="activeTutorial" class="tutorial-panel">
-                    <template v-if="activeTutorial === 'ios'">
-                        <div class="tutorial-download">
-                            <p class="tutorial-download-label">
-                                {{ $t('user.free.clientDownloadTitle') }}
-                            </p>
-                            <a
-                                href="https://apps.apple.com/app/id932747118"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                >{{
-                                    $t('user.free.clientDownloadShadowrocket')
-                                }}</a
-                            >
-                            <a
-                                href="https://apps.apple.com/app/id1596063299"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                >{{ $t('user.free.clientDownloadStash') }}</a
-                            >
+                    <div class="tutorial-platform-row">
+                        <div
+                            class="tutorial-platform-btn"
+                            :class="{ active: activeTutorial === 'ios' }"
+                            @click="
+                                activeTutorial =
+                                    activeTutorial === 'ios' ? null : 'ios'
+                            "
+                        >
+                            {{ $t('user.free.tutorialTabIos') }}
                         </div>
-                        <div class="tutorial-client">
-                            <p class="tutorial-client-title">
-                                {{ $t('user.free.tutorialShadowrocketTitle') }}
-                            </p>
-                            <ol class="tutorial-steps">
-                                <li>{{ $t('user.free.tutorialShadowrocketStep2') }}</li>
-                                <li>{{ $t('user.free.tutorialShadowrocketStep3') }}</li>
-                                <li>{{ $t('user.free.tutorialShadowrocketStep4') }}</li>
-                                <li>{{ $t('user.free.tutorialShadowrocketStep5') }}</li>
-                                <li>{{ $t('user.free.tutorialShadowrocketStep6') }}</li>
-                            </ol>
-                            <div v-if="tutorialImages.shadowrocket.length" class="tutorial-images">
-                                <el-image
-                                    v-for="(src, i) in tutorialImages.shadowrocket"
-                                    :key="i" :src="src"
-                                    :preview-src-list="tutorialImages.shadowrocket"
-                                    :initial-index="i"
-                                    class="tutorial-img" fit="contain"
-                                />
+                        <div
+                            class="tutorial-platform-btn"
+                            :class="{ active: activeTutorial === 'windows' }"
+                            @click="
+                                activeTutorial =
+                                    activeTutorial === 'windows'
+                                        ? null
+                                        : 'windows'
+                            "
+                        >
+                            {{ $t('user.free.tutorialTabWindows') }}
+                        </div>
+                        <div
+                            class="tutorial-platform-btn"
+                            :class="{ active: activeTutorial === 'android' }"
+                            @click="
+                                activeTutorial =
+                                    activeTutorial === 'android'
+                                        ? null
+                                        : 'android'
+                            "
+                        >
+                            {{ $t('user.free.tutorialTabAndroid') }}
+                        </div>
+                    </div>
+                    <div v-if="activeTutorial" class="tutorial-panel">
+                        <template v-if="activeTutorial === 'ios'">
+                            <div class="tutorial-download">
+                                <p class="tutorial-download-label">
+                                    {{ $t('user.free.clientDownloadTitle') }}
+                                </p>
+                                <a
+                                    href="https://apps.apple.com/app/id932747118"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    >{{
+                                        $t(
+                                            'user.free.clientDownloadShadowrocket',
+                                        )
+                                    }}</a
+                                >
+                                <a
+                                    href="https://apps.apple.com/app/id1596063299"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    >{{
+                                        $t('user.free.clientDownloadStash')
+                                    }}</a
+                                >
                             </div>
-                        </div>
-                        <div class="tutorial-client">
-                            <p class="tutorial-client-title">
-                                {{ $t('user.free.tutorialStashTitle') }}
-                            </p>
-                            <ol class="tutorial-steps">
-                                <li>{{ $t('user.free.tutorialStashStep2') }}</li>
-                                <li>{{ $t('user.free.tutorialStashStep3') }}</li>
-                                <li>{{ $t('user.free.tutorialStashStep4') }}</li>
-                            </ol>
-                            <div v-if="tutorialImages.stash.length" class="tutorial-images">
-                                <el-image
-                                    v-for="(src, i) in tutorialImages.stash"
-                                    :key="i" :src="src"
-                                    :preview-src-list="tutorialImages.stash"
-                                    :initial-index="i"
-                                    class="tutorial-img" fit="contain"
-                                />
+                            <div class="tutorial-client">
+                                <p class="tutorial-client-title">
+                                    {{
+                                        $t(
+                                            'user.free.tutorialShadowrocketTitle',
+                                        )
+                                    }}
+                                </p>
+                                <ol class="tutorial-steps">
+                                    <li>
+                                        {{
+                                            $t(
+                                                'user.free.tutorialShadowrocketStep2',
+                                            )
+                                        }}
+                                    </li>
+                                    <li>
+                                        {{
+                                            $t(
+                                                'user.free.tutorialShadowrocketStep3',
+                                            )
+                                        }}
+                                    </li>
+                                    <li>
+                                        {{
+                                            $t(
+                                                'user.free.tutorialShadowrocketStep4',
+                                            )
+                                        }}
+                                    </li>
+                                    <li>
+                                        {{
+                                            $t(
+                                                'user.free.tutorialShadowrocketStep5',
+                                            )
+                                        }}
+                                    </li>
+                                    <li>
+                                        {{
+                                            $t(
+                                                'user.free.tutorialShadowrocketStep6',
+                                            )
+                                        }}
+                                    </li>
+                                </ol>
+                                <div
+                                    v-if="tutorialImages.shadowrocket.length"
+                                    class="tutorial-images"
+                                >
+                                    <el-image
+                                        v-for="(
+                                            src, i
+                                        ) in tutorialImages.shadowrocket"
+                                        :key="i"
+                                        :src="src"
+                                        :preview-src-list="
+                                            tutorialImages.shadowrocket
+                                        "
+                                        :initial-index="i"
+                                        class="tutorial-img"
+                                        fit="contain"
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    </template>
-                    <template v-else-if="activeTutorial === 'windows'">
-                        <div class="tutorial-download">
-                            <p class="tutorial-download-label">
-                                {{ $t('user.free.clientDownloadTitle') }}
-                            </p>
-                            <a
-                                href="https://github.com/2rayN/v2rayN/releases"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                >{{ $t('user.free.clientDownloadV2rayn') }}</a
-                            >
-                            <a
-                                href="https://github.com/clash-verge-rev/clash-verge-rev/releases"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                >{{ $t('user.free.clientDownloadClashVergeRev') }}</a
-                            >
-                        </div>
-                        <div class="tutorial-client">
-                            <p class="tutorial-client-title">
-                                {{ $t('user.free.tutorialV2raynTitle') }}
-                            </p>
-                            <ol class="tutorial-steps">
-                                <li>{{ $t('user.free.tutorialV2raynStep2') }}</li>
-                                <li>{{ $t('user.free.tutorialV2raynStep3') }}</li>
-                                <li>{{ $t('user.free.tutorialV2raynStep4') }}</li>
-                                <li>{{ $t('user.free.tutorialV2raynStep5') }}</li>
-                                <li>{{ $t('user.free.tutorialV2raynStep6') }}</li>
-                            </ol>
-                            <div v-if="tutorialImages.v2rayn.length" class="tutorial-images">
-                                <el-image
-                                    v-for="(src, i) in tutorialImages.v2rayn"
-                                    :key="i" :src="src"
-                                    :preview-src-list="tutorialImages.v2rayn"
-                                    :initial-index="i"
-                                    class="tutorial-img" fit="contain"
-                                />
+                            <div class="tutorial-client">
+                                <p class="tutorial-client-title">
+                                    {{ $t('user.free.tutorialStashTitle') }}
+                                </p>
+                                <ol class="tutorial-steps">
+                                    <li>
+                                        {{ $t('user.free.tutorialStashStep2') }}
+                                    </li>
+                                    <li>
+                                        {{ $t('user.free.tutorialStashStep3') }}
+                                    </li>
+                                    <li>
+                                        {{ $t('user.free.tutorialStashStep4') }}
+                                    </li>
+                                </ol>
+                                <div
+                                    v-if="tutorialImages.stash.length"
+                                    class="tutorial-images"
+                                >
+                                    <el-image
+                                        v-for="(src, i) in tutorialImages.stash"
+                                        :key="i"
+                                        :src="src"
+                                        :preview-src-list="tutorialImages.stash"
+                                        :initial-index="i"
+                                        class="tutorial-img"
+                                        fit="contain"
+                                    />
+                                </div>
                             </div>
-                        </div>
-                        <div class="tutorial-client">
-                            <p class="tutorial-client-title">
-                                {{ $t('user.free.tutorialClashVergeTitle') }}
-                            </p>
-                            <ol class="tutorial-steps">
-                                <li>{{ $t('user.free.tutorialClashVergeStep2') }}</li>
-                                <li>{{ $t('user.free.tutorialClashVergeStep3') }}</li>
-                                <li>{{ $t('user.free.tutorialClashVergeStep4') }}</li>
-                                <li>{{ $t('user.free.tutorialClashVergeStep5') }}</li>
-                                <li>{{ $t('user.free.tutorialClashVergeStep6') }}</li>
-                            </ol>
-                            <div v-if="tutorialImages.clashVerge.length" class="tutorial-images">
-                                <el-image
-                                    v-for="(src, i) in tutorialImages.clashVerge"
-                                    :key="i" :src="src"
-                                    :preview-src-list="tutorialImages.clashVerge"
-                                    :initial-index="i"
-                                    class="tutorial-img" fit="contain"
-                                />
+                        </template>
+                        <template v-else-if="activeTutorial === 'windows'">
+                            <div class="tutorial-download">
+                                <p class="tutorial-download-label">
+                                    {{ $t('user.free.clientDownloadTitle') }}
+                                </p>
+                                <a
+                                    href="https://github.com/2rayN/v2rayN/releases"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    >{{
+                                        $t('user.free.clientDownloadV2rayn')
+                                    }}</a
+                                >
+                                <a
+                                    href="https://github.com/clash-verge-rev/clash-verge-rev/releases"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    >{{
+                                        $t(
+                                            'user.free.clientDownloadClashVergeRev',
+                                        )
+                                    }}</a
+                                >
                             </div>
-                        </div>
-                    </template>
-                    <template v-else-if="activeTutorial === 'android'">
-                        <div class="tutorial-download">
-                            <p class="tutorial-download-label">
-                                {{ $t('user.free.clientDownloadTitle') }}
-                            </p>
-                            <a
-                                href="https://github.com/2rayN/v2rayNG/releases"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                >{{ $t('user.free.clientDownloadV2rayNG') }}</a
-                            >
-                            <a
-                                href="https://github.com/MetaCubeX/ClashMetaForAndroid/releases"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                >{{ $t('user.free.clientDownloadClashMeta') }}</a
-                            >
-                        </div>
-                        <div class="tutorial-client">
-                            <p class="tutorial-client-title">
-                                {{ $t('user.free.tutorialV2rayNGTitle') }}
-                            </p>
-                            <ol class="tutorial-steps">
-                                <li>{{ $t('user.free.tutorialV2rayNGStep2') }}</li>
-                                <li>{{ $t('user.free.tutorialV2rayNGStep3') }}</li>
-                                <li>{{ $t('user.free.tutorialV2rayNGStep4') }}</li>
-                            </ol>
-                            <div v-if="tutorialImages.v2rayng.length" class="tutorial-images">
-                                <el-image
-                                    v-for="(src, i) in tutorialImages.v2rayng"
-                                    :key="i" :src="src"
-                                    :preview-src-list="tutorialImages.v2rayng"
-                                    :initial-index="i"
-                                    class="tutorial-img" fit="contain"
-                                />
+                            <div class="tutorial-client">
+                                <p class="tutorial-client-title">
+                                    {{ $t('user.free.tutorialV2raynTitle') }}
+                                </p>
+                                <ol class="tutorial-steps">
+                                    <li>
+                                        {{
+                                            $t('user.free.tutorialV2raynStep2')
+                                        }}
+                                    </li>
+                                    <li>
+                                        {{
+                                            $t('user.free.tutorialV2raynStep3')
+                                        }}
+                                    </li>
+                                    <li>
+                                        {{
+                                            $t('user.free.tutorialV2raynStep4')
+                                        }}
+                                    </li>
+                                    <li>
+                                        {{
+                                            $t('user.free.tutorialV2raynStep5')
+                                        }}
+                                    </li>
+                                    <li>
+                                        {{
+                                            $t('user.free.tutorialV2raynStep6')
+                                        }}
+                                    </li>
+                                </ol>
+                                <div
+                                    v-if="tutorialImages.v2rayn.length"
+                                    class="tutorial-images"
+                                >
+                                    <el-image
+                                        v-for="(
+                                            src, i
+                                        ) in tutorialImages.v2rayn"
+                                        :key="i"
+                                        :src="src"
+                                        :preview-src-list="
+                                            tutorialImages.v2rayn
+                                        "
+                                        :initial-index="i"
+                                        class="tutorial-img"
+                                        fit="contain"
+                                    />
+                                </div>
                             </div>
-                        </div>
-                        <div class="tutorial-client">
-                            <p class="tutorial-client-title">
-                                {{ $t('user.free.tutorialClashMetaTitle') }}
-                            </p>
-                            <ol class="tutorial-steps">
-                                <li>{{ $t('user.free.tutorialClashMetaStep2') }}</li>
-                                <li>{{ $t('user.free.tutorialClashMetaStep3') }}</li>
-                                <li>{{ $t('user.free.tutorialClashMetaStep4') }}</li>
-                                <li>{{ $t('user.free.tutorialClashMetaStep5') }}</li>
-                            </ol>
-                            <div v-if="tutorialImages.clashMeta.length" class="tutorial-images">
-                                <el-image
-                                    v-for="(src, i) in tutorialImages.clashMeta"
-                                    :key="i" :src="src"
-                                    :preview-src-list="tutorialImages.clashMeta"
-                                    :initial-index="i"
-                                    class="tutorial-img" fit="contain"
-                                />
+                            <div class="tutorial-client">
+                                <p class="tutorial-client-title">
+                                    {{
+                                        $t('user.free.tutorialClashVergeTitle')
+                                    }}
+                                </p>
+                                <ol class="tutorial-steps">
+                                    <li>
+                                        {{
+                                            $t(
+                                                'user.free.tutorialClashVergeStep2',
+                                            )
+                                        }}
+                                    </li>
+                                    <li>
+                                        {{
+                                            $t(
+                                                'user.free.tutorialClashVergeStep3',
+                                            )
+                                        }}
+                                    </li>
+                                    <li>
+                                        {{
+                                            $t(
+                                                'user.free.tutorialClashVergeStep4',
+                                            )
+                                        }}
+                                    </li>
+                                    <li>
+                                        {{
+                                            $t(
+                                                'user.free.tutorialClashVergeStep5',
+                                            )
+                                        }}
+                                    </li>
+                                    <li>
+                                        {{
+                                            $t(
+                                                'user.free.tutorialClashVergeStep6',
+                                            )
+                                        }}
+                                    </li>
+                                </ol>
+                                <div
+                                    v-if="tutorialImages.clashVerge.length"
+                                    class="tutorial-images"
+                                >
+                                    <el-image
+                                        v-for="(
+                                            src, i
+                                        ) in tutorialImages.clashVerge"
+                                        :key="i"
+                                        :src="src"
+                                        :preview-src-list="
+                                            tutorialImages.clashVerge
+                                        "
+                                        :initial-index="i"
+                                        class="tutorial-img"
+                                        fit="contain"
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    </template>
-                </div>
+                        </template>
+                        <template v-else-if="activeTutorial === 'android'">
+                            <div class="tutorial-download">
+                                <p class="tutorial-download-label">
+                                    {{ $t('user.free.clientDownloadTitle') }}
+                                </p>
+                                <a
+                                    href="https://github.com/2rayN/v2rayNG/releases"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    >{{
+                                        $t('user.free.clientDownloadV2rayNG')
+                                    }}</a
+                                >
+                                <a
+                                    href="https://github.com/MetaCubeX/ClashMetaForAndroid/releases"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    >{{
+                                        $t('user.free.clientDownloadClashMeta')
+                                    }}</a
+                                >
+                            </div>
+                            <div class="tutorial-client">
+                                <p class="tutorial-client-title">
+                                    {{ $t('user.free.tutorialV2rayNGTitle') }}
+                                </p>
+                                <ol class="tutorial-steps">
+                                    <li>
+                                        {{
+                                            $t('user.free.tutorialV2rayNGStep2')
+                                        }}
+                                    </li>
+                                    <li>
+                                        {{
+                                            $t('user.free.tutorialV2rayNGStep3')
+                                        }}
+                                    </li>
+                                    <li>
+                                        {{
+                                            $t('user.free.tutorialV2rayNGStep4')
+                                        }}
+                                    </li>
+                                </ol>
+                                <div
+                                    v-if="tutorialImages.v2rayng.length"
+                                    class="tutorial-images"
+                                >
+                                    <el-image
+                                        v-for="(
+                                            src, i
+                                        ) in tutorialImages.v2rayng"
+                                        :key="i"
+                                        :src="src"
+                                        :preview-src-list="
+                                            tutorialImages.v2rayng
+                                        "
+                                        :initial-index="i"
+                                        class="tutorial-img"
+                                        fit="contain"
+                                    />
+                                </div>
+                            </div>
+                            <div class="tutorial-client">
+                                <p class="tutorial-client-title">
+                                    {{ $t('user.free.tutorialClashMetaTitle') }}
+                                </p>
+                                <ol class="tutorial-steps">
+                                    <li>
+                                        {{
+                                            $t(
+                                                'user.free.tutorialClashMetaStep2',
+                                            )
+                                        }}
+                                    </li>
+                                    <li>
+                                        {{
+                                            $t(
+                                                'user.free.tutorialClashMetaStep3',
+                                            )
+                                        }}
+                                    </li>
+                                    <li>
+                                        {{
+                                            $t(
+                                                'user.free.tutorialClashMetaStep4',
+                                            )
+                                        }}
+                                    </li>
+                                    <li>
+                                        {{
+                                            $t(
+                                                'user.free.tutorialClashMetaStep5',
+                                            )
+                                        }}
+                                    </li>
+                                </ol>
+                                <div
+                                    v-if="tutorialImages.clashMeta.length"
+                                    class="tutorial-images"
+                                >
+                                    <el-image
+                                        v-for="(
+                                            src, i
+                                        ) in tutorialImages.clashMeta"
+                                        :key="i"
+                                        :src="src"
+                                        :preview-src-list="
+                                            tutorialImages.clashMeta
+                                        "
+                                        :initial-index="i"
+                                        class="tutorial-img"
+                                        fit="contain"
+                                    />
+                                </div>
+                            </div>
+                        </template>
+                    </div>
                 </div>
 
                 <div class="divider"></div>
@@ -490,7 +704,9 @@
                             :disabled="planCodeSent && planResendCountdown > 0"
                             @click="handleGetPlanCode"
                         >
-                            <span v-if="planCodeSent && planResendCountdown > 0">{{ planResendCountdown }}s</span>
+                            <span v-if="planCodeSent && planResendCountdown > 0"
+                                >{{ planResendCountdown }}s</span
+                            >
                             <span v-else>{{ $t('user.free.getCode') }}</span>
                         </el-button>
                     </div>
@@ -510,7 +726,9 @@
                                     inputmode="numeric"
                                     maxlength="1"
                                     @input="handlePlanCodeInput(index, $event)"
-                                    @keydown="handlePlanCodeKeydown(index, $event)"
+                                    @keydown="
+                                        handlePlanCodeKeydown(index, $event)
+                                    "
                                     @paste="handlePlanCodePaste($event)"
                                 />
                             </div>
@@ -555,7 +773,10 @@
                         </div>
                     </div>
                     <div
-                        v-else-if="orderPollingState === 'success' || orderPollingState === 'paid'"
+                        v-else-if="
+                            orderPollingState === 'success' ||
+                            orderPollingState === 'paid'
+                        "
                         class="plan-order-status plan-success"
                     >
                         <div class="plan-success-icon">✓</div>
@@ -623,7 +844,11 @@
                         class="plan-order-status"
                     >
                         <p>{{ $t('user.free.orderFail') }}</p>
-                        <p class="order-status-label">{{ $t('user.free.orderStatus') }}：{{ orderPollingState }}</p>
+                        <p class="order-status-label">
+                            {{ $t('user.free.orderStatus') }}：{{
+                                orderPollingState
+                            }}
+                        </p>
                     </div>
                 </template>
             </div>
@@ -633,7 +858,8 @@
 
 <script>
 import { generateOrder, orderStatus, sendCode } from '@/api/email'
-import { freeUserInfo, planList } from '@/api/user'
+import { planList } from '@/api/plan'
+import { freeUserInfo } from '@/api/user'
 import { readableBytes } from '@/utils/common'
 import { Grid, Link as LinkIcon } from '@element-plus/icons-vue'
 import QRCode from 'easyqrcodejs'
@@ -940,7 +1166,9 @@ export default {
             }
         },
         handlePlanCodePaste(event) {
-            const text = (event.clipboardData || event.originalEvent?.clipboardData)
+            const text = (
+                event.clipboardData || event.originalEvent?.clipboardData
+            )
                 ?.getData('text')
                 .replace(/\D/g, '')
                 .slice(0, 6)
@@ -1062,7 +1290,11 @@ export default {
                         this.orderPollingState = status
                         this.planOrderCreated = false
                         const statusMsgKey = `user.free.orderStatus${status.charAt(0).toUpperCase() + status.slice(1)}`
-                        ElMessage.error(this.$te(statusMsgKey) ? this.$t(statusMsgKey) : this.$t('user.free.orderFail'))
+                        ElMessage.error(
+                            this.$te(statusMsgKey)
+                                ? this.$t(statusMsgKey)
+                                : this.$t('user.free.orderFail'),
+                        )
                         this.planDialogVisible = false
                     }
                 }
@@ -1074,7 +1306,13 @@ export default {
     computed: {
         isFailedOrderState() {
             const state = this.orderPollingState
-            return state && state !== 'idle' && state !== 'pending' && state !== 'success' && state !== 'paid'
+            return (
+                state &&
+                state !== 'idle' &&
+                state !== 'pending' &&
+                state !== 'success' &&
+                state !== 'paid'
+            )
         },
         paidPlans() {
             return (this.plans || []).filter((plan) => {
@@ -1291,7 +1529,9 @@ export default {
     border-bottom: 2px solid transparent;
     border-right: 1px solid var(--el-border-color-lighter);
     margin-bottom: -1px;
-    transition: color 0.2s, border-color 0.2s;
+    transition:
+        color 0.2s,
+        border-color 0.2s;
     user-select: none;
 }
 
@@ -1817,7 +2057,9 @@ export default {
 
 .plan-fade-enter-active,
 .plan-fade-leave-active {
-    transition: opacity 0.25s ease, transform 0.25s ease;
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
 }
 .plan-fade-enter-from,
 .plan-fade-leave-to {
