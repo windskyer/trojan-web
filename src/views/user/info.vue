@@ -580,8 +580,8 @@
             v-model="planDialogVisible"
             :width="planDialogWidth"
             :show-close="true"
-            :close-on-click-modal="false"
-            :close-on-press-escape="false"
+            :close-on-click-modal="!planCodeSent && !planOrderCreated"
+            :close-on-press-escape="!planCodeSent && !planOrderCreated"
         >
             <div v-if="!selectedPlan">
                 <div v-if="paidPlans.length > 0" class="plan-grid">
@@ -619,6 +619,7 @@
                     plain
                     size="small"
                     class="plan-back-btn"
+                    :disabled="planCodeSent"
                     @click="backToPlanList"
                 >
                     {{ $t('user.free.backToPlans') }}

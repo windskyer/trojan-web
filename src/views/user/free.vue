@@ -681,12 +681,53 @@
                     : $t('user.free.planListTitle')
             "
             v-model="planDialogVisible"
-            width="360px"
+            :width="planDialogWidth"
             :show-close="true"
-            :close-on-click-modal="false"
-            :close-on-press-escape="false"
+            :close-on-click-modal="!planCodeSent && !planOrderCreated"
+            :close-on-press-escape="!planCodeSent && !planOrderCreated"
         >
-            <div v-if="selectedPlan" class="plan-dialog-content">
+            <div v-if="!selectedPlan">
+                <div v-if="paidPlans.length > 0" class="plan-grid">
+                    <div
+                        v-for="plan in paidPlans"
+                        :key="`dialog-${plan.name}`"
+                        class="plan-card"
+                        @click="openPlanDialog(plan)"
+                    >
+                        <p class="plan-label">{{ getPlanLabel(plan) }}</p>
+                        <p v-if="getPlanDescription(plan)" class="plan-desc">
+                            {{ getPlanDescription(plan) }}
+                        </p>
+                        <p class="plan-price">
+                            ¥{{ formatPlanPrice(plan.price) }}
+                        </p>
+                        <p>
+                            {{ $t('user.free.planDuration') }}:
+                            {{ plan.duration_days }} {{ $t('user.days') }}
+                        </p>
+                        <p>
+                            {{ $t('user.free.planTraffic') }}:
+                            {{ plan.total_data_gb }}GB
+                        </p>
+                    </div>
+                </div>
+                <p v-else class="empty-text">
+                    {{ $t('user.free.emptyPlans') }}
+                </p>
+            </div>
+
+            <div v-else class="plan-dialog-content">
+                <el-button
+                    type="info"
+                    plain
+                    size="small"
+                    class="plan-back-btn"
+                    :disabled="planCodeSent"
+                    @click="backToPlanList"
+                >
+                    {{ $t('user.free.backToPlans') }}
+                </el-button>
+
                 <p class="plan-dialog-price">
                     ¥{{ formatPlanPrice(selectedPlan.price) }}
                 </p>
@@ -940,6 +981,15 @@ export default {
         planDialogVisible(newVal) {
             if (!newVal) {
                 this.stopOrderPolling()
+                this.selectedPlan = null
+                this.planOrderCreated = false
+                this.planCodeDigits = ['', '', '', '', '', '']
+                this.planCodeRefs = []
+                this.planCodeSent = false
+                this.planResendCountdown = 0
+                clearInterval(this.planResendTimer)
+                this.orderName = ''
+                this.orderPollingState = 'idle'
             }
         },
     },
@@ -1089,6 +1139,29 @@ export default {
                 this.plans = []
             }
         },
+        openPlanListDialog() {
+            this.stopOrderPolling()
+            this.selectedPlan = null
+            this.planEmail = ''
+            this.planOrderCreated = false
+            this.planCodeDigits = ['', '', '', '', '', '']
+            this.planCodeRefs = []
+            this.planCodeSent = false
+            this.planResendCountdown = 0
+            clearInterval(this.planResendTimer)
+            this.orderName = ''
+            this.orderPollingState = 'idle'
+            this.planDialogVisible = true
+        },
+        backToPlanList() {
+            this.stopOrderPolling()
+            this.selectedPlan = null
+            this.planOrderCreated = false
+            this.planCodeDigits = ['', '', '', '', '', '']
+            this.planCodeRefs = []
+            this.orderName = ''
+            this.orderPollingState = 'idle'
+        },
         openPlanDialog(plan) {
             if (!plan || String(plan.name || '').toLowerCase() === 'free') {
                 return
@@ -1103,6 +1176,7 @@ export default {
             this.planResendCountdown = 0
             clearInterval(this.planResendTimer)
             this.orderName = ''
+            this.orderPollingState = 'idle'
             this.planDialogVisible = true
         },
         async handleGetPlanCode() {
@@ -1322,6 +1396,11 @@ export default {
         },
         isPlanEmailValid() {
             return mailReg.test(this.planEmail)
+        },
+        planDialogWidth() {
+            return (typeof window !== 'undefined' ? window.innerWidth : 1024) <= 480
+                ? '92%'
+                : '420px'
         },
         isPlanCodeComplete() {
             return this.planCodeDigits.join('').length === 6
@@ -1789,6 +1868,10 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 12px;
+}
+
+.plan-back-btn {
+    align-self: flex-start;
 }
 
 .plan-dialog-price {
