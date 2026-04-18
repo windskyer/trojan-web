@@ -701,7 +701,7 @@
                         <el-button
                             type="primary"
                             class="plan-send-btn"
-                            :disabled="planCodeSent && planResendCountdown > 0"
+                            :disabled="!isPlanEmailValid || (planCodeSent && planResendCountdown > 0)"
                             @click="handleGetPlanCode"
                         >
                             <span v-if="planCodeSent && planResendCountdown > 0"
@@ -1319,6 +1319,9 @@ export default {
                 const name = String(plan?.name || '').toLowerCase()
                 return name && name !== 'free'
             })
+        },
+        isPlanEmailValid() {
+            return mailReg.test(this.planEmail)
         },
         isPlanCodeComplete() {
             return this.planCodeDigits.join('').length === 6
