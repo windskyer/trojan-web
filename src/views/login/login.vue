@@ -252,8 +252,11 @@ export default {
 
                 this.$router.replace(isAdmin ? '/' : '/user/info').catch()
             } catch (error) {
-                // 假设后端返回 403 代表邮箱未验证
-                if (error.response && error.response.status === 403) {
+                const status = error?.status ?? error?.response?.status
+                if (status === 401) {
+                    this.$message.error(this.$t('loginFailed'))
+                } else if (status === 403) {
+                    // 邮箱未验证
                     this.$alert(this.$t('emailNotVerified'), this.$t('Tip'), {
                         confirmButtonText: this.$t('Sure'),
                         type: 'warning',

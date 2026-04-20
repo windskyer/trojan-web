@@ -13,6 +13,9 @@ const settingsStore = useSettingsStore(pinia)
 
 /**
  * HTTP 状态码统一处理
+ * 注意：401 不在此处理——需要区分登录接口的密码错误与 token 过期，
+ * 二者都返回 401，但只有后者才应该 logout + reload。
+ * 401 的实际处理在响应错误拦截器中按请求 URL 区分。
  */
 function validateStatus(status) {
   const { t } = i18n.global
@@ -23,9 +26,6 @@ function validateStatus(status) {
       break
 
     case 401:
-      ElMessage.warning(t('request.authFail'))
-      userStore.logout()
-      setTimeout(() => window.location.reload(), 1000)
       return false
 
     case 403:
@@ -82,6 +82,9 @@ instance.interceptors.request.use(
   error => Promise.reject(error)
 )
 
+// 登录接口白名单：这些接口返回 401 表示"凭据错误"，不应触发全局 logout+reload
+const authEndpoints = ['/auth/login', '/auth/register']
+
 /**
  * 响应拦截器
  */
@@ -93,7 +96,17 @@ instance.interceptors.response.use(
   error => {
     NProgress.done()
 
-    if (!error.response && !settingsStore.noerror) {
+    if (error.response) {
+      const status = error.response.status
+      const url = error.config?.url || ''
+
+      if (status === 401 && !authEndpoints.some(e => url.includes(e))) {
+        // token 过期或失效：通知用户并强制重新登录
+        ElMessage.warning(i18n.global.t('request.authFail'))
+        userStore.logout()
+        setTimeout(() => window.location.reload(), 1000)
+      }
+    } else if (!settingsStore.noerror) {
       ElMessage.error(i18n.global.t('request.connectError'))
     }
 

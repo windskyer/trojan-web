@@ -40,6 +40,7 @@ export default {
     registerUser: '注册用户',
     inputNotNull: '用户名或密码不能为空!',
     loginInputNotNull: '账号/邮箱或密码不能为空!',
+    loginFailed: '用户名或密码错误',
     forgotPassword: '忘记密码',
     emailNotRegistered: '该邮箱尚未注册',
     resetPassword: {
@@ -72,7 +73,7 @@ export default {
         dashboard: '首页',
         trojan: '管理',
         user: '用户',
-        analytics: '访问统计'
+        analytics: '统计'
     },
     navbar: {
         version: '系统版本',

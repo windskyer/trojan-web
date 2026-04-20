@@ -19,6 +19,7 @@ export default {
     registerUser: 'register trojan username',
     inputNotNull: "username or password can't be null!",
     loginInputNotNull: "username/email or password can't be null!",
+    loginFailed: 'Invalid username or password',
     forgotPassword: 'Forgot Password',
     emailNotRegistered: 'This email is not registered',
     resetPassword: {
