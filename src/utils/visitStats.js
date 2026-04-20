@@ -108,7 +108,9 @@ export function trackPageView(path) {
   let referrer = 'direct'
   try {
     if (document.referrer) referrer = new URL(document.referrer).hostname
-  } catch {}
+  } catch (e) {
+    // Ignore invalid referrer URLs
+  }
   stats.referrers[referrer] = (stats.referrers[referrer] || 0) + 1
 
   localStorage.setItem(getTodayKey(), JSON.stringify(stats))
