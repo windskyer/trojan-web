@@ -162,7 +162,7 @@
                         <el-col :span="10">
                             <b>{{ $t('dashboard.upload') }}:</b>
                         </el-col>
-                        <el-col :span="12" style="padding-top: 1px">
+                        <el-col :span="12" style="padding-top: 1px; color: #67c23a">
                             {{ uploadData }}
                         </el-col>
                     </el-row>
@@ -174,7 +174,7 @@
                         <el-col :span="10">
                             <b>{{ $t('dashboard.download') }}:</b>
                         </el-col>
-                        <el-col :span="12" style="padding-top: 1px">
+                        <el-col :span="12" style="padding-top: 1px; color: #67c23a">
                             {{ downloadData }}
                         </el-col>
                     </el-row>
@@ -186,7 +186,7 @@
                         <el-col :span="10">
                             <b>{{ $t('dashboard.total') }}:</b>
                         </el-col>
-                        <el-col :span="12" style="padding-top: 1px">
+                        <el-col :span="12" style="padding-top: 1px; color: #67c23a">
                             {{ totalData }}
                         </el-col>
                     </el-row>
