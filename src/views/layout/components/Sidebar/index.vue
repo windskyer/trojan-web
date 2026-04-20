@@ -17,53 +17,71 @@
                     :item="route"
                     :base-path="route.path"
                 />
-                <el-menu-item
-                    class="free-entry-item"
-                    index="/free"
-                    @click="goFreePage"
+                <el-tooltip
+                    :content="$t('sidebar.free')"
+                    placement="right"
+                    :disabled="!isCollapse"
                 >
-                    <svg-icon
-                        icon-class="free"
-                        :class-name="
-                            isCollapse ? 'free-icon collapsed' : 'free-icon'
-                        "
-                    />
-                    <span v-show="!isCollapse">{{ $t('sidebar.free') }}</span>
-                </el-menu-item>
-                <el-menu-item
-                    class="telegram-channel-item"
-                    index="telegram-channel"
-                    @click="openTelegramChannel"
+                    <el-menu-item
+                        class="free-entry-item"
+                        index="/free"
+                        @click="goFreePage"
+                    >
+                        <svg-icon
+                            icon-class="free"
+                            :class-name="
+                                isCollapse ? 'free-icon collapsed' : 'free-icon'
+                            "
+                        />
+                        <span v-show="!isCollapse">{{ $t('sidebar.free') }}</span>
+                    </el-menu-item>
+                </el-tooltip>
+                <el-tooltip
+                    :content="$t('sidebar.telegramChannel')"
+                    placement="right"
+                    :disabled="!isCollapse"
                 >
-                    <svg-icon
-                        icon-class="telegram"
-                        :class-name="
-                            isCollapse
-                                ? 'telegram-icon collapsed'
-                                : 'telegram-icon'
-                        "
-                    />
-                    <span v-show="!isCollapse">{{
-                        $t('sidebar.telegramChannel')
-                    }}</span>
-                </el-menu-item>
+                    <el-menu-item
+                        class="telegram-channel-item"
+                        index="telegram-channel"
+                        @click="openTelegramChannel"
+                    >
+                        <svg-icon
+                            icon-class="telegram"
+                            :class-name="
+                                isCollapse
+                                    ? 'telegram-icon collapsed'
+                                    : 'telegram-icon'
+                            "
+                        />
+                        <span v-show="!isCollapse">{{
+                            $t('sidebar.telegramChannel')
+                        }}</span>
+                    </el-menu-item>
+                </el-tooltip>
             </el-menu>
         </el-scrollbar>
-        <div
-            class="customer-entry"
-            :class="{ collapsed: isCollapse }"
-            @click="openTelegramBot"
+        <el-tooltip
+            :content="$t('sidebar.customerService')"
+            placement="right"
+            :disabled="!isCollapse"
         >
-            <svg-icon
-                icon-class="customer-service"
-                :class-name="
-                    isCollapse ? 'customer-icon collapsed' : 'customer-icon'
-                "
-            />
-            <span v-show="!isCollapse">{{
-                $t('sidebar.customerService')
-            }}</span>
-        </div>
+            <div
+                class="customer-entry"
+                :class="{ collapsed: isCollapse }"
+                @click="openTelegramBot"
+            >
+                <svg-icon
+                    icon-class="customer-service"
+                    :class-name="
+                        isCollapse ? 'customer-icon collapsed' : 'customer-icon'
+                    "
+                />
+                <span v-show="!isCollapse">{{
+                    $t('sidebar.customerService')
+                }}</span>
+            </div>
+        </el-tooltip>
     </div>
 </template>
 

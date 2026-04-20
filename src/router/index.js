@@ -88,7 +88,7 @@ export const constantRoutes = [
                 path: '',
                 name: 'analytics',
                 component: () => import('@/views/analytics/index'),
-                meta: { title: 'analytics', icon: 'documentation', isAdmin: true }
+                meta: { title: 'analytics', icon: 'chart', isAdmin: true }
             }
         ]
     },
