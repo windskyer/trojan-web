@@ -92,8 +92,6 @@ src/
 VITE_API=http://your-backend-api          # 后端 API 地址（代理目标）
 VITE_FREE_DOMAIN=free.example.com         # 单个免费落地页域名（可选）
 VITE_FREE_DOMAINS=a.example.com,b.example.com  # 多个免费落地页域名，逗号分隔（可选）
-VITE_TG_BOT_TOKEN=                        # Telegram Bot Token（可选，供后端参考）
-VITE_TG_CHAT_ID=                          # Telegram Chat ID（可选，供后端参考）
 ```
 
 开发时 `/api` 和 `/ws` 前缀均代理到 `VITE_API`，路径前缀自动去除。

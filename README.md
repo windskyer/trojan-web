@@ -49,8 +49,6 @@ npm run build
 | `VITE_API` | ✅ | 后端 API 地址，开发时代理目标（如 `http://localhost:8081`） |
 | `VITE_FREE_DOMAIN` | ❌ | 单个免费落地页专属域名，访问该域名时强制跳转 `/free` |
 | `VITE_FREE_DOMAINS` | ❌ | 多个免费落地页域名，逗号分隔（与 `VITE_FREE_DOMAIN` 合并生效） |
-| `VITE_TG_BOT_TOKEN` | ❌ | Telegram Bot Token，供后端读取用于每日推送 |
-| `VITE_TG_CHAT_ID` | ❌ | Telegram 目标群组/频道 Chat ID |
 
 **示例 `.env.local`：**
 
@@ -60,8 +58,6 @@ VITE_API=http://your-backend:8081
 VITE_FREE_DOMAIN=free.example.com
 VITE_FREE_DOMAINS=landing1.example.com,landing2.example.com
 
-VITE_TG_BOT_TOKEN=123456:ABCdef...
-VITE_TG_CHAT_ID=-1001234567890
 ```
 
 > `.env.local` 不会提交到 Git。`.env.development` / `.env.production` 为共享默认值，可以提交。
@@ -318,20 +314,6 @@ trojan-web/
 - **设备 / 浏览器 / OS / 来源**：进度条占比展示
 - **近 7 天趋势**：PV + UV 双色柱图
 - **手动发送日报**：点击按钮立即触发后端 TG 推送
-
-### 配置 Telegram Bot
-
-1. 向 `@BotFather` 发送 `/newbot`，按提示创建 Bot，获取 **Token**
-2. 将 Bot 邀请进目标群组或频道，发一条任意消息
-3. 访问 `https://api.telegram.org/bot<TOKEN>/getUpdates`，在响应中找到 `chat.id`，即 **Chat ID**
-4. 将两个值填入 `.env.local`：
-
-```env
-VITE_TG_BOT_TOKEN=123456:ABCdef...
-VITE_TG_CHAT_ID=-1001234567890
-```
-
-5. 后端读取这两个值，在收到 `POST /analytics/daily-report` 时调用 Telegram Bot API 发送消息
 
 ---
 
