@@ -181,6 +181,34 @@
                 </el-card>
             </el-col>
         </el-row>
+        <el-row style="margin-top: 10px" v-if="isAdmin">
+            <el-col :span="24">
+                <el-card shadow="hover">
+                    <template #header>
+                        <span>📊 {{ $t('dashboard.visitStats') }}</span>
+                        <el-link
+                            type="primary"
+                            style="float: right; margin-top: 2px; font-size: 13px"
+                            @click="navigate('/analytics')"
+                        >{{ $t('dashboard.viewDetails') }} →</el-link>
+                    </template>
+                    <el-row>
+                        <el-col :sm="24" :md="8" style="text-align:center; padding: 8px 0">
+                            <div style="font-size: 28px; font-weight: bold; color: #409EFF">{{ todayPageViews }}</div>
+                            <div style="color: #909399; font-size: 13px">{{ $t('dashboard.todayPageViews') }}</div>
+                        </el-col>
+                        <el-col :sm="24" :md="8" style="text-align:center; padding: 8px 0">
+                            <div style="font-size: 28px; font-weight: bold; color: #67C23A">{{ todayVisitors }}</div>
+                            <div style="color: #909399; font-size: 13px">{{ $t('dashboard.todayVisitors') }}</div>
+                        </el-col>
+                        <el-col :sm="24" :md="8" style="text-align:center; padding: 8px 0">
+                            <div style="font-size: 28px; font-weight: bold; color: #E6A23C">{{ weekPageViews }}</div>
+                            <div style="color: #909399; font-size: 13px">{{ $t('dashboard.weekPageViews') }}</div>
+                        </el-col>
+                    </el-row>
+                </el-card>
+            </el-col>
+        </el-row>
     </div>
 </template>
 
@@ -190,6 +218,7 @@ import { userTotal } from '@/api/user'
 import { useSettingsStore } from '@/store/settings'
 import { useUserStore } from '@/store/user'
 import { readableBytes } from '@/utils/common'
+import { getTodayStats, getWeekStats } from '@/utils/visitStats'
 
 export default {
     name: 'DashboardIndex',
@@ -221,6 +250,9 @@ export default {
             load: '',
             netSpeed: { up: '', down: '' },
             netCount: '',
+            todayPageViews: 0,
+            todayVisitors: 0,
+            weekPageViews: 0,
         }
     },
     computed: {
@@ -233,6 +265,7 @@ export default {
         this.setOffset()
         this.getVersion()
         this.getUserTotal()
+        this.loadVisitStats()
     },
     mounted() {
         if (this.isAdmin) {
@@ -333,6 +366,12 @@ export default {
             } finally {
                 this.userTotalLoading = false
             }
+        },
+        loadVisitStats() {
+            const today = getTodayStats()
+            this.todayPageViews = Object.values(today.pageViews).reduce((a, b) => a + b, 0)
+            this.todayVisitors = today.visitors.length
+            this.weekPageViews = getWeekStats().reduce((sum, d) => sum + d.pageViews, 0)
         },
         async getVersion() {
             const result = await version()

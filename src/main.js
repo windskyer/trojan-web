@@ -4,6 +4,8 @@ import i18n from '@/lang'; // vue-i18n v11
 import router from '@/router';
 import pinia from '@/store';
 import { useUserStore } from '@/store/user';
+import { checkAndSendDailyReport } from '@/utils/dailyReport';
+import { trackPageView } from '@/utils/visitStats';
 import { createApp } from 'vue';
 
 // ElementPlus 样式和组件
@@ -100,6 +102,14 @@ router.beforeEach(async (to, from, next) => {
     }
     return next('/login')
   }
+})
+
+// ==================
+// 访问统计 & 每日 TG 报告
+// ==================
+router.afterEach((to) => {
+  trackPageView(to.path)
+  checkAndSendDailyReport()
 })
 
 // ==================

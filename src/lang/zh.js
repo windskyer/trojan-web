@@ -71,7 +71,8 @@ export default {
     route: {
         dashboard: '首页',
         trojan: '管理',
-        user: '用户'
+        user: '用户',
+        analytics: '访问统计'
     },
     navbar: {
         version: '系统版本',
@@ -120,7 +121,35 @@ export default {
         day: '天',
         hour: '时',
         minute: '分',
-        second: '秒'
+        second: '秒',
+        visitStats: '访问统计',
+        todayPageViews: '今日页面浏览量',
+        todayVisitors: '今日独立访客',
+        weekPageViews: '近 7 日浏览量',
+        viewDetails: '查看详情'
+    },
+    analytics: {
+        selectDate: '选择日期',
+        sendReport: '发送日报到 TG',
+        reportSent: '日报已发送到 Telegram',
+        reportFailed: '发送失败，请检查后端配置',
+        pageViews: '页面浏览量',
+        uniqueVisitors: '独立访客',
+        newVisitors: '新访客',
+        returningVisitors: '回访用户',
+        topPages: '热门页面',
+        hourlyDistribution: '24小时访问分布',
+        devices: '设备类型',
+        browsers: '浏览器',
+        os: '操作系统',
+        referrers: '访问来源',
+        weekTrend: '近 7 天趋势',
+        noData: '暂无数据',
+        device: {
+            desktop: '桌面端',
+            mobile: '移动端',
+            tablet: '平板'
+        }
     },
     trojan: {
         restartSuccess: '重启VPN成功!',

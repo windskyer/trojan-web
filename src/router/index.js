@@ -80,6 +80,18 @@ export const constantRoutes = [
             }
         ]
     },
+    {
+        path: '/analytics',
+        component: Layout,
+        children: [
+            {
+                path: '',
+                name: 'analytics',
+                component: () => import('@/views/analytics/index'),
+                meta: { title: 'analytics', icon: 'documentation', isAdmin: true }
+            }
+        ]
+    },
     { path: '/:pathMatch(.*)*', redirect: '/404', hidden: true }
 ]
 

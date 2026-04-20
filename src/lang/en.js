@@ -50,7 +50,8 @@ export default {
     route: {
         dashboard: 'Dashboard',
         trojan: 'Management',
-        user: 'User'
+        user: 'User',
+        analytics: 'Analytics'
     },
     navbar: {
         version: 'System Version',
@@ -99,7 +100,35 @@ export default {
         day: ' day',
         hour: ' hour',
         minute: ' minute',
-        second: ' second'
+        second: ' second',
+        visitStats: 'Visit Statistics',
+        todayPageViews: "Today's Page Views",
+        todayVisitors: "Today's Unique Visitors",
+        weekPageViews: 'Last 7 Days Views',
+        viewDetails: 'View Details'
+    },
+    analytics: {
+        selectDate: 'Select Date',
+        sendReport: 'Send Daily Report to TG',
+        reportSent: 'Daily report sent to Telegram',
+        reportFailed: 'Failed to send, please check backend config',
+        pageViews: 'Page Views',
+        uniqueVisitors: 'Unique Visitors',
+        newVisitors: 'New Visitors',
+        returningVisitors: 'Returning Visitors',
+        topPages: 'Top Pages',
+        hourlyDistribution: '24h Visit Distribution',
+        devices: 'Device Types',
+        browsers: 'Browsers',
+        os: 'Operating Systems',
+        referrers: 'Referrers',
+        weekTrend: '7-Day Trend',
+        noData: 'No data yet',
+        device: {
+            desktop: 'Desktop',
+            mobile: 'Mobile',
+            tablet: 'Tablet'
+        }
     },
     trojan: {
         restartSuccess: 'restart VPN success!',
