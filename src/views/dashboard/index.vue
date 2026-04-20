@@ -156,28 +156,40 @@
             </el-col>
         </el-row>
         <el-row style="margin-top: 10px">
-            <el-col :span="7">
-                <el-card shadow="hover">
-                    {{ $t('dashboard.upload') }}:
-                    <el-tag effect="dark" type="success">{{
-                        uploadData
-                    }}</el-tag>
+            <el-col :sm="24" :md="8">
+                <el-card class="home-card" shadow="hover">
+                    <el-row>
+                        <el-col :span="10">
+                            <b>{{ $t('dashboard.upload') }}:</b>
+                        </el-col>
+                        <el-col :span="12" style="padding-top: 1px">
+                            {{ uploadData }}
+                        </el-col>
+                    </el-row>
                 </el-card>
             </el-col>
-            <el-col :span="7" :offset="1">
-                <el-card shadow="hover">
-                    {{ $t('dashboard.download') }}:
-                    <el-tag effect="dark" type="success">{{
-                        downloadData
-                    }}</el-tag>
+            <el-col :sm="24" :md="8">
+                <el-card class="home-card" shadow="hover">
+                    <el-row>
+                        <el-col :span="10">
+                            <b>{{ $t('dashboard.download') }}:</b>
+                        </el-col>
+                        <el-col :span="12" style="padding-top: 1px">
+                            {{ downloadData }}
+                        </el-col>
+                    </el-row>
                 </el-card>
             </el-col>
-            <el-col :span="7" :offset="1">
-                <el-card shadow="hover">
-                    {{ $t('dashboard.total') }}:
-                    <el-tag effect="dark" type="success">{{
-                        totalData
-                    }}</el-tag>
+            <el-col :sm="24" :md="8">
+                <el-card class="home-card" shadow="hover">
+                    <el-row>
+                        <el-col :span="10">
+                            <b>{{ $t('dashboard.total') }}:</b>
+                        </el-col>
+                        <el-col :span="12" style="padding-top: 1px">
+                            {{ totalData }}
+                        </el-col>
+                    </el-row>
                 </el-card>
             </el-col>
         </el-row>
