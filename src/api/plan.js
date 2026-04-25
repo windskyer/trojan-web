@@ -8,7 +8,6 @@ export function planList() {
    })
 }
 
-export function planInfo(id) {
-   return request.get(`/trojan/user/plan?id=${id}`)
+export function planInfo(name) {
+   return request.get(`/trojan/user/plan?name=${name}`)
 }
-

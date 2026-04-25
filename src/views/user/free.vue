@@ -1166,6 +1166,10 @@ export default {
             if (!plan || String(plan.name || '').toLowerCase() === 'free') {
                 return
             }
+            if (String(plan.name || '').toLowerCase() === 'welcome') {
+                this.$router.push('/register').catch(() => {})
+                return
+            }
             this.stopOrderPolling()
             this.selectedPlan = plan || null
             this.planEmail = ''

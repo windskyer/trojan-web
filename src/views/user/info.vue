@@ -986,7 +986,7 @@ export default {
         paidPlans() {
             return (this.plans || []).filter((plan) => {
                 const name = String(plan?.name || '').toLowerCase()
-                return name && name !== 'free'
+                return name && name !== 'free' && name !== 'welcome'
             })
         },
         isPlanCodeComplete() {
