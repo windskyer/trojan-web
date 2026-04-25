@@ -1,5 +1,12 @@
 export default {
     ok: 'ok',
+    welcomeBannerTitle: 'Free Trial for New Users',
+    welcomeBannerDesc: 'Register now — no payment required. Unlock AI access instantly.',
+    welcomeTagFree: 'Free',
+    welcomeTagTraffic: '3GB Data',
+    welcomeTagDays: '3 Days',
+    welcomeTagDevices: 'Unlimited Devices',
+    welcomeTagAI: 'AI Boost',
     cancel: 'cancel',
     reset: 'reset',
     inputName: 'input username',

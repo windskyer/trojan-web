@@ -1,5 +1,18 @@
 <template>
     <div class="register-container">
+        <!-- welcome 套餐信息 -->
+        <div class="welcome-plan-banner">
+            <p class="welcome-plan-label">{{ $t('welcomeBannerTitle') }}</p>
+            <p class="welcome-plan-desc">{{ $t('welcomeBannerDesc') }}</p>
+            <div class="welcome-plan-tags">
+                <span class="welcome-tag">{{ $t('welcomeTagFree') }}</span>
+                <span class="welcome-tag">{{ $t('welcomeTagTraffic') }}</span>
+                <span class="welcome-tag">{{ $t('welcomeTagDays') }}</span>
+                <span class="welcome-tag">{{ $t('welcomeTagDevices') }}</span>
+                <span class="welcome-tag">{{ $t('welcomeTagAI') }}</span>
+            </div>
+        </div>
+
         <el-form class="register-form" @submit.prevent>
             <div class="title-container">
                 <h3 class="title">{{ $t('register') }}</h3>
@@ -16,7 +29,7 @@
                     type="primary"
                     class="send-btn"
                     :loading="sending"
-                    :disabled="codeSent && resendCountdown > 0"
+                    :disabled="!isEmailValid || (codeSent && resendCountdown > 0)"
                     @click="handleSendCode"
                 >
                     <span v-if="codeSent && resendCountdown > 0">{{ resendCountdown }}s</span>
@@ -129,6 +142,12 @@ export default {
             dialogTimer: null,
             redirecting: false,
         }
+    },
+
+    computed: {
+        isEmailValid() {
+            return mailReg.test(this.email)
+        },
     },
 
     created() {
@@ -335,11 +354,51 @@ $light_gray: #eee;
     background-color: $bg;
     overflow: hidden;
 
+    .welcome-plan-banner {
+        width: 520px;
+        max-width: calc(100% - 70px);
+        margin: 60px auto 0;
+        padding: 14px 16px;
+        border-radius: 10px;
+        border: 1px solid rgba(64, 158, 255, 0.3);
+        background: rgba(64, 158, 255, 0.06);
+    }
+
+    .welcome-plan-label {
+        margin: 0 0 4px;
+        font-size: 15px;
+        font-weight: 700;
+        color: $light_gray;
+    }
+
+    .welcome-plan-desc {
+        margin: 0 0 10px;
+        font-size: 13px;
+        color: $dark_gray;
+        line-height: 1.6;
+    }
+
+    .welcome-plan-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .welcome-tag {
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        background: rgba(64, 158, 255, 0.15);
+        color: #6db8ff;
+        border: 1px solid rgba(64, 158, 255, 0.25);
+    }
+
     .register-form {
         position: relative;
         width: 520px;
         max-width: 100%;
-        padding: 160px 35px 0;
+        padding: 60px 35px 0;
         margin: 0 auto;
         overflow: hidden;
     }
