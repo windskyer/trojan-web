@@ -27,7 +27,7 @@ const whiteList = ['/login', '/register', '/404', '/free', '/pay', '/reset-passw
 const userHomePath = '/user/info'
 
 // ==================
-// 单独域名：强制进入 /free
+// 单独域名：强制进入 /login
 // - VITE_FREE_DOMAIN: 单个域名（如 free.example.com）
 // - VITE_FREE_DOMAINS: 多个域名，逗号分隔（如 free.example.com,landing.example.com）
 // ==================
@@ -53,13 +53,13 @@ router.beforeEach(async (to, from, next) => {
 
   if (
     isFreeDomain &&
-    to.path !== '/free' &&
+    to.path !== '/login' &&
     !isPayRoute &&
     to.path !== '/verify-success' &&
     to.path !== '/verify-fail' &&
     to.path !== '/404'
   ) {
-    return next('/free')
+    return next('/login')
   }
 
   // Public pages should not be blocked by stale/invalid token checks.

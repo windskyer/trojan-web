@@ -19,7 +19,7 @@ export const constantRoutes = [
     },
     {
         path: '/free',
-        component: () => import('@/views/user/free'),
+        redirect: '/login',
         hidden: true
     },
     {
