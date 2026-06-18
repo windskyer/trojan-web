@@ -423,7 +423,7 @@
         >
             <el-form class="user-info-form" label-position="top">
                 <el-row :gutter="12">
-                    <el-col :xs="24" :sm="24" :md="12" :lg="8">
+                    <el-col :span="24">
                         <el-form-item :label="$t('username')">
                             <el-input
                                 type="text"
@@ -438,7 +438,7 @@
                             />
                         </el-form-item>
                     </el-col>
-                    <el-col :xs="24" :sm="24" :md="12" :lg="8">
+                    <el-col :span="24">
                         <el-form-item :label="$t('user.email')">
                             <el-input
                                 type="email"
@@ -453,7 +453,7 @@
                             />
                         </el-form-item>
                     </el-col>
-                    <el-col :xs="24" :sm="24" :md="12" :lg="8">
+                    <el-col :span="24">
                         <el-form-item :label="$t('user.password')">
                             <el-input
                                 type="password"
