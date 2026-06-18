@@ -413,7 +413,7 @@ export default {
             trojanLinkLabel: '📋 稳定如磐，专属链接 (点击复制):',
             hy2LinkLabel: '📋 暴力加速，专属链接 (点击复制):',
             vlessLinkLabel: '📋 顶级抗封锁，专属链接 (点击复制):',
-            copySuccess: '链接已复制',
+            copySuccess: '复制成功',
             copyFail: '复制失败，请手动复制',
             fetchFail: '获取用户信息失败',
             linkName: '专属链接',

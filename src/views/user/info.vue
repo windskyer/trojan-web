@@ -12,7 +12,12 @@
                 @keydown.enter="copyText(user.username)"
                 @keydown.space.prevent="copyText(user.username)"
             >
-                <span>{{ $t('user.info.username') }}: {{ user.username }}</span>
+                <span class="account-copy-content">
+                    <span class="account-copy-label"
+                        >{{ $t('user.info.username') }}:</span
+                    >
+                    <span class="account-copy-value">{{ user.username }}</span>
+                </span>
                 <el-icon class="account-copy-icon"><CopyDocument /></el-icon>
             </p>
             <p
@@ -24,7 +29,12 @@
                 @keydown.enter="copyText(user.email)"
                 @keydown.space.prevent="copyText(user.email)"
             >
-                <span>{{ $t('user.info.email') }}: {{ user.email }}</span>
+                <span class="account-copy-content">
+                    <span class="account-copy-label"
+                        >{{ $t('user.info.email') }}:</span
+                    >
+                    <span class="account-copy-value">{{ user.email }}</span>
+                </span>
                 <el-icon class="account-copy-icon"><CopyDocument /></el-icon>
             </p>
             <p
@@ -36,10 +46,12 @@
                 @keydown.enter="copyText(user.uuid)"
                 @keydown.space.prevent="copyText(user.uuid)"
             >
-                <span>
+                <span class="account-copy-content">
+                    <span class="account-copy-label">
                     <el-icon class="label-icon"><Key /></el-icon>
-                    {{ $t('user.info.uuid') }}:
-                    {{ user.uuid }}
+                        {{ $t('user.info.uuid') }}:
+                    </span>
+                    <span class="account-copy-value">{{ user.uuid }}</span>
                 </span>
                 <el-icon class="account-copy-icon"><CopyDocument /></el-icon>
             </p>
@@ -52,9 +64,13 @@
                 @keydown.enter="copyText(user.tgUsername || '-')"
                 @keydown.space.prevent="copyText(user.tgUsername || '-')"
             >
-                <span>
-                    {{ $t('user.info.tgUsername') }}:
-                    {{ user.tgUsername || '-' }}
+                <span class="account-copy-content">
+                    <span class="account-copy-label"
+                        >{{ $t('user.info.tgUsername') }}:</span
+                    >
+                    <span class="account-copy-value">
+                        {{ user.tgUsername || '-' }}
+                    </span>
                 </span>
                 <el-icon class="account-copy-icon"><CopyDocument /></el-icon>
             </p>
@@ -67,8 +83,11 @@
                 @keydown.enter="copyText(user.password)"
                 @keydown.space.prevent="copyText(user.password)"
             >
-                <span>
-                    {{ $t('user.info.linkPassword') }}: {{ user.password }}
+                <span class="account-copy-content">
+                    <span class="account-copy-label"
+                        >{{ $t('user.info.linkPassword') }}:</span
+                    >
+                    <span class="account-copy-value">{{ user.password }}</span>
                 </span>
                 <el-icon class="account-copy-icon"><CopyDocument /></el-icon>
             </p>
@@ -1496,24 +1515,39 @@ export default {
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    padding: 3px 6px;
-    border-radius: 6px;
+    padding: 3px 0;
     cursor: pointer;
+}
+
+.account-copy-row:hover,
+.account-copy-row:focus-visible {
+    outline: none;
+}
+
+.account-copy-content {
+    display: flex;
+    align-items: baseline;
+    min-width: 0;
+}
+
+.account-copy-label {
+    flex: 0 0 auto;
+}
+
+.account-copy-value {
+    min-width: 0;
+    word-break: break-all;
+    padding: 0 4px;
+    border-radius: 4px;
     transition:
         color 0.15s ease,
         background-color 0.15s ease;
 }
 
-.account-copy-row:hover,
-.account-copy-row:focus-visible {
+.account-copy-row:hover .account-copy-value,
+.account-copy-row:focus-visible .account-copy-value {
     color: var(--el-color-primary);
     background: var(--el-color-primary-light-9);
-    outline: none;
-}
-
-.account-copy-row > span {
-    min-width: 0;
-    word-break: break-all;
 }
 
 .account-copy-icon {

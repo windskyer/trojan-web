@@ -396,7 +396,7 @@ export default {
             trojanLinkLabel: '📋 Stable Link (click to copy):',
             hy2LinkLabel: '📋 High-Speed Link (click to copy):',
             vlessLinkLabel: '📋 Anti-Block Link (click to copy):',
-            copySuccess: 'Link copied',
+            copySuccess: 'Copied',
             copyFail: 'Copy failed, please copy manually',
             fetchFail: 'Failed to fetch user info',
             linkName: 'Link',
